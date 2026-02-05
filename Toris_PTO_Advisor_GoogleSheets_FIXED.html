@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tori's PTO Advisor - Wyoming State Worker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .balance-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .balance-display h2 {
+            font-size: 48px;
+            margin-bottom: 5px;
+        }
+        
+        .balance-display p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .trip-list {
+            list-style: none;
+        }
+        
+        .trip-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .trip-item h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .trip-item p {
+            font-size: 13px;
+            color: #666;
+            margin: 4px 0;
+        }
+        
+        .trip-item .days {
+            font-weight: 600;
+            color: #764ba2;
+        }
+        
+        .trip-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .trip-card h4 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .trip-card .trip-dates {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .trip-card .trip-detail {
+            font-size: 13px;
+            color: #6c757d;
+            margin: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .trip-card .trip-detail:before {
+            content: "•";
+            position: absolute;
+            left: 8px;
+            color: #667eea;
+        }
+        
+        .trip-card .trip-balance {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 13px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .trip-card .trip-balance strong {
+            color: #667eea;
+        }
+        
+        .trip-card .trip-notes {
+            background: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+            font-size: 13px;
+            border-left: 3px solid #ffc107;
+            color: #495057;
+        }
+        
+        .no-trips {
+            text-align: center;
+            padding: 40px;
+            color: #adb5bd;
+            font-style: italic;
+        }
+        
+        .holiday-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        
+        .holiday-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        
+        .holiday-item strong {
+            color: #667eea;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .projection {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        
+        .projection h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>💼 Tori's PTO Advisor</h1>
+            <p class="subtitle">Wyoming State Worker Edition</p>
+            
+            <!-- Step 1: Confirm Balance -->
+            <div id="step1">
+                <h3 style="color: #667eea; margin-bottom: 20px;">Step 1: Confirm Current PTO Balance</h3>
+                <div class="form-group">
+                    <label>Current PTO Balance (hours)</label>
+                    <input type="number" id="currentBalance" step="0.01" value="73.33" placeholder="Enter current balance">
+                </div>
+                <button onclick="confirmBalance()">Confirm Balance</button>
+            </div>
+            
+            <!-- Step 2: Validate Planned PTO -->
+            <div id="step2" class="hidden">
+                <div class="balance-display">
+                    <h2 id="displayBalance">73.33 hrs</h2>
+                    <p>Current PTO Balance</p>
+                </div>
+                
+                <h3 style="color: #667eea; margin-bottom: 15px;">Step 2: Review Planned PTO</h3>
+                <div id="plannedTripsSection"></div>
+                <button onclick="validatePlannedPTO()">Confirm All Trips Still Valid</button>
+            </div>
+            
+            <!-- Step 3: Main Interface -->
+            <div id="step3" class="hidden">
+                <div class="balance-display" onclick="editBalance()" style="cursor: pointer;" title="Click to edit balance">
+                    <h2 id="mainBalance">73.33 hrs</h2>
+                    <p>Current PTO Balance (click to edit)</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <button onclick="showPlanPTO()">📅 Plan New PTO</button>
+                    <button onclick="showHolidays()" class="btn-secondary">🎉 View Holidays</button>
+                </div>
+                
+                <button onclick="showProjections()" class="btn-success" style="margin-bottom: 20px;">📊 View Balance Projections</button>
+                
+                <!-- Planned Trips Section -->
+                <div id="plannedTripsMain">
+                    <h3 style="color: #667eea; margin: 20px 0 15px 0; border-bottom: 2px solid #667eea; padding-bottom: 10px;">🗓️ Your Planned Trips</h3>
+                    <div id="mainTripsList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Plan PTO Modal -->
+        <div id="planPTOCard" class="card hidden">
+            <h3 style="color: #667eea; margin-bottom: 20px;">Plan New PTO</h3>
+            
+            <div class="form-group">
+                <label>PTO Type</label>
+                <select id="ptoType" onchange="toggleAdminHoursInput()">
+                    <option value="pto">PTO (Vacation)</option>
+                    <option value="admin">Admin Time (No Balance Impact)</option>
+                    <option value="split">Split (Admin + PTO)</option>
+                </select>
+            </div>
+            
+            <div class="form-group hidden" id="adminHoursGroup">
+                <label>Admin Hours to Use</label>
+                <input type="number" id="adminHours" step="0.01" min="0" placeholder="e.g., 12">
+                <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">Remaining hours will be deducted from PTO</p>
+            </div>
+            
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" id="startDate">
+            </div>
+            
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" id="endDate">
+            </div>
+            
+            <div class="form-group">
+                <label>Destination / Purpose</label>
+                <input type="text" id="destination" placeholder="e.g., Hawaii vacation, Family visit">
+            </div>
+            
+            <div class="form-group">
+                <label>Reservations / Notes (optional)</label>
+                <textarea id="reservations" rows="3" placeholder="Flight info, hotel, etc."></textarea>
+            </div>
+            
+            <div id="ptoWarnings"></div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <button onclick="savePlannedPTO()">Save PTO</button>
+                <button onclick="cancelPlanPTO()" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+        
+        <!-- Holidays Modal -->
+        <div id="holidaysCard" class="card hidden">
+            <h3 style="color: #667eea; margin-bottom: 20px;">🎉 Wyoming State Holidays 2025-2027</h3>
+            <div id="holidaysList"></div>
+            <button onclick="hideHolidays()" class="btn-secondary" style="margin-top: 20px;">Close</button>
+        </div>
+        
+        <!-- Projections Modal -->
+        <div id="projectionsCard" class="card hidden">
+            <h3 style="color: #667eea; margin-bottom: 20px;">📊 PTO Balance Projections</h3>
+            <div id="projectionsList"></div>
+            <button onclick="hideProjections()" class="btn-secondary" style="margin-top: 20px;">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        // Storage key
+        // Google Sheets Configuration
+        const API_KEY = 'AIzaSyBlUX_6nAdn9OkSkrAVFo50QXZu3_wOPsQ';
+        const SPREADSHEET_ID = '107ByQVrvKaBV-IgB9WzSKJnTx5k-9m-VXNg6j25WEec';
+        const SHEET_BALANCE = 'Balance';
+        const SHEET_TRIPS = 'Trips';
+        
+        // State
+        let state = {
+            currentBalance: 73.33,
+            plannedTrips: [],
+            lastUpdated: new Date().toISOString()
+        };
+        
+        // Wyoming State Holidays (with weekend observation rules)
+        function getHolidays(year) {
+            const holidays = [];
+            
+            // Helper to get observed date if weekend
+            const observeWeekend = (date) => {
+                const day = date.getDay();
+                if (day === 6) { // Saturday
+                    date.setDate(date.getDate() - 1); // Friday
+                } else if (day === 0) { // Sunday
+                    date.setDate(date.getDate() + 1); // Monday
+                }
+                return date;
+            };
+            
+            // New Year's Day
+            holidays.push({ name: "New Year's Day", date: observeWeekend(new Date(year, 0, 1)) });
+            
+            // MLK Day - 3rd Monday in January
+            const mlkDay = new Date(year, 0, 1);
+            mlkDay.setDate(1 + (7 - mlkDay.getDay() + 1) % 7 + 14);
+            holidays.push({ name: "MLK / Wyoming Equality Day", date: mlkDay });
+            
+            // President's Day - 3rd Monday in February
+            const presDay = new Date(year, 1, 1);
+            presDay.setDate(1 + (7 - presDay.getDay() + 1) % 7 + 14);
+            holidays.push({ name: "President's Day", date: presDay });
+            
+            // Memorial Day - Last Monday in May
+            const memDay = new Date(year, 4, 31);
+            memDay.setDate(31 - (memDay.getDay() + 6) % 7);
+            holidays.push({ name: "Memorial Day", date: memDay });
+            
+            // Independence Day
+            holidays.push({ name: "Independence Day", date: observeWeekend(new Date(year, 6, 4)) });
+            
+            // Labor Day - First Monday in September
+            const laborDay = new Date(year, 8, 1);
+            laborDay.setDate(1 + (7 - laborDay.getDay() + 1) % 7);
+            holidays.push({ name: "Labor Day", date: laborDay });
+            
+            // Veterans Day
+            holidays.push({ name: "Veterans Day", date: observeWeekend(new Date(year, 10, 11)) });
+            
+            // Thanksgiving - 4th Thursday in November
+            const thanksgiving = new Date(year, 10, 1);
+            thanksgiving.setDate(1 + (7 - thanksgiving.getDay() + 4) % 7 + 21);
+            holidays.push({ name: "Thanksgiving", date: thanksgiving });
+            
+            // Christmas
+            holidays.push({ name: "Christmas", date: observeWeekend(new Date(year, 11, 25)) });
+            
+            return holidays;
+        }
+        
+        // Load state from Google Sheets
+        async function loadState() {
+            try {
+                // Load balance
+                const balanceUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BALANCE}!B1?key=${API_KEY}`;
+                const balanceResponse = await fetch(balanceUrl);
+                const balanceData = await balanceResponse.json();
+                
+                if (balanceData.values && balanceData.values[0] && balanceData.values[0][0]) {
+                    state.currentBalance = parseFloat(balanceData.values[0][0]);
+                }
+                
+                // Load trips
+                const tripsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:I1000?key=${API_KEY}`;
+                const tripsResponse = await fetch(tripsUrl);
+                const tripsData = await tripsResponse.json();
+                
+                state.plannedTrips = [];
+                if (tripsData.values && tripsData.values.length > 0) {
+                    state.plannedTrips = tripsData.values
+                        .filter(row => row[0])
+                        .map(row => ({
+                            type: row[0],
+                            startDate: row[1],
+                            endDate: row[2],
+                            destination: row[3],
+                            reservations: row[4] || '',
+                            daysUsed: parseInt(row[5]) || 0,
+                            hoursUsed: parseFloat(row[6]) || 0,
+                            projectedBalance: parseFloat(row[7]) || 0,
+                            balanceAfter: parseFloat(row[8]) || 0
+                        }));
+                }
+                
+                console.log('✓ Loaded from Google Sheets');
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                alert('Unable to load data from Google Sheets. Check your internet connection.');
+            }
+        }
+        
+        // Save state to Google Sheets
+        function saveState() {
+            saveStateAsync().catch(error => {
+                console.error('Error saving:', error);
+            });
+        }
+        
+        async function saveStateAsync() {
+            try {
+                // Save balance
+                const balanceUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BALANCE}!B1?valueInputOption=RAW&key=${API_KEY}`;
+                await fetch(balanceUrl, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ values: [[state.currentBalance]] })
+                });
+                
+                // Clear trips
+                const clearUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:I1000:clear?key=${API_KEY}`;
+                await fetch(clearUrl, { method: 'POST' });
+                
+                // Save trips
+                if (state.plannedTrips.length > 0) {
+                    const tripRows = state.plannedTrips.map(trip => [
+                        trip.type, trip.startDate, trip.endDate, trip.destination,
+                        trip.reservations || '', trip.daysUsed, trip.hoursUsed,
+                        trip.projectedBalance, trip.balanceAfter
+                    ]);
+                    
+                    const tripsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2?valueInputOption=RAW&key=${API_KEY}`;
+                    await fetch(tripsUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ values: tripRows })
+                    });
+                }
+                
+                console.log('✓ Saved to Google Sheets');
+            } catch (error) {
+                console.error('Error saving:', error);
+                throw error;
+            }
+        }
+        
+        // Calculate weekdays between two dates
+        function countWeekdays(startDate, endDate) {
+            let count = 0;
+            let current = new Date(startDate);
+            const end = new Date(endDate);
+            
+            while (current <= end) {
+                const day = current.getDay();
+                if (day !== 0 && day !== 6) { // Not Sunday (0) or Saturday (6)
+                    count++;
+                }
+                current.setDate(current.getDate() + 1);
+            }
+            
+            return count;
+        }
+        
+        // Calculate accrual based on date
+        function getMonthlyAccrual(date) {
+            const checkDate = new Date(date);
+            const may2027 = new Date(2027, 4, 1); // May 1, 2027
+            
+            if (checkDate < may2027) {
+                return 10;
+            }
+            
+            // After May 1, 2027, increase by 2 hours every 4 years
+            const yearsSince2027 = (checkDate.getFullYear() - 2027);
+            const cyclesPassed = Math.floor(yearsSince2027 / 4);
+            return 10 + (cyclesPassed + 1) * 2;
+        }
+        
+        // Check if date is within 2 weeks of a holiday
+        function checkHolidayProximity(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const warnings = [];
+            
+            const year = start.getFullYear();
+            const holidays = [...getHolidays(year), ...getHolidays(year + 1)];
+            
+            holidays.forEach(holiday => {
+                const holidayDate = holiday.date;
+                const twoWeeksBefore = new Date(holidayDate);
+                twoWeeksBefore.setDate(twoWeeksBefore.getDate() - 14);
+                const twoWeeksAfter = new Date(holidayDate);
+                twoWeeksAfter.setDate(twoWeeksAfter.getDate() + 14);
+                
+                // Check if PTO is within 2 weeks of holiday
+                if ((start >= twoWeeksBefore && start <= twoWeeksAfter) ||
+                    (end >= twoWeeksBefore && end <= twoWeeksAfter)) {
+                    
+                    // Check if holiday is already covered
+                    if (holidayDate >= start && holidayDate <= end) {
+                        warnings.push({
+                            type: 'info',
+                            message: `✓ Your PTO includes ${holiday.name} (${holidayDate.toLocaleDateString()}) - Great planning!`
+                        });
+                    } else {
+                        warnings.push({
+                            type: 'warning',
+                            message: `⚠️ ${holiday.name} is on ${holidayDate.toLocaleDateString()}. Consider adjusting your dates to include this holiday!`,
+                            holiday: holiday
+                        });
+                    }
+                }
+            });
+            
+            return warnings;
+        }
+        
+        // Step 1: Confirm Balance
+        function confirmBalance() {
+            const balance = parseFloat(document.getElementById('currentBalance').value);
+            if (isNaN(balance) || balance < 0) {
+                alert('Please enter a valid PTO balance');
+                return;
+            }
+            
+            state.currentBalance = balance;
+            saveState();
+            
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('displayBalance').textContent = balance.toFixed(2) + ' hrs';
+            
+            displayPlannedTrips();
+        }
+        
+        // Display planned trips for validation
+        function displayPlannedTrips() {
+            const section = document.getElementById('plannedTripsSection');
+            
+            if (state.plannedTrips.length === 0) {
+                section.innerHTML = '<p style="color: #666; margin-bottom: 20px;">No planned PTO yet.</p>';
+            } else {
+                let html = '';
+                state.plannedTrips.forEach((trip, idx) => {
+                    const startDate = new Date(trip.startDate);
+                    const endDate = new Date(trip.endDate);
+                    const tripMonth = startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    const dateRange = `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+                    
+                    const isPTO = trip.type === 'pto';
+                    const icon = isPTO ? '🏖️' : '⚙️';
+                    
+                    html += `
+                        <div class="trip-card">
+                            <h4>${icon} ${trip.destination}</h4>
+                            <div class="trip-dates">📅 ${dateRange}</div>
+                            <div class="trip-detail">Duration: ${trip.daysUsed} weekdays (${trip.hoursUsed} hours${!isPTO ? ' - Admin Time' : ''})</div>
+                            ${trip.reservations ? `
+                                <div class="trip-notes">
+                                    📝 <strong>Notes:</strong> ${trip.reservations}
+                                </div>
+                            ` : ''}
+                            ${isPTO ? `
+                                <div class="trip-balance">
+                                    <strong>Projected Balance in ${tripMonth}:</strong> ${trip.projectedBalance.toFixed(2)} hrs<br>
+                                    <strong>After this trip:</strong> ${trip.balanceAfter.toFixed(2)} hrs (${(trip.balanceAfter / 8).toFixed(1)} days)
+                                </div>
+                            ` : `
+                                <div class="trip-balance">
+                                    ℹ️ Admin time does not impact PTO balance
+                                </div>
+                            `}
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                                <button class="delete-btn" onclick="modifyTrip(${idx})">✏️ Modify</button>
+                                <button class="delete-btn" onclick="deletePlannedTrip(${idx})">🗑️ Cancel</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                section.innerHTML = html;
+            }
+        }
+        
+        // Modify trip
+        function modifyTrip(idx) {
+            const trip = state.plannedTrips[idx];
+            
+            // Pre-fill the form
+            document.getElementById('ptoType').value = trip.type;
+            document.getElementById('startDate').value = trip.startDate;
+            document.getElementById('endDate').value = trip.endDate;
+            document.getElementById('destination').value = trip.destination;
+            document.getElementById('reservations').value = trip.reservations || '';
+            
+            // Delete the old trip
+            state.plannedTrips.splice(idx, 1);
+            saveState();
+            
+            // Show the plan PTO form
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+            updateMainBalance();
+            displayMainTrips();
+            showPlanPTO();
+        }
+        
+        // Delete planned trip (from validation step)
+        function deletePlannedTrip(idx) {
+            if (confirm('Are you sure you want to cancel this trip?')) {
+                state.plannedTrips.splice(idx, 1);
+                saveState();
+                displayPlannedTrips();
+            }
+        }
+        
+        // Step 2: Validate Planned PTO
+        function validatePlannedPTO() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+            updateMainBalance();
+            displayMainTrips();
+        }
+        
+        // Display trips in main interface as cards
+        function displayMainTrips() {
+            const container = document.getElementById('mainTripsList');
+            
+            if (state.plannedTrips.length === 0) {
+                container.innerHTML = '<div class="no-trips">No trips planned yet. Click "Plan New PTO" to get started!</div>';
+                return;
+            }
+            
+            let html = '';
+            state.plannedTrips.forEach((trip, idx) => {
+                const startDate = new Date(trip.startDate);
+                const endDate = new Date(trip.endDate);
+                const tripMonth = startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                const dateRange = `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+                
+                const isPTO = trip.type === 'pto';
+                const isSplit = trip.type === 'split';
+                const isAdmin = trip.type === 'admin';
+                const icon = (isPTO || isSplit) ? '🏖️' : '⚙️';
+                
+                // Duration text
+                let durationText = `Duration: ${trip.daysUsed} weekdays (${trip.hoursUsed} hours`;
+                if (isSplit) {
+                    durationText += ` - ${trip.adminHours} Admin + ${trip.ptoHours} PTO`;
+                } else if (isAdmin) {
+                    durationText += ' - Admin Time';
+                }
+                durationText += ')';
+                
+                html += `
+                    <div class="trip-card">
+                        <h4>${icon} ${trip.destination}</h4>
+                        <div class="trip-dates">📅 ${dateRange}</div>
+                        <div class="trip-detail">${durationText}</div>
+                        ${trip.reservations ? `
+                            <div class="trip-notes">
+                                📝 <strong>Notes:</strong> ${trip.reservations}
+                            </div>
+                        ` : ''}
+                        ${isPTO || isSplit ? `
+                            <div class="trip-balance">
+                                <strong>Projected Balance in ${tripMonth}:</strong> ${trip.projectedBalance.toFixed(2)} hrs<br>
+                                <strong>After this trip:</strong> ${trip.balanceAfter.toFixed(2)} hrs (${(trip.balanceAfter / 8).toFixed(1)} days)
+                            </div>
+                        ` : `
+                            <div class="trip-balance">
+                                ℹ️ Admin time does not impact PTO balance
+                            </div>
+                        `}
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                            <button class="delete-btn" onclick="modifyMainTrip(${idx})">✏️ Modify</button>
+                            <button class="delete-btn" onclick="deleteMainTrip(${idx})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Modify trip from main view
+        function modifyMainTrip(idx) {
+            const trip = state.plannedTrips[idx];
+            
+            // Pre-fill the form
+            document.getElementById('ptoType').value = trip.type;
+            document.getElementById('startDate').value = trip.startDate;
+            document.getElementById('endDate').value = trip.endDate;
+            document.getElementById('destination').value = trip.destination;
+            document.getElementById('reservations').value = trip.reservations || '';
+            
+            // Delete the old trip
+            state.plannedTrips.splice(idx, 1);
+            saveState();
+            displayMainTrips();
+            
+            // Show the plan PTO form
+            showPlanPTO();
+        }
+        
+        // Delete trip from main view
+        function deleteMainTrip(idx) {
+            if (confirm('Are you sure you want to delete this trip?')) {
+                state.plannedTrips.splice(idx, 1);
+                saveState();
+                displayMainTrips();
+            }
+        }
+        
+        // Update main balance display
+        function updateMainBalance() {
+            document.getElementById('mainBalance').textContent = state.currentBalance.toFixed(2) + ' hrs';
+        }
+        
+        // Edit balance from main interface
+        function editBalance() {
+            const currentBalance = state.currentBalance;
+            const newBalance = prompt(`Update your current PTO balance:\n\n(Current: ${currentBalance.toFixed(2)} hours)\n\nEnter new balance in hours:`, currentBalance.toFixed(2));
+            
+            if (newBalance === null) return; // User cancelled
+            
+            const parsedBalance = parseFloat(newBalance);
+            
+            if (isNaN(parsedBalance) || parsedBalance < 0) {
+                alert('Please enter a valid positive number');
+                return;
+            }
+            
+            if (parsedBalance > 400) {
+                alert('Balance cannot exceed 400 hours (state maximum)');
+                return;
+            }
+            
+            state.currentBalance = parsedBalance;
+            saveState();
+            updateMainBalance();
+            
+            alert(`✅ Balance updated to ${parsedBalance.toFixed(2)} hours`);
+        }
+        
+        // Show plan PTO form
+        function showPlanPTO() {
+            document.getElementById('planPTOCard').classList.remove('hidden');
+            document.getElementById('ptoWarnings').innerHTML = '';
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').min = today;
+            document.getElementById('endDate').min = today;
+            
+            // Add listener to check holidays when dates change
+            document.getElementById('startDate').onchange = checkDatesForHolidays;
+            document.getElementById('endDate').onchange = checkDatesForHolidays;
+        }
+        
+        // Check dates for holiday proximity
+        function checkDatesForHolidays() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) return;
+            
+            const warnings = checkHolidayProximity(startDate, endDate);
+            const warningsDiv = document.getElementById('ptoWarnings');
+            
+            if (warnings.length > 0) {
+                let html = '';
+                warnings.forEach(w => {
+                    const alertClass = w.type === 'warning' ? 'alert-warning' : 'alert-info';
+                    html += `<div class="alert ${alertClass}">${w.message}</div>`;
+                });
+                warningsDiv.innerHTML = html;
+            } else {
+                warningsDiv.innerHTML = '';
+            }
+        }
+        
+        // Calculate projected balance at a future date
+        function getProjectedBalance(targetDate) {
+            const today = new Date();
+            const target = new Date(targetDate);
+            let balance = state.currentBalance;
+            
+            // Calculate months between now and target
+            let current = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            
+            while (current <= target) {
+                const accrual = getMonthlyAccrual(current);
+                balance += accrual;
+                
+                // Cap at 400
+                if (balance > 400) balance = 400;
+                
+                current.setMonth(current.getMonth() + 1);
+            }
+            
+            return balance;
+        }
+        
+        // Get all planned PTO between two dates
+        function getPTOBetween(startDate, endDate) {
+            return state.plannedTrips.filter(trip => {
+                const tripStart = new Date(trip.startDate);
+                return tripStart >= startDate && tripStart <= endDate;
+            });
+        }
+        
+        // Save planned PTO
+        // Toggle admin hours input based on PTO type
+        function toggleAdminHoursInput() {
+            const type = document.getElementById('ptoType').value;
+            const adminHoursGroup = document.getElementById('adminHoursGroup');
+            
+            if (type === 'split') {
+                adminHoursGroup.classList.remove('hidden');
+            } else {
+                adminHoursGroup.classList.add('hidden');
+                document.getElementById('adminHours').value = '';
+            }
+        }
+        
+        // Save planned PTO
+        function savePlannedPTO() {
+            const type = document.getElementById('ptoType').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const destination = document.getElementById('destination').value;
+            const reservations = document.getElementById('reservations').value;
+            const adminHours = type === 'split' ? parseFloat(document.getElementById('adminHours').value) || 0 : 0;
+            
+            if (!startDate || !endDate || !destination) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (type === 'split' && adminHours <= 0) {
+                alert('Please enter the number of admin hours to use');
+                return;
+            }
+            
+            const daysUsed = countWeekdays(startDate, endDate);
+            const totalHours = daysUsed * 8;
+            
+            if (type === 'split' && adminHours >= totalHours) {
+                alert(`Admin hours (${adminHours}) must be less than total hours (${totalHours})`);
+                return;
+            }
+            
+            // For split, PTO hours = total - admin
+            const ptoHours = type === 'split' ? totalHours - adminHours : totalHours;
+            
+            // Calculate projected balance at trip start date
+            const projectedBalance = getProjectedBalance(startDate);
+            
+            // Subtract any already-planned PTO between now and this trip
+            const today = new Date();
+            const tripStart = new Date(startDate);
+            const priorTrips = getPTOBetween(today, tripStart);
+            let priorPTOUsed = 0;
+            priorTrips.forEach(trip => {
+                if (trip.type === 'pto' || trip.type === 'split') {
+                    priorPTOUsed += trip.ptoHours || trip.hoursUsed;
+                }
+            });
+            
+            const availableBalance = projectedBalance - priorPTOUsed;
+            
+            // Check if enough PTO for pto or split types
+            if ((type === 'pto' || type === 'split') && ptoHours > availableBalance) {
+                const tripMonth = new Date(startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                alert(`Insufficient PTO for ${tripMonth}.\n\nProjected balance: ${projectedBalance.toFixed(2)} hrs\nAlready planned PTO: ${priorPTOUsed.toFixed(2)} hrs\nAvailable: ${availableBalance.toFixed(2)} hrs\nPTO needed: ${ptoHours.toFixed(2)} hrs\n\nShortfall: ${(ptoHours - availableBalance).toFixed(2)} hrs`);
+                return;
+            }
+            
+            const trip = {
+                type,
+                startDate,
+                endDate,
+                destination,
+                reservations,
+                daysUsed,
+                hoursUsed: totalHours,
+                adminHours: type === 'split' ? adminHours : 0,
+                ptoHours: type === 'split' ? ptoHours : (type === 'pto' ? totalHours : 0),
+                projectedBalance: projectedBalance,
+                balanceAfter: (type === 'pto' || type === 'split') ? availableBalance - ptoHours : availableBalance
+            };
+            
+            state.plannedTrips.push(trip);
+            
+            // Sort trips by date
+            state.plannedTrips.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+            
+            saveState();
+            cancelPlanPTO();
+            displayMainTrips(); // Refresh the trips display
+            
+            const tripMonth = new Date(startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            if (type === 'admin') {
+                alert(`Admin time saved for ${tripMonth}!\n\nThis does not affect your PTO balance.`);
+            } else if (type === 'split') {
+                alert(`Split time saved for ${tripMonth}!\n\nTotal: ${totalHours} hrs\nAdmin: ${adminHours} hrs\nPTO: ${ptoHours} hrs\n\nProjected balance: ${projectedBalance.toFixed(2)} hrs\nRemaining: ${(availableBalance - ptoHours).toFixed(2)} hrs`);
+            } else {
+                alert(`PTO saved for ${tripMonth}!\n\nProjected balance: ${projectedBalance.toFixed(2)} hrs\nMinus this trip: ${totalHours} hrs\nRemaining: ${(availableBalance - totalHours).toFixed(2)} hrs`);
+            }
+        }
+        
+        // Cancel plan PTO
+        function cancelPlanPTO() {
+            document.getElementById('planPTOCard').classList.add('hidden');
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('destination').value = '';
+            document.getElementById('reservations').value = '';
+            document.getElementById('ptoType').value = 'pto';
+            document.getElementById('adminHours').value = '';
+            document.getElementById('adminHoursGroup').classList.add('hidden');
+        }
+        
+        // Show holidays
+        function showHolidays() {
+            const year = new Date().getFullYear();
+            const holidays2025 = getHolidays(2025);
+            const holidays2026 = getHolidays(2026);
+            const holidays2027 = getHolidays(2027);
+            
+            let html = '<div class="holiday-list">';
+            
+            [...holidays2025, ...holidays2026, ...holidays2027].forEach(h => {
+                html += `
+                    <div class="holiday-item">
+                        <strong>${h.name}</strong><br>
+                        ${h.date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            document.getElementById('holidaysList').innerHTML = html;
+            document.getElementById('holidaysCard').classList.remove('hidden');
+        }
+        
+        function hideHolidays() {
+            document.getElementById('holidaysCard').classList.add('hidden');
+        }
+        
+        // Show projections
+        function showProjections() {
+            let html = '<div class="projection">';
+            html += '<h4>Current Balance (as of today)</h4>';
+            html += `<p><strong>${state.currentBalance.toFixed(2)} hours</strong> (${(state.currentBalance / 8).toFixed(1)} days)</p>`;
+            html += '</div>';
+            
+            // Project 12 months with planned PTO
+            const projections = [];
+            let runningBalance = state.currentBalance;
+            const today = new Date();
+            
+            for (let i = 1; i <= 12; i++) {
+                const projDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
+                const accrual = getMonthlyAccrual(projDate);
+                runningBalance += accrual;
+                
+                // Cap at 400 hours
+                if (runningBalance > 400) runningBalance = 400;
+                
+                // Check for planned PTO in this month
+                const monthStart = new Date(projDate.getFullYear(), projDate.getMonth(), 1);
+                const monthEnd = new Date(projDate.getFullYear(), projDate.getMonth() + 1, 0);
+                const tripsThisMonth = state.plannedTrips.filter(trip => {
+                    const tripStart = new Date(trip.startDate);
+                    return tripStart >= monthStart && tripStart <= monthEnd && trip.type === 'pto';
+                });
+                
+                let ptoUsed = 0;
+                let tripNames = [];
+                tripsThisMonth.forEach(trip => {
+                    ptoUsed += trip.hoursUsed;
+                    tripNames.push(trip.destination);
+                });
+                
+                runningBalance -= ptoUsed;
+                
+                projections.push({
+                    month: projDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+                    accrual,
+                    ptoUsed,
+                    tripNames,
+                    balance: runningBalance
+                });
+            }
+            
+            html += '<div class="projection">';
+            html += '<h4>12-Month Projection (includes accrual and planned PTO)</h4>';
+            projections.forEach(p => {
+                let monthLine = `<p><strong>${p.month}:</strong> +${p.accrual} hrs`;
+                if (p.ptoUsed > 0) {
+                    monthLine += ` - ${p.ptoUsed} hrs (${p.tripNames.join(', ')})`;
+                }
+                monthLine += ` → <strong>${p.balance.toFixed(2)} hrs</strong> (${(p.balance / 8).toFixed(1)} days)</p>`;
+                html += monthLine;
+            });
+            html += '</div>';
+            
+            // Show note about May 2027 increase
+            html += '<div class="alert alert-info">';
+            html += '<strong>📅 Accrual Increase:</strong> Starting May 1, 2027, monthly accrual increases to 12 hours/month (+2 hours). The increase continues every 4 years.';
+            html += '</div>';
+            
+            // Show cap warning if approaching
+            const maxProjected = Math.max(...projections.map(p => p.balance));
+            if (maxProjected >= 380) {
+                html += '<div class="alert alert-warning">';
+                html += '<strong>⚠️ Approaching Cap:</strong> You are approaching the 400-hour PTO cap. Consider using some PTO to avoid losing accrual.';
+                html += '</div>';
+            }
+            
+            document.getElementById('projectionsList').innerHTML = html;
+            document.getElementById('projectionsCard').classList.remove('hidden');
+        }
+        
+        function hideProjections() {
+            document.getElementById('projectionsCard').classList.add('hidden');
+        }
+        
+        // Sync end date picker with start date
+        document.addEventListener('DOMContentLoaded', function() {
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            
+            startDateInput.addEventListener('change', function() {
+                if (this.value) {
+                    // Set end date minimum to start date
+                    endDateInput.min = this.value;
+                    // If end date is before start date, reset it to start date
+                    if (endDateInput.value && endDateInput.value < this.value) {
+                        endDateInput.value = this.value;
+                    }
+                    // Set end date value to start date if empty
+                    if (!endDateInput.value) {
+                        endDateInput.value = this.value;
+                    }
+                }
+            });
+        });
+        
+        // Initialize - wait for data to load from Sheets
+        async function init() {
+            await loadState();
+            document.getElementById('currentBalance').value = state.currentBalance;
+        }
+        
+        init();
+    </script>
+</body>
+</html>
