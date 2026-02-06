@@ -789,7 +789,7 @@
             alert(`✅ Balance updated to ${formatDays(parsed)}`);
         }
         
-        // Show plan PTO form
+  // Show plan PTO form
         function showPlanPTO() {
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
@@ -799,6 +799,15 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('ptoStartDate').min = today;
             document.getElementById('ptoEndDate').min = today;
+            
+            // Add listener to sync end date calendar to start date month
+            document.getElementById('ptoStartDate').addEventListener('change', function() {
+                const startDate = this.value;
+                if (startDate) {
+                    document.getElementById('ptoEndDate').value = startDate;
+                    document.getElementById('ptoEndDate').min = startDate;
+                }
+            });
         }
         
         // Cancel plan PTO
