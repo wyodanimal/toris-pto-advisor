@@ -315,6 +315,19 @@
             font-weight: 600;
             margin-left: 8px;
         }
+        
+        .date-calc-display {
+            background: #e7f3ff;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 13px;
+            border: 2px solid #17a2b8;
+        }
+        
+        .date-calc-display strong {
+            color: #2c5f2d;
+        }
     </style>
 </head>
 <body>
@@ -352,7 +365,7 @@
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                    <button onclick="showPlanPTO()">📅 Plan PTO Day</button>
+                    <button onclick="showPlanPTO()">📅 Plan PTO Days</button>
                     <button onclick="showPlanNonPTO()" class="btn-secondary">🗓️ Plan Non-PTO Day</button>
                 </div>
                 
@@ -371,20 +384,19 @@
         
         <!-- Plan PTO Modal -->
         <div id="planPTOCard" class="card hidden">
-            <h3 style="color: #2c5f2d; margin-bottom: 20px;">Plan PTO Day</h3>
+            <h3 style="color: #2c5f2d; margin-bottom: 20px;">Plan PTO Days</h3>
             
             <div class="form-group">
-                <label>PTO Amount</label>
-                <select id="ptoAmount">
-                    <option value="1">Full Day (1.0)</option>
-                    <option value="0.5">Half Day (0.5)</option>
-                </select>
+                <label>Start Date</label>
+                <input type="date" id="ptoStartDate" onchange="calculateWorkdays()">
             </div>
             
             <div class="form-group">
-                <label>Date</label>
-                <input type="date" id="ptoDate">
+                <label>End Date</label>
+                <input type="date" id="ptoEndDate" onchange="calculateWorkdays()">
             </div>
+            
+            <div id="workdayCalculation" class="hidden"></div>
             
             <div class="form-group">
                 <label>Purpose</label>
@@ -467,6 +479,7 @@
         };
         
         let accessToken = null;
+        let calculatedWorkdays = 0;
         
         // Work schedule - Dan works Sat/Sun/Mon
         const WORK_DAYS = [0, 1, 6]; // Sunday=0, Monday=1, Saturday=6
@@ -538,7 +551,7 @@
                 }
                 
                 const tripsResponse = await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:H1000`,
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:I1000`,
                     { headers: { 'Authorization': `Bearer ${token}` } }
                 );
                 const tripsData = await tripsResponse.json();
@@ -549,13 +562,14 @@
                         .filter(row => row[0])
                         .map(row => ({
                             type: row[0],
-                            date: row[1],
-                            purpose: row[2],
-                            notes: row[3] || '',
-                            daysUsed: parseFloat(row[4]) || 0,
-                            balanceAfter: parseFloat(row[5]) || 0,
-                            usesReserve: row[6] === 'true',
-                            reserveDaysUsed: parseFloat(row[7]) || 0
+                            startDate: row[1],
+                            endDate: row[2] || row[1],
+                            purpose: row[3],
+                            notes: row[4] || '',
+                            daysUsed: parseFloat(row[5]) || 0,
+                            balanceAfter: parseFloat(row[6]) || 0,
+                            usesReserve: row[7] === 'true',
+                            reserveDaysUsed: parseFloat(row[8]) || 0
                         }));
                 }
                 
@@ -583,7 +597,7 @@
                 );
                 
                 await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:H1000:clear`,
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:I1000:clear`,
                     {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
@@ -593,7 +607,8 @@
                 if (state.plannedDays.length > 0) {
                     const rows = state.plannedDays.map(day => [
                         day.type,
-                        day.date,
+                        day.startDate,
+                        day.endDate || day.startDate,
                         day.purpose,
                         day.notes || '',
                         day.daysUsed,
@@ -631,8 +646,59 @@
         
         // Check if date falls on workday
         function isWorkDay(dateString) {
-            const date = new Date(dateString);
+            const date = new Date(dateString + 'T00:00:00');
             return WORK_DAYS.includes(date.getDay());
+        }
+        
+        // Count workdays in date range
+        function countWorkdaysInRange(startDate, endDate) {
+            let count = 0;
+            const start = new Date(startDate + 'T00:00:00');
+            const end = new Date(endDate + 'T00:00:00');
+            const current = new Date(start);
+            
+            while (current <= end) {
+                if (WORK_DAYS.includes(current.getDay())) {
+                    count++;
+                }
+                current.setDate(current.getDate() + 1);
+            }
+            
+            return count;
+        }
+        
+        // Calculate workdays and display
+        function calculateWorkdays() {
+            const startDate = document.getElementById('ptoStartDate').value;
+            const endDate = document.getElementById('ptoEndDate').value;
+            
+            if (!startDate || !endDate) {
+                document.getElementById('workdayCalculation').classList.add('hidden');
+                return;
+            }
+            
+            if (new Date(endDate) < new Date(startDate)) {
+                document.getElementById('workdayCalculation').innerHTML = 
+                    '<div class="alert alert-danger">End date must be after start date</div>';
+                document.getElementById('workdayCalculation').classList.remove('hidden');
+                return;
+            }
+            
+            const workdays = countWorkdaysInRange(startDate, endDate);
+            calculatedWorkdays = workdays;
+            
+            const start = new Date(startDate + 'T00:00:00');
+            const end = new Date(endDate + 'T00:00:00');
+            const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
+            let html = '<div class="date-calc-display">';
+            html += `<strong>Date Range:</strong> ${totalDays} total ${totalDays === 1 ? 'day' : 'days'}<br>`;
+            html += `<strong>Your Workdays (Sat/Sun/Mon):</strong> ${workdays} ${workdays === 1 ? 'day' : 'days'}<br>`;
+            html += `<strong>PTO to be deducted:</strong> ${formatDays(workdays)}`;
+            html += '</div>';
+            
+            document.getElementById('workdayCalculation').innerHTML = html;
+            document.getElementById('workdayCalculation').classList.remove('hidden');
         }
         
         // Get holidays for a year
@@ -642,18 +708,20 @@
             // Thanksgiving - 4th Thursday in November
             const thanksgiving = new Date(year, 10, 1);
             thanksgiving.setDate(1 + (7 - thanksgiving.getDay() + 4) % 7 + 21);
+            const thanksgivingStr = thanksgiving.toISOString().split('T')[0];
             holidays.push({ 
                 name: "Thanksgiving", 
                 date: thanksgiving,
-                isWorkDay: isWorkDay(thanksgiving.toISOString().split('T')[0])
+                isWorkDay: isWorkDay(thanksgivingStr)
             });
             
             // Christmas
             const christmas = new Date(year, 11, 25);
+            const christmasStr = christmas.toISOString().split('T')[0];
             holidays.push({ 
                 name: "Christmas", 
                 date: christmas,
-                isWorkDay: isWorkDay(christmas.toISOString().split('T')[0])
+                isWorkDay: isWorkDay(christmasStr)
             });
             
             return holidays;
@@ -725,39 +793,57 @@
         function showPlanPTO() {
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
+            document.getElementById('workdayCalculation').classList.add('hidden');
+            calculatedWorkdays = 0;
+            
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('ptoDate').min = today;
+            document.getElementById('ptoStartDate').min = today;
+            document.getElementById('ptoEndDate').min = today;
         }
         
         // Cancel plan PTO
         function cancelPlanPTO() {
             document.getElementById('planPTOCard').classList.add('hidden');
-            document.getElementById('ptoAmount').value = '1';
-            document.getElementById('ptoDate').value = '';
+            document.getElementById('ptoStartDate').value = '';
+            document.getElementById('ptoEndDate').value = '';
             document.getElementById('ptoPurpose').value = '';
             document.getElementById('ptoNotes').value = '';
+            document.getElementById('workdayCalculation').classList.add('hidden');
+            calculatedWorkdays = 0;
         }
         
         // Save PTO
         function savePTO() {
-            const amount = parseFloat(document.getElementById('ptoAmount').value);
-            const date = document.getElementById('ptoDate').value;
+            const startDate = document.getElementById('ptoStartDate').value;
+            const endDate = document.getElementById('ptoEndDate').value;
             const purpose = document.getElementById('ptoPurpose').value;
             const notes = document.getElementById('ptoNotes').value;
             
-            if (!date || !purpose) {
-                alert('Please fill in date and purpose');
+            if (!startDate || !endDate || !purpose) {
+                alert('Please fill in start date, end date, and purpose');
+                return;
+            }
+            
+            if (new Date(endDate) < new Date(startDate)) {
+                alert('End date must be after start date');
+                return;
+            }
+            
+            const workdays = countWorkdaysInRange(startDate, endDate);
+            
+            if (workdays === 0) {
+                alert('This date range contains no workdays (Sat/Sun/Mon). No PTO will be deducted.');
                 return;
             }
             
             // Calculate if this uses reserve
-            const usesReserve = amount > state.currentBalance;
-            const reserveUsed = usesReserve ? amount - state.currentBalance : 0;
+            const usesReserve = workdays > state.currentBalance;
+            const reserveUsed = usesReserve ? workdays - state.currentBalance : 0;
             
             if (usesReserve) {
                 const confirm = window.confirm(
                     `⚠️ RESERVE WARNING\n\n` +
-                    `This ${formatDays(amount)} will use ${formatDays(reserveUsed)} from your 5-day emergency reserve.\n\n` +
+                    `This ${formatDays(workdays)} will use ${formatDays(reserveUsed)} from your 5-day emergency reserve.\n\n` +
                     `Current planning balance: ${formatDays(state.currentBalance)}\n` +
                     `Reserve days available: ${formatDays(state.reserveDays)}\n\n` +
                     `Do you want to proceed?`
@@ -768,18 +854,19 @@
             
             const day = {
                 type: 'pto',
-                date,
+                startDate,
+                endDate,
                 purpose,
                 notes,
-                daysUsed: amount,
-                balanceAfter: state.currentBalance - amount,
+                daysUsed: workdays,
+                balanceAfter: state.currentBalance - workdays,
                 usesReserve,
                 reserveDaysUsed: reserveUsed
             };
             
             state.plannedDays.push(day);
-            state.plannedDays.sort((a, b) => new Date(a.date) - new Date(b.date));
-            state.currentBalance -= amount;
+            state.plannedDays.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+            state.currentBalance -= workdays;
             
             saveState();
             cancelPlanPTO();
@@ -789,7 +876,7 @@
             if (usesReserve) {
                 alert(`✅ PTO saved\n\n⚠️ Used ${formatDays(reserveUsed)} from reserve\n\nRemaining balance: ${formatDays(state.currentBalance)}`);
             } else {
-                alert(`✅ PTO saved\n\nRemaining balance: ${formatDays(state.currentBalance)}`);
+                alert(`✅ PTO saved\n\nWorkdays used: ${formatDays(workdays)}\nRemaining balance: ${formatDays(state.currentBalance)}`);
             }
         }
         
@@ -821,7 +908,8 @@
             
             const day = {
                 type: 'non-pto',
-                date,
+                startDate: date,
+                endDate: date,
                 purpose,
                 notes,
                 daysUsed: 0,
@@ -829,7 +917,7 @@
             };
             
             state.plannedDays.push(day);
-            state.plannedDays.sort((a, b) => new Date(a.date) - new Date(b.date));
+            state.plannedDays.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
             
             saveState();
             cancelPlanNonPTO();
@@ -849,8 +937,19 @@
             
             let html = '';
             state.plannedDays.forEach((day, idx) => {
-                const date = new Date(day.date);
-                const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+                const startDate = new Date(day.startDate + 'T00:00:00');
+                const endDate = new Date(day.endDate + 'T00:00:00');
+                const isSingleDay = day.startDate === day.endDate;
+                
+                let dateStr;
+                if (isSingleDay) {
+                    dateStr = startDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+                } else {
+                    const startStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const endStr = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    dateStr = `${startStr} - ${endStr}`;
+                }
+                
                 const isPTO = day.type === 'pto';
                 const icon = isPTO ? '🏖️' : '🗓️';
                 const cardClass = isPTO ? '' : 'non-pto';
