@@ -106,6 +106,28 @@
             border-color: #2c5f2d;
         }
         
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
         button {
             width: 100%;
             padding: 14px;
@@ -172,6 +194,27 @@
             background: #f8d7da;
             border: 2px solid #dc3545;
             color: #721c24;
+        }
+        
+        .tori-holiday-highlight {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            color: #0c5460;
+            font-size: 14px;
+        }
+        
+        .trip-suggestion {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            color: #155724;
+            font-size: 14px;
+            font-weight: 500;
         }
         
         .trip-card {
@@ -398,6 +441,13 @@
             
             <div id="workdayCalculation" class="hidden"></div>
             
+            <div class="checkbox-group">
+                <input type="checkbox" id="toriComing" onchange="checkToriHolidays()">
+                <label for="toriComing">Is Tori coming on this trip?</label>
+            </div>
+            
+            <div id="toriHolidayWarnings"></div>
+            
             <div class="form-group">
                 <label>Purpose</label>
                 <input type="text" id="ptoPurpose" placeholder="e.g., Family trip, Doctor appointment">
@@ -469,6 +519,19 @@
             private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCzCb9Z3IONbhi2\nMlP5OLTFyGmqpt0UZhggB3rZdn+myXle4qzJbDvqe4NcZMq0n+EMbY+UOQHzj4WE\nf1w0cYg0b6gLBTLbZXrJ446ab1pgCVbq9DuHEfIpfG3G07SkISj8rrbb0uFwiaA0\n5tcbBZ2nLdZYipAM0ujRyOsrFaiv4JUMk6vE9SuyyI3PVK6LCoPqb9iQyBlNYhPk\nB+1SL/KGjRVjkPEk68+x1w48BKcRMy0YN015V/eo45Oh2KRd3dV1ubJ4D7IcSzsg\nFGeVV+C//MrRLeOYEy1BaCaGKTT+VHtJeUt06robTyJaWJnZt7YSARRuJb3kxoRH\nJMy2bk0PAgMBAAECggEAAvwMHQ7ggIiPz+W54aMw3EUxgb9DWzYye8I0KZDgouKj\n69GCiN8NhqSldXJWsLkjksX2yUVEA4/mbWWEH3mvCBS+a+Sbyu1/pQLumyN1EbnG\nIaeNoHxLmaZx3Akmb0AAQ2oUMUjsKiiZK5iXiGNJFALfGl3A9f3EFM8xIGg9hiUE\nm1ePBPPXY2VItEG9Z8ry+AFHDreT7x/fekMXTfnpqFRLddE2ioucSshRzW7U+UAN\nOvt1V166PrUuIHtAveKaStTULzEPZS6By6viRpUIIDftvfgAptEFMLnpOC/QrZVo\n7tif6V36o03om42zQtrc6ygYwgD0Tj/sPa6kJHxQtQKBgQDrrmLZKbLKeK1A6ngC\niEWqKAd9NrUfbcbUIXEJVlAYbqEWQhJs10UJgWkqvnbgOmimX24YvKQrr4EV2Yan\nDTCtqeanRbMXpuSWCFjftp1RtmhKdrUQ4zIIgjD0ESbviRKWHJwdJiGxUZrkPvMV\n3nPeXRAWnAWmLeeNHYa15muEswKBgQDCeTdqkEdWgnkByIWVChEt5I+1c3d3TprB\nqWIm3i5vxTdho2METSWy/+XX1Qrtmb5YjUZCfD8xc7hLA2X41KNFsCVJwbYYWgIB\n9fKcB6nfeCsuexpcpjGh75R4nU39bUUOAUQbNlLu8h09pbF68nLguUXWUEJ3RWd2\nQl3O2FbcNQKBgBWjWB36Dxk5xSZdoJES89pwfGeJm018ZbHaNCeYThhAJ/gELu7h\nQMxjnkU3YXCqzCriPhh1UVlVbrOT2iICOwLmw29+HbhBMWF4+Lfpaz4yUhbsGSmo\nwlI3qcjuvjVlz1gK3mZqttMx29ey09yhJOA4iR6aSoZ8VnMFT/XpZtuzAoGBAI7O\n8PDiLmDKww2aMO43TFJFK3r15d7I7EAWoKsmMTeGvZqHnujDtlFyNVh/a9z7L5pb\ndCLSlp07+zOqtTE7BQLhzSASjiPnxN2nvJbz0bz2w88IO12Z9YyTIJZJ/cGCglk8\neMT66X/qb6qbiG9epxl7NFui6IwpfUaMidKhb3eZAoGAEmcmFmtljyUU1NOvbtgM\nIrFA0QlDalsJD/HSZsslCrrwsHpgX6oxhyg425wgmFcC8MiBRkqyMJMPouxqKToo\njIfXjTWVU3pF89QW+MRN0gCHsLppH/rXMFgU7liCuCIw94NqJ3xKS7bnsuGbYKey\nSVB5YETSRSvhZb6+LKJFgH4=\n-----END PRIVATE KEY-----\n"
         };
         
+        // Wyoming State Holidays (Tori's holidays)
+        const WYOMING_HOLIDAYS = [
+            { name: "New Year's Day", month: 0, day: 1 },
+            { name: "Martin Luther King Jr. Day", month: 0, nthDay: 3, weekday: 1 }, // 3rd Monday of January
+            { name: "Presidents' Day", month: 1, nthDay: 3, weekday: 1 }, // 3rd Monday of February
+            { name: "Memorial Day", month: 4, lastWeekday: 1 }, // Last Monday of May
+            { name: "Independence Day", month: 6, day: 4 },
+            { name: "Labor Day", month: 8, nthDay: 1, weekday: 1 }, // 1st Monday of September
+            { name: "Veterans Day", month: 10, day: 11 },
+            { name: "Thanksgiving", month: 10, nthDay: 4, weekday: 4 }, // 4th Thursday of November
+            { name: "Christmas", month: 11, day: 25 }
+        ];
+        
         // State
         let state = {
             currentBalance: 22,
@@ -483,6 +546,130 @@
         
         // Work schedule - Dan works Sat/Sun/Mon
         const WORK_DAYS = [0, 1, 6]; // Sunday=0, Monday=1, Saturday=6
+        
+        // Get observed holiday date (Saturday→Friday, Sunday→Monday)
+        function getObservedHolidayDate(year, holiday) {
+            let date;
+            
+            if (holiday.day) {
+                // Fixed date holiday
+                date = new Date(year, holiday.month, holiday.day);
+            } else if (holiday.nthDay) {
+                // Nth weekday of month
+                date = new Date(year, holiday.month, 1);
+                let count = 0;
+                while (count < holiday.nthDay) {
+                    if (date.getDay() === holiday.weekday) {
+                        count++;
+                    }
+                    if (count < holiday.nthDay) {
+                        date.setDate(date.getDate() + 1);
+                    }
+                }
+            } else if (holiday.lastWeekday) {
+                // Last weekday of month
+                date = new Date(year, holiday.month + 1, 0); // Last day of month
+                while (date.getDay() !== holiday.weekday) {
+                    date.setDate(date.getDate() - 1);
+                }
+            }
+            
+            // Apply observance rules
+            const dayOfWeek = date.getDay();
+            if (dayOfWeek === 6) { // Saturday → observe Friday
+                date.setDate(date.getDate() - 1);
+            } else if (dayOfWeek === 0) { // Sunday → observe Monday
+                date.setDate(date.getDate() + 1);
+            }
+            
+            return date;
+        }
+        
+        // Get Tori holidays within 2 weeks of date range
+        function getToriHolidaysNear(startDateStr, endDateStr) {
+            const startDate = new Date(startDateStr + 'T00:00:00');
+            const endDate = new Date(endDateStr + 'T00:00:00');
+            
+            // Check 2 weeks before and after
+            const twoWeeksBefore = new Date(startDate);
+            twoWeeksBefore.setDate(twoWeeksBefore.getDate() - 14);
+            const twoWeeksAfter = new Date(endDate);
+            twoWeeksAfter.setDate(twoWeeksAfter.getDate() + 14);
+            
+            const nearbyHolidays = [];
+            const years = [startDate.getFullYear(), endDate.getFullYear()];
+            
+            [...new Set(years)].forEach(year => {
+                WYOMING_HOLIDAYS.forEach(holiday => {
+                    const holidayDate = getObservedHolidayDate(year, holiday);
+                    
+                    // Only include if within 2-week window but NOT during the trip
+                    if (holidayDate >= twoWeeksBefore && holidayDate <= twoWeeksAfter) {
+                        if (holidayDate < startDate || holidayDate > endDate) {
+                            const daysDiff = holidayDate < startDate 
+                                ? Math.ceil((startDate - holidayDate) / (1000 * 60 * 60 * 24))
+                                : Math.ceil((holidayDate - endDate) / (1000 * 60 * 60 * 24));
+                            
+                            nearbyHolidays.push({
+                                name: holiday.name,
+                                date: holidayDate,
+                                daysBefore: holidayDate < startDate ? daysDiff : 0,
+                                daysAfter: holidayDate > endDate ? daysDiff : 0
+                            });
+                        }
+                    }
+                });
+            });
+            
+            return nearbyHolidays;
+        }
+        
+        // Check Tori holidays and display suggestions
+        function checkToriHolidays() {
+            const startDate = document.getElementById('ptoStartDate').value;
+            const endDate = document.getElementById('ptoEndDate').value;
+            const toriComing = document.getElementById('toriComing').checked;
+            const warningsDiv = document.getElementById('toriHolidayWarnings');
+            
+            if (!toriComing || !startDate || !endDate) {
+                warningsDiv.innerHTML = '';
+                return;
+            }
+            
+            const nearbyHolidays = getToriHolidaysNear(startDate, endDate);
+            
+            if (nearbyHolidays.length === 0) {
+                warningsDiv.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            nearbyHolidays.forEach(h => {
+                const dateStr = h.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                
+                if (h.daysBefore > 0) {
+                    html += `
+                        <div class="tori-holiday-highlight">
+                            📅 <strong>${h.name}</strong> is ${h.daysBefore} day${h.daysBefore !== 1 ? 's' : ''} before trip (${dateStr})
+                        </div>
+                        <div class="trip-suggestion">
+                            💡 <strong>Suggestion:</strong> Start trip on ${dateStr} to save Tori ${h.daysBefore} day${h.daysBefore !== 1 ? 's' : ''} of PTO
+                        </div>
+                    `;
+                } else if (h.daysAfter > 0) {
+                    html += `
+                        <div class="tori-holiday-highlight">
+                            📅 <strong>${h.name}</strong> is ${h.daysAfter} day${h.daysAfter !== 1 ? 's' : ''} after trip (${dateStr})
+                        </div>
+                        <div class="trip-suggestion">
+                            💡 <strong>Suggestion:</strong> End trip on ${dateStr} to save Tori ${h.daysAfter} day${h.daysAfter !== 1 ? 's' : ''} of PTO
+                        </div>
+                    `;
+                }
+            });
+            
+            warningsDiv.innerHTML = html;
+        }
         
         // Get OAuth access token
         async function getAccessToken() {
@@ -551,7 +738,7 @@
                 }
                 
                 const tripsResponse = await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:I1000`,
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:J1000`,
                     { headers: { 'Authorization': `Bearer ${token}` } }
                 );
                 const tripsData = await tripsResponse.json();
@@ -569,7 +756,8 @@
                             daysUsed: parseFloat(row[5]) || 0,
                             balanceAfter: parseFloat(row[6]) || 0,
                             usesReserve: row[7] === 'true',
-                            reserveDaysUsed: parseFloat(row[8]) || 0
+                            reserveDaysUsed: parseFloat(row[8]) || 0,
+                            toriComing: row[9] === 'true'
                         }));
                 }
                 
@@ -597,7 +785,7 @@
                 );
                 
                 await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:I1000:clear`,
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:J1000:clear`,
                     {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
@@ -614,7 +802,8 @@
                         day.daysUsed,
                         day.balanceAfter,
                         day.usesReserve ? 'true' : 'false',
-                        day.reserveDaysUsed || 0
+                        day.reserveDaysUsed || 0,
+                        day.toriComing ? 'true' : 'false'
                     ]);
                     
                     await fetch(
@@ -699,29 +888,26 @@
             
             document.getElementById('workdayCalculation').innerHTML = html;
             document.getElementById('workdayCalculation').classList.remove('hidden');
+            
+            // Check Tori holidays when dates change
+            checkToriHolidays();
         }
         
         // Get holidays for a year
         function getHolidays(year) {
             const holidays = [];
             
-            // Thanksgiving - 4th Thursday in November
-            const thanksgiving = new Date(year, 10, 1);
-            thanksgiving.setDate(1 + (7 - thanksgiving.getDay() + 4) % 7 + 21);
-            const thanksgivingStr = thanksgiving.toISOString().split('T')[0];
-            holidays.push({ 
-                name: "Thanksgiving", 
-                date: thanksgiving,
-                isWorkDay: isWorkDay(thanksgivingStr)
-            });
-            
-            // Christmas
-            const christmas = new Date(year, 11, 25);
-            const christmasStr = christmas.toISOString().split('T')[0];
-            holidays.push({ 
-                name: "Christmas", 
-                date: christmas,
-                isWorkDay: isWorkDay(christmasStr)
+            // Only Dan's paid holidays: Thanksgiving & Christmas
+            WYOMING_HOLIDAYS.forEach(holiday => {
+                if (holiday.name === 'Thanksgiving' || holiday.name === 'Christmas') {
+                    const date = getObservedHolidayDate(year, holiday);
+                    const dateStr = date.toISOString().split('T')[0];
+                    holidays.push({ 
+                        name: holiday.name, 
+                        date: date,
+                        isWorkDay: isWorkDay(dateStr)
+                    });
+                }
             });
             
             return holidays;
@@ -789,25 +975,17 @@
             alert(`✅ Balance updated to ${formatDays(parsed)}`);
         }
         
-  // Show plan PTO form
+        // Show plan PTO form
         function showPlanPTO() {
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
             document.getElementById('workdayCalculation').classList.add('hidden');
+            document.getElementById('toriHolidayWarnings').innerHTML = '';
             calculatedWorkdays = 0;
             
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('ptoStartDate').min = today;
             document.getElementById('ptoEndDate').min = today;
-            
-            // Add listener to sync end date calendar to start date month
-            document.getElementById('ptoStartDate').addEventListener('change', function() {
-                const startDate = this.value;
-                if (startDate) {
-                    document.getElementById('ptoEndDate').value = startDate;
-                    document.getElementById('ptoEndDate').min = startDate;
-                }
-            });
         }
         
         // Cancel plan PTO
@@ -817,7 +995,9 @@
             document.getElementById('ptoEndDate').value = '';
             document.getElementById('ptoPurpose').value = '';
             document.getElementById('ptoNotes').value = '';
+            document.getElementById('toriComing').checked = false;
             document.getElementById('workdayCalculation').classList.add('hidden');
+            document.getElementById('toriHolidayWarnings').innerHTML = '';
             calculatedWorkdays = 0;
         }
         
@@ -827,6 +1007,7 @@
             const endDate = document.getElementById('ptoEndDate').value;
             const purpose = document.getElementById('ptoPurpose').value;
             const notes = document.getElementById('ptoNotes').value;
+            const toriComing = document.getElementById('toriComing').checked;
             
             if (!startDate || !endDate || !purpose) {
                 alert('Please fill in start date, end date, and purpose');
@@ -870,7 +1051,8 @@
                 daysUsed: workdays,
                 balanceAfter: state.currentBalance - workdays,
                 usesReserve,
-                reserveDaysUsed: reserveUsed
+                reserveDaysUsed: reserveUsed,
+                toriComing
             };
             
             state.plannedDays.push(day);
@@ -970,6 +1152,7 @@
                         ${isPTO ? `
                             <div class="trip-detail">PTO Used: ${formatDays(day.daysUsed)}</div>
                             ${day.usesReserve ? `<div class="trip-detail" style="color: #856404;">⚠️ Reserve Used: ${formatDays(day.reserveDaysUsed)}</div>` : ''}
+                            ${day.toriComing ? `<div class="trip-detail" style="color: #17a2b8;">👥 Tori is coming</div>` : ''}
                             <div class="trip-balance">
                                 <strong>Balance After:</strong> ${formatDays(day.balanceAfter)}
                             </div>
@@ -981,6 +1164,39 @@
                                 📝 <strong>Notes:</strong> ${day.notes}
                             </div>
                         ` : ''}
+                `;
+                
+                // Show Tori holiday suggestions for saved trips
+                if (isPTO && day.toriComing) {
+                    const nearbyHolidays = getToriHolidaysNear(day.startDate, day.endDate);
+                    if (nearbyHolidays.length > 0) {
+                        nearbyHolidays.forEach(h => {
+                            const dateStr = h.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                            
+                            if (h.daysBefore > 0) {
+                                html += `
+                                    <div class="tori-holiday-highlight">
+                                        📅 <strong>${h.name}</strong> is ${h.daysBefore} day${h.daysBefore !== 1 ? 's' : ''} before trip (${dateStr})
+                                    </div>
+                                    <div class="trip-suggestion">
+                                        💡 Could have started on ${dateStr} to save Tori ${h.daysBefore} day${h.daysBefore !== 1 ? 's' : ''} of PTO
+                                    </div>
+                                `;
+                            } else if (h.daysAfter > 0) {
+                                html += `
+                                    <div class="tori-holiday-highlight">
+                                        📅 <strong>${h.name}</strong> is ${h.daysAfter} day${h.daysAfter !== 1 ? 's' : ''} after trip (${dateStr})
+                                    </div>
+                                    <div class="trip-suggestion">
+                                        💡 Could extend to ${dateStr} to save Tori ${h.daysAfter} day${h.daysAfter !== 1 ? 's' : ''} of PTO
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                }
+                
+                html += `
                         <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px;">
                             <button class="delete-btn" onclick="deleteDay(${idx})">🗑️ Delete</button>
                         </div>
@@ -1009,28 +1225,34 @@
         // Show holidays
         function showHolidays() {
             const currentYear = new Date().getFullYear();
-            const allHolidays = [
-                ...getHolidays(currentYear),
-                ...getHolidays(currentYear + 1),
-                ...getHolidays(currentYear + 2)
-            ];
             
             let html = '<div class="alert alert-info" style="margin-bottom: 20px;">';
-            html += '<strong>Your Workdays:</strong> Saturday, Sunday, Monday<br>';
-            html += '<strong>Paid Holidays:</strong> Thanksgiving & Christmas<br>';
-            html += '⚠️ If a holiday falls on your workday, you must use PTO';
+            html += '<strong>Dan\'s Workdays:</strong> Saturday, Sunday, Monday<br>';
+            html += '<strong>Dan\'s Paid Holidays:</strong> Thanksgiving & Christmas<br>';
+            html += '⚠️ If a holiday falls on your workday, you must use PTO<br><br>';
+            html += '<strong>All Wyoming State Holidays (Tori has these off):</strong>';
             html += '</div>';
             
+            // Show all Wyoming holidays for context
+            html += '<h4 style="color: #2c5f2d; margin: 20px 0 10px;">All Wyoming State Holidays</h4>';
             html += '<div class="holiday-list">';
-            allHolidays.forEach(h => {
-                const workdayClass = h.isWorkDay ? 'workday' : '';
-                html += `
-                    <div class="holiday-item ${workdayClass}">
-                        <strong>${h.name}</strong><br>
-                        ${h.date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
-                        ${h.isWorkDay ? '<span style="color: #856404;">⚠️ Falls on workday - requires PTO</span>' : '<span style="color: #28a745;">✓ Not a workday</span>'}
-                    </div>
-                `;
+            
+            [currentYear, currentYear + 1, currentYear + 2].forEach(year => {
+                WYOMING_HOLIDAYS.forEach(holiday => {
+                    const date = getObservedHolidayDate(year, holiday);
+                    const dateStr = date.toISOString().split('T')[0];
+                    const isDanHoliday = holiday.name === 'Thanksgiving' || holiday.name === 'Christmas';
+                    const isWorkDay = isWorkDay(dateStr);
+                    const workdayClass = isDanHoliday && isWorkDay ? 'workday' : '';
+                    
+                    html += `
+                        <div class="holiday-item ${workdayClass}">
+                            <strong>${holiday.name} ${year}</strong><br>
+                            ${date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}<br>
+                            ${isDanHoliday ? (isWorkDay ? '<span style="color: #856404;">⚠️ Dan\'s workday - requires PTO</span>' : '<span style="color: #28a745;">✓ Dan\'s paid holiday</span>') : '<span style="color: #17a2b8;">Tori has off</span>'}
+                        </div>
+                    `;
+                });
             });
             html += '</div>';
             
