@@ -358,7 +358,7 @@
                         <div class="balance-item">
                             Reserve (Emergency)
                             <strong id="reserveDays">5 days</strong>
-                    </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -761,9 +761,8 @@
         function confirmBalance() {
             const balance = parseFloat(document.getElementById('currentBalance').value);
             if (isNaN(balance)) {
-                 alert('Please enter a valid balance');
+                alert('Please enter a valid balance');
                 return;
-    }
             }
             
             if (balance > 22) {
@@ -781,14 +780,13 @@
             saveState().catch(err => console.error('Background save failed:', err));
         }
         
-          function updateMainBalance() {
+        function updateMainBalance() {
             const reserveUsed = calculateReserveUsed();
             const reserveRemaining = 5 - reserveUsed;
-    
+            
             document.getElementById('mainBalance').textContent = formatDays(state.currentBalance);
             document.getElementById('planningDays').textContent = formatDays(state.currentBalance);
             document.getElementById('reserveDays').textContent = formatDays(reserveRemaining);
-}
         }
         
         function editBalance() {
@@ -797,8 +795,8 @@
             if (newBalance === null) return;
             
             const parsed = parseFloat(newBalance);
-            if (isNaN(parsed) || parsed < 0) {
-                alert('Please enter a valid positive number');
+            if (isNaN(parsed)) {
+                alert('Please enter a valid number');
                 return;
             }
             
