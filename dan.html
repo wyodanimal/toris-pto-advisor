@@ -196,27 +196,6 @@
             color: #721c24;
         }
         
-        .tori-holiday-highlight {
-            background: #d1ecf1;
-            border: 2px solid #17a2b8;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-            color: #0c5460;
-            font-size: 14px;
-        }
-        
-        .trip-suggestion {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-            color: #155724;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
         .trip-card {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 20px;
@@ -337,15 +316,30 @@
             background: #dc3545;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             margin-top: 8px;
         }
         
         .delete-btn:hover {
             background: #c82333;
+        }
+        
+        .edit-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        
+        .edit-btn:hover {
+            background: #138496;
         }
         
         .reserve-badge {
@@ -427,7 +421,7 @@
         
         <!-- Plan PTO Modal -->
         <div id="planPTOCard" class="card hidden">
-            <h3 style="color: #2c5f2d; margin-bottom: 20px;">Plan PTO Days</h3>
+            <h3 style="color: #2c5f2d; margin-bottom: 20px;" id="ptoFormTitle">Plan PTO Days</h3>
             
             <div class="form-group">
                 <label>Start Date</label>
@@ -459,9 +453,9 @@
             </div>
         </div>
         
-        <!-- Plan Non-PTO Modal - FIX #3: Added date range -->
+        <!-- Plan Non-PTO Modal -->
         <div id="planNonPTOCard" class="card hidden">
-            <h3 style="color: #6c757d; margin-bottom: 20px;">Plan Non-PTO Days (Regular Days Off)</h3>
+            <h3 style="color: #6c757d; margin-bottom: 20px;" id="nonPtoFormTitle">Plan Non-PTO Days (Regular Days Off)</h3>
             <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Track what you're doing on your regular days off (Thu/Fri) - doesn't impact PTO balance</p>
             
             <div class="form-group">
@@ -517,19 +511,6 @@
             private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCzCb9Z3IONbhi2\nMlP5OLTFyGmqpt0UZhggB3rZdn+myXle4qzJbDvqe4NcZMq0n+EMbY+UOQHzj4WE\nf1w0cYg0b6gLBTLbZXrJ446ab1pgCVbq9DuHEfIpfG3G07SkISj8rrbb0uFwiaA0\n5tcbBZ2nLdZYipAM0ujRyOsrFaiv4JUMk6vE9SuyyI3PVK6LCoPqb9iQyBlNYhPk\nB+1SL/KGjRVjkPEk68+x1w48BKcRMy0YN015V/eo45Oh2KRd3dV1ubJ4D7IcSzsg\nFGeVV+C//MrRLeOYEy1BaCaGKTT+VHtJeUt06robTyJaWJnZt7YSARRuJb3kxoRH\nJMy2bk0PAgMBAAECggEAAvwMHQ7ggIiPz+W54aMw3EUxgb9DWzYye8I0KZDgouKj\n69GCiN8NhqSldXJWsLkjksX2yUVEA4/mbWWEH3mvCBS+a+Sbyu1/pQLumyN1EbnG\nIaeNoHxLmaZx3Akmb0AAQ2oUMUjsKiiZK5iXiGNJFALfGl3A9f3EFM8xIGg9hiUE\nm1ePBPPXY2VItEG9Z8ry+AFHDreT7x/fekMXTfnpqFRLddE2ioucSshRzW7U+UAN\nOvt1V166PrUuIHtAveKaStTULzEPZS6By6viRpUIIDftvfgAptEFMLnpOC/QrZVo\n7tif6V36o03om42zQtrc6ygYwgD0Tj/sPa6kJHxQtQKBgQDrrmLZKbLKeK1A6ngC\niEWqKAd9NrUfbcbUIXEJVlAYbqEWQhJs10UJgWkqvnbgOmimX24YvKQrr4EV2Yan\nDTCtqeanRbMXpuSWCFjftp1RtmhKdrUQ4zIIgjD0ESbviRKWHJwdJiGxUZrkPvMV\n3nPeXRAWnAWmLeeNHYa15muEswKBgQDCeTdqkEdWgnkByIWVChEt5I+1c3d3TprB\nqWIm3i5vxTdho2METSWy/+XX1Qrtmb5YjUZCfD8xc7hLA2X41KNFsCVJwbYYWgIB\n9fKcB6nfeCsuexpcpjGh75R4nU39bUUOAUQbNlLu8h09pbF68nLguUXWUEJ3RWd2\nQl3O2FbcNQKBgBWjWB36Dxk5xSZdoJES89pwfGeJm018ZbHaNCeYThhAJ/gELu7h\nQMxjnkU3YXCqzCriPhh1UVlVbrOT2iICOwLmw29+HbhBMWF4+Lfpaz4yUhbsGSmo\nwlI3qcjuvjVlz1gK3mZqttMx29ey09yhJOA4iR6aSoZ8VnMFT/XpZtuzAoGBAI7O\n8PDiLmDKww2aMO43TFJFK3r15d7I7EAWoKsmMTeGvZqHnujDtlFyNVh/a9z7L5pb\ndCLSlp07+zOqtTE7BQLhzSASjiPnxN2nvJbz0bz2w88IO12Z9YyTIJZJ/cGCglk8\neMT66X/qb6qbiG9epxl7NFui6IwpfUaMidKhb3eZAoGAEmcmFmtljyUU1NOvbtgM\nIrFA0QlDalsJD/HSZsslCrrwsHpgX6oxhyg425wgmFcC8MiBRkqyMJMPouxqKToo\njIfXjTWVU3pF89QW+MRN0gCHsLppH/rXMFgU7liCuCIw94NqJ3xKS7bnsuGbYKey\nSVB5YETSRSvhZb6+LKJFgH4=\n-----END PRIVATE KEY-----\n"
         };
         
-        // Wyoming State Holidays (Tori's holidays)
-        const WYOMING_HOLIDAYS = [
-            { name: "New Year's Day", month: 0, day: 1 },
-            { name: "Martin Luther King Jr. Day", month: 0, nthDay: 3, weekday: 1 },
-            { name: "Presidents' Day", month: 1, nthDay: 3, weekday: 1 },
-            { name: "Memorial Day", month: 4, lastWeekday: 1 },
-            { name: "Independence Day", month: 6, day: 4 },
-            { name: "Labor Day", month: 8, nthDay: 1, weekday: 1 },
-            { name: "Veterans Day", month: 10, day: 11 },
-            { name: "Thanksgiving", month: 10, nthDay: 4, weekday: 4 },
-            { name: "Christmas", month: 11, day: 25 }
-        ];
-        
         // State
         let state = {
             currentBalance: 22,
@@ -541,6 +522,7 @@
         
         let accessToken = null;
         let calculatedWorkdays = 0;
+        let editingIndex = -1; // Track which trip we're editing
         
         // Work schedule - Dan works Sat/Sun/Mon
         const WORK_DAYS = [0, 1, 6];
@@ -551,40 +533,6 @@
             if (startDate) {
                 document.getElementById('ptoEndDate').value = startDate;
             }
-        }
-        
-        // Get observed holiday date
-        function getObservedHolidayDate(year, holiday) {
-            let date;
-            
-            if (holiday.day) {
-                date = new Date(year, holiday.month, holiday.day);
-            } else if (holiday.nthDay) {
-                date = new Date(year, holiday.month, 1);
-                let count = 0;
-                while (count < holiday.nthDay) {
-                    if (date.getDay() === holiday.weekday) {
-                        count++;
-                    }
-                    if (count < holiday.nthDay) {
-                        date.setDate(date.getDate() + 1);
-                    }
-                }
-            } else if (holiday.lastWeekday) {
-                date = new Date(year, holiday.month + 1, 0);
-                while (date.getDay() !== holiday.weekday) {
-                    date.setDate(date.getDate() - 1);
-                }
-            }
-            
-            const dayOfWeek = date.getDay();
-            if (dayOfWeek === 6) {
-                date.setDate(date.getDate() - 1);
-            } else if (dayOfWeek === 0) {
-                date.setDate(date.getDate() + 1);
-            }
-            
-            return date;
         }
         
         // Get OAuth access token
@@ -749,7 +697,7 @@
             return `${days} days`;
         }
         
-        // Check if date falls on workday - FIX #2: Fixed function call
+        // Check if date falls on workday
         function isWorkDay(dateString) {
             const date = new Date(dateString + 'T00:00:00');
             return WORK_DAYS.includes(date.getDay());
@@ -804,25 +752,6 @@
             
             document.getElementById('workdayCalculation').innerHTML = html;
             document.getElementById('workdayCalculation').classList.remove('hidden');
-        }
-        
-        // Get holidays for a year
-        function getHolidays(year) {
-            const holidays = [];
-            
-            WYOMING_HOLIDAYS.forEach(holiday => {
-                if (holiday.name === 'Thanksgiving' || holiday.name === 'Christmas') {
-                    const date = getObservedHolidayDate(year, holiday);
-                    const dateStr = date.toISOString().split('T')[0];
-                    holidays.push({ 
-                        name: holiday.name, 
-                        date: date,
-                        isWorkDay: isWorkDay(dateStr)
-                    });
-                }
-            });
-            
-            return holidays;
         }
         
         // Calculate total reserve used from planned PTO days
@@ -891,6 +820,8 @@
         
         // Show plan PTO form
         function showPlanPTO() {
+            editingIndex = -1;
+            document.getElementById('ptoFormTitle').textContent = 'Plan PTO Days';
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
             document.getElementById('workdayCalculation').classList.add('hidden');
@@ -903,6 +834,7 @@
         
         // Cancel plan PTO
         function cancelPlanPTO() {
+            editingIndex = -1;
             document.getElementById('planPTOCard').classList.add('hidden');
             document.getElementById('ptoStartDate').value = '';
             document.getElementById('ptoEndDate').value = '';
@@ -910,6 +842,36 @@
             document.getElementById('ptoNotes').value = '';
             document.getElementById('workdayCalculation').classList.add('hidden');
             calculatedWorkdays = 0;
+        }
+        
+        // Edit PTO trip
+        function editDay(idx) {
+            const day = state.plannedDays[idx];
+            
+            if (day.type === 'pto') {
+                // Restore balance before editing
+                state.currentBalance += day.daysUsed;
+                
+                editingIndex = idx;
+                document.getElementById('ptoFormTitle').textContent = 'Edit PTO Days';
+                document.getElementById('ptoStartDate').value = day.startDate;
+                document.getElementById('ptoEndDate').value = day.endDate;
+                document.getElementById('ptoPurpose').value = day.purpose;
+                document.getElementById('ptoNotes').value = day.notes;
+                
+                calculateWorkdays();
+                document.getElementById('planPTOCard').classList.remove('hidden');
+            } else {
+                // Edit non-PTO
+                editingIndex = idx;
+                document.getElementById('nonPtoFormTitle').textContent = 'Edit Non-PTO Days';
+                document.getElementById('nonPtoStartDate').value = day.startDate;
+                document.getElementById('nonPtoEndDate').value = day.endDate;
+                document.getElementById('nonPtoPurpose').value = day.purpose;
+                document.getElementById('nonPtoNotes').value = day.notes;
+                
+                document.getElementById('planNonPTOCard').classList.remove('hidden');
+            }
         }
         
         // Save PTO
@@ -949,7 +911,14 @@
                     `Do you want to proceed?`
                 );
                 
-                if (!confirm) return;
+                if (!confirm) {
+                    // Restore balance if they cancel
+                    if (editingIndex >= 0) {
+                        const oldDay = state.plannedDays[editingIndex];
+                        state.currentBalance -= oldDay.daysUsed;
+                    }
+                    return;
+                }
             }
             
             const day = {
@@ -965,7 +934,14 @@
                 toriComing: false
             };
             
-            state.plannedDays.push(day);
+            if (editingIndex >= 0) {
+                // Update existing trip
+                state.plannedDays[editingIndex] = day;
+            } else {
+                // Add new trip
+                state.plannedDays.push(day);
+            }
+            
             state.plannedDays.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
             state.currentBalance -= workdays;
             
@@ -975,14 +951,18 @@
             displayPlannedDays();
             
             if (usesReserve) {
-                alert(`✅ PTO saved\n\n⚠️ Used ${formatDays(reserveUsed)} from reserve\n\nRemaining balance: ${formatDays(state.currentBalance)}`);
+                alert(`✅ PTO ${editingIndex >= 0 ? 'updated' : 'saved'}\n\n⚠️ Used ${formatDays(reserveUsed)} from reserve\n\nRemaining balance: ${formatDays(state.currentBalance)}`);
             } else {
-                alert(`✅ PTO saved\n\nWorkdays used: ${formatDays(workdays)}\nRemaining balance: ${formatDays(state.currentBalance)}`);
+                alert(`✅ PTO ${editingIndex >= 0 ? 'updated' : 'saved'}\n\nWorkdays used: ${formatDays(workdays)}\nRemaining balance: ${formatDays(state.currentBalance)}`);
             }
+            
+            editingIndex = -1;
         }
         
         // Show plan non-PTO form
         function showPlanNonPTO() {
+            editingIndex = -1;
+            document.getElementById('nonPtoFormTitle').textContent = 'Plan Non-PTO Days (Regular Days Off)';
             document.getElementById('planNonPTOCard').classList.remove('hidden');
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('nonPtoStartDate').min = today;
@@ -991,6 +971,7 @@
         
         // Cancel plan non-PTO
         function cancelPlanNonPTO() {
+            editingIndex = -1;
             document.getElementById('planNonPTOCard').classList.add('hidden');
             document.getElementById('nonPtoStartDate').value = '';
             document.getElementById('nonPtoEndDate').value = '';
@@ -998,7 +979,7 @@
             document.getElementById('nonPtoNotes').value = '';
         }
         
-        // Save non-PTO - FIX #3: Updated to handle date range
+        // Save non-PTO
         function saveNonPTO() {
             const startDate = document.getElementById('nonPtoStartDate').value;
             const endDate = document.getElementById('nonPtoEndDate').value;
@@ -1025,14 +1006,22 @@
                 balanceAfter: state.currentBalance
             };
             
-            state.plannedDays.push(day);
+            if (editingIndex >= 0) {
+                // Update existing
+                state.plannedDays[editingIndex] = day;
+            } else {
+                // Add new
+                state.plannedDays.push(day);
+            }
+            
             state.plannedDays.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
             
             saveState();
             cancelPlanNonPTO();
             displayPlannedDays();
             
-            alert(`✅ Days planned (no PTO impact)`);
+            alert(`✅ Days ${editingIndex >= 0 ? 'updated' : 'planned'} (no PTO impact)`);
+            editingIndex = -1;
         }
         
         // Display planned days
@@ -1081,7 +1070,8 @@
                                 📝 <strong>Notes:</strong> ${day.notes}
                             </div>
                         ` : ''}
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                            <button class="edit-btn" onclick="editDay(${idx})">✏️ Edit</button>
                             <button class="delete-btn" onclick="deleteDay(${idx})">🗑️ Delete</button>
                         </div>
                     </div>
@@ -1106,37 +1096,58 @@
             displayPlannedDays();
         }
         
-        // Show holidays - FIX #2: Fixed isWorkDay function call
+        // FIX: Simplified show holidays - no infinite loop
         function showHolidays() {
             const currentYear = new Date().getFullYear();
             
             let html = '<div class="alert alert-info" style="margin-bottom: 20px;">';
             html += '<strong>Dan\'s Workdays:</strong> Saturday, Sunday, Monday<br>';
             html += '<strong>Dan\'s Paid Holidays:</strong> Thanksgiving & Christmas<br>';
-            html += '⚠️ If a holiday falls on your workday, you must use PTO<br><br>';
-            html += '<strong>All Wyoming State Holidays (Tori has these off):</strong>';
+            html += '⚠️ If a holiday falls on your workday, you must use PTO';
             html += '</div>';
             
-            html += '<h4 style="color: #2c5f2d; margin: 20px 0 10px;">All Wyoming State Holidays</h4>';
+            html += '<h4 style="color: #2c5f2d; margin: 20px 0 10px;">Thanksgiving & Christmas (Next 3 Years)</h4>';
             html += '<div class="holiday-list">';
             
-            [currentYear, currentYear + 1, currentYear + 2].forEach(year => {
-                WYOMING_HOLIDAYS.forEach(holiday => {
-                    const date = getObservedHolidayDate(year, holiday);
-                    const dateStr = date.toISOString().split('T')[0];
-                    const isDanHoliday = holiday.name === 'Thanksgiving' || holiday.name === 'Christmas';
-                    const checkWorkDay = isWorkDay(dateStr);
-                    const workdayClass = isDanHoliday && checkWorkDay ? 'workday' : '';
-                    
-                    html += `
-                        <div class="holiday-item ${workdayClass}">
-                            <strong>${holiday.name} ${year}</strong><br>
-                            ${date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}<br>
-                            ${isDanHoliday ? (checkWorkDay ? '<span style="color: #856404;">⚠️ Dan\'s workday - requires PTO</span>' : '<span style="color: #28a745;">✓ Dan\'s paid holiday</span>') : '<span style="color: #17a2b8;">Tori has off</span>'}
-                        </div>
-                    `;
-                });
-            });
+            for (let year = currentYear; year <= currentYear + 2; year++) {
+                // Thanksgiving - 4th Thursday of November
+                const nov1 = new Date(year, 10, 1);
+                let thursdayCount = 0;
+                let thanksgiving = new Date(nov1);
+                
+                while (thursdayCount < 4) {
+                    if (thanksgiving.getDay() === 4) {
+                        thursdayCount++;
+                        if (thursdayCount === 4) break;
+                    }
+                    thanksgiving.setDate(thanksgiving.getDate() + 1);
+                }
+                
+                const thanksgivingStr = thanksgiving.toISOString().split('T')[0];
+                const thanksgivingIsWorkday = isWorkDay(thanksgivingStr);
+                
+                html += `
+                    <div class="holiday-item ${thanksgivingIsWorkday ? 'workday' : ''}">
+                        <strong>Thanksgiving ${year}</strong><br>
+                        ${thanksgiving.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}<br>
+                        ${thanksgivingIsWorkday ? '<span style="color: #856404;">⚠️ Dan\'s workday - requires PTO</span>' : '<span style="color: #28a745;">✓ Dan\'s paid holiday</span>'}
+                    </div>
+                `;
+                
+                // Christmas - December 25
+                const christmas = new Date(year, 11, 25);
+                const christmasStr = christmas.toISOString().split('T')[0];
+                const christmasIsWorkday = isWorkDay(christmasStr);
+                
+                html += `
+                    <div class="holiday-item ${christmasIsWorkday ? 'workday' : ''}">
+                        <strong>Christmas ${year}</strong><br>
+                        ${christmas.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}<br>
+                        ${christmasIsWorkday ? '<span style="color: #856404;">⚠️ Dan\'s workday - requires PTO</span>' : '<span style="color: #28a745;">✓ Dan\'s paid holiday</span>'}
+                    </div>
+                `;
+            }
+            
             html += '</div>';
             
             document.getElementById('holidaysList').innerHTML = html;
@@ -1147,7 +1158,7 @@
             document.getElementById('holidaysCard').classList.add('hidden');
         }
         
-        // Show projections - FIX #4: Added planned PTO list
+        // Show projections - FIX: Added non-PTO trips
         function showProjections() {
             const feb1Next = new Date(new Date().getFullYear() + 1, 1, 1);
             const reserveUsedThisYear = calculateReserveUsed();
@@ -1161,7 +1172,7 @@
             html += `<p><strong>Reserve Used This Year:</strong> ${formatDays(reserveUsedThisYear)}</p>`;
             html += '</div>';
             
-            // FIX #4: Show planned PTO trips
+            // Show planned PTO trips
             const ptoTrips = state.plannedDays.filter(day => day.type === 'pto');
             if (ptoTrips.length > 0) {
                 html += '<div class="projection">';
@@ -1174,6 +1185,23 @@
                         : `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
                     
                     html += `<p><strong>${trip.purpose}:</strong> ${dateStr} - ${formatDays(trip.daysUsed)}${trip.usesReserve ? ' <span style="color: #856404;">(uses reserve)</span>' : ''}</p>`;
+                });
+                html += '</div>';
+            }
+            
+            // FIX: Show non-PTO trips
+            const nonPtoTrips = state.plannedDays.filter(day => day.type === 'non-pto');
+            if (nonPtoTrips.length > 0) {
+                html += '<div class="projection">';
+                html += '<h4>Planned Non-PTO Days (Regular Days Off)</h4>';
+                nonPtoTrips.forEach(trip => {
+                    const startDate = new Date(trip.startDate + 'T00:00:00');
+                    const endDate = new Date(trip.endDate + 'T00:00:00');
+                    const dateStr = trip.startDate === trip.endDate 
+                        ? startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                        : `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                    
+                    html += `<p><strong>${trip.purpose}:</strong> ${dateStr} <span style="color: #6c757d;">(no PTO impact)</span></p>`;
                 });
                 html += '</div>';
             }
