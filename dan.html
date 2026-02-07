@@ -385,7 +385,7 @@
                 <div class="form-group">
                     <label>Current Planning Balance (days)</label>
                     <input type="number" id="currentBalance" step="0.5" value="22" placeholder="Enter planning balance">
-                    <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">Enter as days (e.g., 22 or 18.5). You have 5 reserve days separate.</p>
+                    <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">Enter as days (e.g., 22 or 18.5 or -2). You have 5 reserve days separate.</p>
                 </div>
                 <button onclick="confirmBalance()">Confirm Balance</button>
             </div>
@@ -402,7 +402,7 @@
                         </div>
                         <div class="balance-item">
                             Reserve (Emergency)
-                            <strong>5 days</strong>
+                            <strong id="reserveDays">5 days</strong>
                         </div>
                     </div>
                 </div>
@@ -431,7 +431,7 @@
             
             <div class="form-group">
                 <label>Start Date</label>
-                <input type="date" id="ptoStartDate" onchange="calculateWorkdays()">
+                <input type="date" id="ptoStartDate" onchange="syncEndDateMonth(); calculateWorkdays();">
             </div>
             
             <div class="form-group">
@@ -440,13 +440,6 @@
             </div>
             
             <div id="workdayCalculation" class="hidden"></div>
-            
-            <div class="checkbox-group">
-                <input type="checkbox" id="toriComing" onchange="checkToriHolidays()">
-                <label for="toriComing">Is Tori coming on this trip?</label>
-            </div>
-            
-            <div id="toriHolidayWarnings"></div>
             
             <div class="form-group">
                 <label>Purpose</label>
@@ -547,6 +540,14 @@
         // Work schedule - Dan works Sat/Sun/Mon
         const WORK_DAYS = [0, 1, 6]; // Sunday=0, Monday=1, Saturday=6
         
+        // FIX 2: Sync end date calendar to start date month
+        function syncEndDateMonth() {
+            const startDate = document.getElementById('ptoStartDate').value;
+            if (startDate) {
+                document.getElementById('ptoEndDate').value = startDate;
+            }
+        }
+        
         // Get observed holiday date (Saturday→Friday, Sunday→Monday)
         function getObservedHolidayDate(year, holiday) {
             let date;
@@ -583,92 +584,6 @@
             }
             
             return date;
-        }
-        
-        // Get Tori holidays within 2 weeks of date range
-        function getToriHolidaysNear(startDateStr, endDateStr) {
-            const startDate = new Date(startDateStr + 'T00:00:00');
-            const endDate = new Date(endDateStr + 'T00:00:00');
-            
-            // Check 2 weeks before and after
-            const twoWeeksBefore = new Date(startDate);
-            twoWeeksBefore.setDate(twoWeeksBefore.getDate() - 14);
-            const twoWeeksAfter = new Date(endDate);
-            twoWeeksAfter.setDate(twoWeeksAfter.getDate() + 14);
-            
-            const nearbyHolidays = [];
-            const years = [startDate.getFullYear(), endDate.getFullYear()];
-            
-            [...new Set(years)].forEach(year => {
-                WYOMING_HOLIDAYS.forEach(holiday => {
-                    const holidayDate = getObservedHolidayDate(year, holiday);
-                    
-                    // Only include if within 2-week window but NOT during the trip
-                    if (holidayDate >= twoWeeksBefore && holidayDate <= twoWeeksAfter) {
-                        if (holidayDate < startDate || holidayDate > endDate) {
-                            const daysDiff = holidayDate < startDate 
-                                ? Math.ceil((startDate - holidayDate) / (1000 * 60 * 60 * 24))
-                                : Math.ceil((holidayDate - endDate) / (1000 * 60 * 60 * 24));
-                            
-                            nearbyHolidays.push({
-                                name: holiday.name,
-                                date: holidayDate,
-                                daysBefore: holidayDate < startDate ? daysDiff : 0,
-                                daysAfter: holidayDate > endDate ? daysDiff : 0
-                            });
-                        }
-                    }
-                });
-            });
-            
-            return nearbyHolidays;
-        }
-        
-        // Check Tori holidays and display suggestions
-        function checkToriHolidays() {
-            const startDate = document.getElementById('ptoStartDate').value;
-            const endDate = document.getElementById('ptoEndDate').value;
-            const toriComing = document.getElementById('toriComing').checked;
-            const warningsDiv = document.getElementById('toriHolidayWarnings');
-            
-            if (!toriComing || !startDate || !endDate) {
-                warningsDiv.innerHTML = '';
-                return;
-            }
-            
-            const nearbyHolidays = getToriHolidaysNear(startDate, endDate);
-            
-            if (nearbyHolidays.length === 0) {
-                warningsDiv.innerHTML = '';
-                return;
-            }
-            
-            let html = '';
-            nearbyHolidays.forEach(h => {
-                const dateStr = h.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                
-                if (h.daysBefore > 0) {
-                    html += `
-                        <div class="tori-holiday-highlight">
-                            📅 <strong>${h.name}</strong> is ${h.daysBefore} day${h.daysBefore !== 1 ? 's' : ''} before trip (${dateStr})
-                        </div>
-                        <div class="trip-suggestion">
-                            💡 <strong>Suggestion:</strong> Start trip on ${dateStr} to save Tori ${h.daysBefore} day${h.daysBefore !== 1 ? 's' : ''} of PTO
-                        </div>
-                    `;
-                } else if (h.daysAfter > 0) {
-                    html += `
-                        <div class="tori-holiday-highlight">
-                            📅 <strong>${h.name}</strong> is ${h.daysAfter} day${h.daysAfter !== 1 ? 's' : ''} after trip (${dateStr})
-                        </div>
-                        <div class="trip-suggestion">
-                            💡 <strong>Suggestion:</strong> End trip on ${dateStr} to save Tori ${h.daysAfter} day${h.daysAfter !== 1 ? 's' : ''} of PTO
-                        </div>
-                    `;
-                }
-            });
-            
-            warningsDiv.innerHTML = html;
         }
         
         // Get OAuth access token
@@ -828,7 +743,7 @@
         // Format days
         function formatDays(days) {
             if (days === Math.floor(days)) {
-                return `${days} ${days === 1 ? 'day' : 'days'}`;
+                return `${days} ${Math.abs(days) === 1 ? 'day' : 'days'}`;
             }
             return `${days} days`;
         }
@@ -888,9 +803,6 @@
             
             document.getElementById('workdayCalculation').innerHTML = html;
             document.getElementById('workdayCalculation').classList.remove('hidden');
-            
-            // Check Tori holidays when dates change
-            checkToriHolidays();
         }
         
         // Get holidays for a year
@@ -924,16 +836,21 @@
             return total;
         }
         
-        // Step 1: Confirm Balance
+        // FIX 3 & 4: Calculate reserve remaining properly when PTO goes negative
+        function calculateReserveRemaining() {
+            if (state.currentBalance >= 0) {
+                return state.reserveDays;
+            } else {
+                // If balance is negative, reserve is reduced
+                return Math.max(0, state.reserveDays + state.currentBalance);
+            }
+        }
+        
+        // Step 1: Confirm Balance - FIX 4: Accept negative balances
         function confirmBalance() {
             const balance = parseFloat(document.getElementById('currentBalance').value);
-            if (isNaN(balance) || balance < 0) {
+            if (isNaN(balance)) {
                 alert('Please enter a valid balance');
-                return;
-            }
-            
-            if (balance > 22) {
-                alert('Planning balance cannot exceed 22 days');
                 return;
             }
             
@@ -946,26 +863,24 @@
             displayPlannedDays();
         }
         
-        // Update main balance display
+        // Update main balance display - FIX 3: Show reserve correctly
         function updateMainBalance() {
+            const reserveRemaining = calculateReserveRemaining();
+            
             document.getElementById('mainBalance').textContent = formatDays(state.currentBalance);
             document.getElementById('planningDays').textContent = formatDays(state.currentBalance);
+            document.getElementById('reserveDays').textContent = formatDays(reserveRemaining);
         }
         
-        // Edit balance
+        // Edit balance - FIX 4: Accept negative balances
         function editBalance() {
-            const newBalance = prompt(`Update your planning balance:\n\n(Current: ${formatDays(state.currentBalance)})\n\nEnter new balance (max 22 days):`, state.currentBalance);
+            const newBalance = prompt(`Update your planning balance:\n\n(Current: ${formatDays(state.currentBalance)})\n\nEnter new balance (can be negative):`, state.currentBalance);
             
             if (newBalance === null) return;
             
             const parsed = parseFloat(newBalance);
-            if (isNaN(parsed) || parsed < 0) {
-                alert('Please enter a valid positive number');
-                return;
-            }
-            
-            if (parsed > 22) {
-                alert('Planning balance cannot exceed 22 days');
+            if (isNaN(parsed)) {
+                alert('Please enter a valid number');
                 return;
             }
             
@@ -980,7 +895,6 @@
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
             document.getElementById('workdayCalculation').classList.add('hidden');
-            document.getElementById('toriHolidayWarnings').innerHTML = '';
             calculatedWorkdays = 0;
             
             const today = new Date().toISOString().split('T')[0];
@@ -995,9 +909,7 @@
             document.getElementById('ptoEndDate').value = '';
             document.getElementById('ptoPurpose').value = '';
             document.getElementById('ptoNotes').value = '';
-            document.getElementById('toriComing').checked = false;
             document.getElementById('workdayCalculation').classList.add('hidden');
-            document.getElementById('toriHolidayWarnings').innerHTML = '';
             calculatedWorkdays = 0;
         }
         
@@ -1007,7 +919,6 @@
             const endDate = document.getElementById('ptoEndDate').value;
             const purpose = document.getElementById('ptoPurpose').value;
             const notes = document.getElementById('ptoNotes').value;
-            const toriComing = document.getElementById('toriComing').checked;
             
             if (!startDate || !endDate || !purpose) {
                 alert('Please fill in start date, end date, and purpose');
@@ -1031,11 +942,12 @@
             const reserveUsed = usesReserve ? workdays - state.currentBalance : 0;
             
             if (usesReserve) {
+                const reserveRemaining = calculateReserveRemaining();
                 const confirm = window.confirm(
                     `⚠️ RESERVE WARNING\n\n` +
                     `This ${formatDays(workdays)} will use ${formatDays(reserveUsed)} from your 5-day emergency reserve.\n\n` +
                     `Current planning balance: ${formatDays(state.currentBalance)}\n` +
-                    `Reserve days available: ${formatDays(state.reserveDays)}\n\n` +
+                    `Reserve days available: ${formatDays(reserveRemaining)}\n\n` +
                     `Do you want to proceed?`
                 );
                 
@@ -1052,7 +964,7 @@
                 balanceAfter: state.currentBalance - workdays,
                 usesReserve,
                 reserveDaysUsed: reserveUsed,
-                toriComing
+                toriComing: false
             };
             
             state.plannedDays.push(day);
@@ -1152,7 +1064,6 @@
                         ${isPTO ? `
                             <div class="trip-detail">PTO Used: ${formatDays(day.daysUsed)}</div>
                             ${day.usesReserve ? `<div class="trip-detail" style="color: #856404;">⚠️ Reserve Used: ${formatDays(day.reserveDaysUsed)}</div>` : ''}
-                            ${day.toriComing ? `<div class="trip-detail" style="color: #17a2b8;">👥 Tori is coming</div>` : ''}
                             <div class="trip-balance">
                                 <strong>Balance After:</strong> ${formatDays(day.balanceAfter)}
                             </div>
@@ -1164,39 +1075,6 @@
                                 📝 <strong>Notes:</strong> ${day.notes}
                             </div>
                         ` : ''}
-                `;
-                
-                // Show Tori holiday suggestions for saved trips
-                if (isPTO && day.toriComing) {
-                    const nearbyHolidays = getToriHolidaysNear(day.startDate, day.endDate);
-                    if (nearbyHolidays.length > 0) {
-                        nearbyHolidays.forEach(h => {
-                            const dateStr = h.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                            
-                            if (h.daysBefore > 0) {
-                                html += `
-                                    <div class="tori-holiday-highlight">
-                                        📅 <strong>${h.name}</strong> is ${h.daysBefore} day${h.daysBefore !== 1 ? 's' : ''} before trip (${dateStr})
-                                    </div>
-                                    <div class="trip-suggestion">
-                                        💡 Could have started on ${dateStr} to save Tori ${h.daysBefore} day${h.daysBefore !== 1 ? 's' : ''} of PTO
-                                    </div>
-                                `;
-                            } else if (h.daysAfter > 0) {
-                                html += `
-                                    <div class="tori-holiday-highlight">
-                                        📅 <strong>${h.name}</strong> is ${h.daysAfter} day${h.daysAfter !== 1 ? 's' : ''} after trip (${dateStr})
-                                    </div>
-                                    <div class="trip-suggestion">
-                                        💡 Could extend to ${dateStr} to save Tori ${h.daysAfter} day${h.daysAfter !== 1 ? 's' : ''} of PTO
-                                    </div>
-                                `;
-                            }
-                        });
-                    }
-                }
-                
-                html += `
                         <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px;">
                             <button class="delete-btn" onclick="deleteDay(${idx})">🗑️ Delete</button>
                         </div>
@@ -1269,11 +1147,12 @@
             const feb1Next = new Date(new Date().getFullYear() + 1, 1, 1);
             const reserveUsedThisYear = calculateReserveUsed();
             const nextYearPlanning = 22 - reserveUsedThisYear;
+            const reserveRemaining = calculateReserveRemaining();
             
             let html = '<div class="projection">';
             html += '<h4>Current Status</h4>';
             html += `<p><strong>Planning Balance:</strong> ${formatDays(state.currentBalance)}</p>`;
-            html += `<p><strong>Reserve Days:</strong> ${formatDays(state.reserveDays)}</p>`;
+            html += `<p><strong>Reserve Days Remaining:</strong> ${formatDays(reserveRemaining)}</p>`;
             html += `<p><strong>Reserve Used This Year:</strong> ${formatDays(reserveUsedThisYear)}</p>`;
             html += '</div>';
             
