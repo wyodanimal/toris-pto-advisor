@@ -196,26 +196,28 @@
             color: #721c24;
         }
         
+        /* FIX 4 & 5: Condensed trip cards with color coding */
         .trip-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 5px solid #2c5f2d;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: #e8f5e9; /* Light green for PTO */
+            padding: 12px 15px; /* Reduced from 20px */
+            border-radius: 6px;
+            margin-bottom: 10px; /* Reduced from 15px */
+            border-left: 4px solid #2c5f2d;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
         }
         
         .trip-card.non-pto {
+            background: #f5f5f5; /* Light gray for non-PTO */
             border-left-color: #6c757d;
         }
         
         .trip-card h4 {
             color: #2c5f2d;
-            font-size: 18px;
-            margin-bottom: 12px;
+            font-size: 16px; /* Reduced from 18px */
+            margin-bottom: 8px; /* Reduced from 12px */
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .trip-card.non-pto h4 {
@@ -223,33 +225,33 @@
         }
         
         .trip-card .trip-dates {
-            font-size: 14px;
+            font-size: 13px; /* Reduced from 14px */
             color: #495057;
-            margin-bottom: 8px;
+            margin-bottom: 6px; /* Reduced from 8px */
             font-weight: 600;
         }
         
         .trip-card .trip-detail {
-            font-size: 13px;
+            font-size: 12px; /* Reduced from 13px */
             color: #6c757d;
-            margin: 6px 0;
-            padding-left: 20px;
+            margin: 4px 0; /* Reduced from 6px */
+            padding-left: 16px; /* Reduced from 20px */
             position: relative;
         }
         
         .trip-card .trip-detail:before {
             content: "•";
             position: absolute;
-            left: 8px;
+            left: 6px;
             color: #2c5f2d;
         }
         
         .trip-card .trip-balance {
             background: white;
-            padding: 10px;
+            padding: 8px; /* Reduced from 10px */
             border-radius: 4px;
-            margin-top: 10px;
-            font-size: 13px;
+            margin-top: 8px; /* Reduced from 10px */
+            font-size: 12px; /* Reduced from 13px */
             border: 1px solid #dee2e6;
         }
         
@@ -259,10 +261,10 @@
         
         .trip-card .trip-notes {
             background: #fff;
-            padding: 10px;
+            padding: 8px; /* Reduced from 10px */
             border-radius: 4px;
-            margin-top: 8px;
-            font-size: 13px;
+            margin-top: 6px; /* Reduced from 8px */
+            font-size: 12px; /* Reduced from 13px */
             border-left: 3px solid #ffc107;
             color: #495057;
         }
@@ -316,11 +318,11 @@
             background: #dc3545;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px; /* Reduced from 8px 16px */
             border-radius: 4px;
             cursor: pointer;
-            font-size: 13px;
-            margin-top: 8px;
+            font-size: 12px; /* Reduced from 13px */
+            margin-top: 6px; /* Reduced from 8px */
         }
         
         .delete-btn:hover {
@@ -331,11 +333,11 @@
             background: #17a2b8;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px; /* Reduced from 8px 16px */
             border-radius: 4px;
             cursor: pointer;
-            font-size: 13px;
-            margin-top: 8px;
+            font-size: 12px; /* Reduced from 13px */
+            margin-top: 6px; /* Reduced from 8px */
         }
         
         .edit-btn:hover {
@@ -346,11 +348,11 @@
             display: inline-block;
             background: #ffc107;
             color: #333;
-            padding: 2px 8px;
+            padding: 2px 6px; /* Reduced from 2px 8px */
             border-radius: 4px;
-            font-size: 11px;
+            font-size: 10px; /* Reduced from 11px */
             font-weight: 600;
-            margin-left: 8px;
+            margin-left: 6px;
         }
         
         .date-calc-display {
@@ -364,6 +366,16 @@
         
         .date-calc-display strong {
             color: #2c5f2d;
+        }
+        
+        /* FIX 1 & 2: Position form cards inline */
+        .inline-form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 2px solid #2c5f2d;
         }
     </style>
 </head>
@@ -411,76 +423,76 @@
                     <button onclick="showProjections()" class="btn-success">📊 View Projections</button>
                 </div>
                 
+                <!-- FIX 1: Plan PTO Modal - Now inline above planned days -->
+                <div id="planPTOCard" class="inline-form-card hidden">
+                    <h3 style="color: #2c5f2d; margin-bottom: 15px;" id="ptoFormTitle">Plan PTO Days</h3>
+                    
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="ptoStartDate" onchange="syncEndDateMonth(); calculateWorkdays();">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="ptoEndDate" onchange="calculateWorkdays()">
+                    </div>
+                    
+                    <div id="workdayCalculation" class="hidden"></div>
+                    
+                    <div class="form-group">
+                        <label>Purpose</label>
+                        <input type="text" id="ptoPurpose" placeholder="e.g., Family trip, Doctor appointment">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes (optional)</label>
+                        <textarea id="ptoNotes" rows="2" placeholder="Additional details..."></textarea>
+                    </div>
+                    
+                    <div id="ptoWarnings"></div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <button onclick="savePTO()">Save PTO</button>
+                        <button onclick="cancelPlanPTO()" class="btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
+                <!-- FIX 1: Plan Non-PTO Modal - Now inline above planned days -->
+                <div id="planNonPTOCard" class="inline-form-card hidden">
+                    <h3 style="color: #6c757d; margin-bottom: 15px;" id="nonPtoFormTitle">Plan Non-PTO Days</h3>
+                    <p style="color: #666; margin-bottom: 15px; font-size: 13px;">Track what you're doing on your regular days off (Thu/Fri) - doesn't impact PTO balance</p>
+                    
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="nonPtoStartDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="nonPtoEndDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Activity/Plans</label>
+                        <input type="text" id="nonPtoPurpose" placeholder="e.g., Hunting trip, Bike ride, Errands">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes (optional)</label>
+                        <textarea id="nonPtoNotes" rows="2" placeholder="Additional details..."></textarea>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <button onclick="saveNonPTO()" class="btn-secondary">Save Days</button>
+                        <button onclick="cancelPlanNonPTO()" class="btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
                 <!-- Planned Days Section -->
                 <div id="plannedDaysMain">
-                    <h3 style="color: #2c5f2d; margin: 20px 0 15px 0; border-bottom: 2px solid #2c5f2d; padding-bottom: 10px;">🗓️ Your Planned Days</h3>
+                    <h3 style="color: #2c5f2d; margin: 20px 0 12px 0; border-bottom: 2px solid #2c5f2d; padding-bottom: 8px;">🗓️ Your Planned Days</h3>
                     <div id="mainDaysList"></div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Plan PTO Modal -->
-        <div id="planPTOCard" class="card hidden">
-            <h3 style="color: #2c5f2d; margin-bottom: 20px;" id="ptoFormTitle">Plan PTO Days</h3>
-            
-            <div class="form-group">
-                <label>Start Date</label>
-                <input type="date" id="ptoStartDate" onchange="syncEndDateMonth(); calculateWorkdays();">
-            </div>
-            
-            <div class="form-group">
-                <label>End Date</label>
-                <input type="date" id="ptoEndDate" onchange="calculateWorkdays()">
-            </div>
-            
-            <div id="workdayCalculation" class="hidden"></div>
-            
-            <div class="form-group">
-                <label>Purpose</label>
-                <input type="text" id="ptoPurpose" placeholder="e.g., Family trip, Doctor appointment">
-            </div>
-            
-            <div class="form-group">
-                <label>Notes (optional)</label>
-                <textarea id="ptoNotes" rows="3" placeholder="Additional details..."></textarea>
-            </div>
-            
-            <div id="ptoWarnings"></div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <button onclick="savePTO()">Save PTO</button>
-                <button onclick="cancelPlanPTO()" class="btn-secondary">Cancel</button>
-            </div>
-        </div>
-        
-        <!-- Plan Non-PTO Modal -->
-        <div id="planNonPTOCard" class="card hidden">
-            <h3 style="color: #6c757d; margin-bottom: 20px;" id="nonPtoFormTitle">Plan Non-PTO Days (Regular Days Off)</h3>
-            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Track what you're doing on your regular days off (Thu/Fri) - doesn't impact PTO balance</p>
-            
-            <div class="form-group">
-                <label>Start Date</label>
-                <input type="date" id="nonPtoStartDate">
-            </div>
-            
-            <div class="form-group">
-                <label>End Date</label>
-                <input type="date" id="nonPtoEndDate">
-            </div>
-            
-            <div class="form-group">
-                <label>Activity/Plans</label>
-                <input type="text" id="nonPtoPurpose" placeholder="e.g., Hunting trip, Bike ride, Errands">
-            </div>
-            
-            <div class="form-group">
-                <label>Notes (optional)</label>
-                <textarea id="nonPtoNotes" rows="3" placeholder="Additional details..."></textarea>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <button onclick="saveNonPTO()" class="btn-secondary">Save Days</button>
-                <button onclick="cancelPlanNonPTO()" class="btn-secondary">Cancel</button>
             </div>
         </div>
         
@@ -522,15 +534,17 @@
         
         let accessToken = null;
         let calculatedWorkdays = 0;
-        let editingIndex = -1; // Track which trip we're editing
+        let editingIndex = -1;
         
         // Work schedule - Dan works Sat/Sun/Mon
         const WORK_DAYS = [0, 1, 6];
         
-        // Sync end date calendar to start date month
+        // FIX 3: Sync end date calendar to start date month
         function syncEndDateMonth() {
             const startDate = document.getElementById('ptoStartDate').value;
             if (startDate) {
+                // Set end date to same value as start date
+                // This makes the calendar open to that month
                 document.getElementById('ptoEndDate').value = startDate;
             }
         }
@@ -818,10 +832,15 @@
             alert(`✅ Balance updated to ${formatDays(parsed)}`);
         }
         
-        // Show plan PTO form
+        // FIX 1: Show plan PTO form inline
         function showPlanPTO() {
             editingIndex = -1;
             document.getElementById('ptoFormTitle').textContent = 'Plan PTO Days';
+            
+            // Hide non-PTO form if open
+            document.getElementById('planNonPTOCard').classList.add('hidden');
+            
+            // Show PTO form
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
             document.getElementById('workdayCalculation').classList.add('hidden');
@@ -830,6 +849,9 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('ptoStartDate').min = today;
             document.getElementById('ptoEndDate').min = today;
+            
+            // Scroll to form
+            document.getElementById('planPTOCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
         // Cancel plan PTO
@@ -844,7 +866,7 @@
             calculatedWorkdays = 0;
         }
         
-        // Edit PTO trip
+        // FIX 2: Edit day - show form inline
         function editDay(idx) {
             const day = state.plannedDays[idx];
             
@@ -859,8 +881,14 @@
                 document.getElementById('ptoPurpose').value = day.purpose;
                 document.getElementById('ptoNotes').value = day.notes;
                 
+                // Hide non-PTO form
+                document.getElementById('planNonPTOCard').classList.add('hidden');
+                
                 calculateWorkdays();
                 document.getElementById('planPTOCard').classList.remove('hidden');
+                
+                // Scroll to form
+                document.getElementById('planPTOCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
                 // Edit non-PTO
                 editingIndex = idx;
@@ -870,7 +898,13 @@
                 document.getElementById('nonPtoPurpose').value = day.purpose;
                 document.getElementById('nonPtoNotes').value = day.notes;
                 
+                // Hide PTO form
+                document.getElementById('planPTOCard').classList.add('hidden');
+                
                 document.getElementById('planNonPTOCard').classList.remove('hidden');
+                
+                // Scroll to form
+                document.getElementById('planNonPTOCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
         
@@ -912,7 +946,6 @@
                 );
                 
                 if (!confirm) {
-                    // Restore balance if they cancel
                     if (editingIndex >= 0) {
                         const oldDay = state.plannedDays[editingIndex];
                         state.currentBalance -= oldDay.daysUsed;
@@ -935,10 +968,8 @@
             };
             
             if (editingIndex >= 0) {
-                // Update existing trip
                 state.plannedDays[editingIndex] = day;
             } else {
-                // Add new trip
                 state.plannedDays.push(day);
             }
             
@@ -959,14 +990,23 @@
             editingIndex = -1;
         }
         
-        // Show plan non-PTO form
+        // FIX 1: Show plan non-PTO form inline
         function showPlanNonPTO() {
             editingIndex = -1;
-            document.getElementById('nonPtoFormTitle').textContent = 'Plan Non-PTO Days (Regular Days Off)';
+            document.getElementById('nonPtoFormTitle').textContent = 'Plan Non-PTO Days';
+            
+            // Hide PTO form if open
+            document.getElementById('planPTOCard').classList.add('hidden');
+            
+            // Show non-PTO form
             document.getElementById('planNonPTOCard').classList.remove('hidden');
+            
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('nonPtoStartDate').min = today;
             document.getElementById('nonPtoEndDate').min = today;
+            
+            // Scroll to form
+            document.getElementById('planNonPTOCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
         // Cancel plan non-PTO
@@ -1007,10 +1047,8 @@
             };
             
             if (editingIndex >= 0) {
-                // Update existing
                 state.plannedDays[editingIndex] = day;
             } else {
-                // Add new
                 state.plannedDays.push(day);
             }
             
@@ -1024,7 +1062,7 @@
             editingIndex = -1;
         }
         
-        // Display planned days
+        // FIX 4 & 5: Display planned days with color coding and condensed layout
         function displayPlannedDays() {
             const container = document.getElementById('mainDaysList');
             
@@ -1041,7 +1079,7 @@
                 
                 let dateStr;
                 if (isSingleDay) {
-                    dateStr = startDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+                    dateStr = startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
                 } else {
                     const startStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     const endStr = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1070,7 +1108,7 @@
                                 📝 <strong>Notes:</strong> ${day.notes}
                             </div>
                         ` : ''}
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px;">
                             <button class="edit-btn" onclick="editDay(${idx})">✏️ Edit</button>
                             <button class="delete-btn" onclick="deleteDay(${idx})">🗑️ Delete</button>
                         </div>
@@ -1096,7 +1134,7 @@
             displayPlannedDays();
         }
         
-        // FIX: Simplified show holidays - no infinite loop
+        // Show holidays
         function showHolidays() {
             const currentYear = new Date().getFullYear();
             
@@ -1158,7 +1196,7 @@
             document.getElementById('holidaysCard').classList.add('hidden');
         }
         
-        // Show projections - FIX: Added non-PTO trips
+        // Show projections
         function showProjections() {
             const feb1Next = new Date(new Date().getFullYear() + 1, 1, 1);
             const reserveUsedThisYear = calculateReserveUsed();
@@ -1172,7 +1210,6 @@
             html += `<p><strong>Reserve Used This Year:</strong> ${formatDays(reserveUsedThisYear)}</p>`;
             html += '</div>';
             
-            // Show planned PTO trips
             const ptoTrips = state.plannedDays.filter(day => day.type === 'pto');
             if (ptoTrips.length > 0) {
                 html += '<div class="projection">';
@@ -1189,7 +1226,6 @@
                 html += '</div>';
             }
             
-            // FIX: Show non-PTO trips
             const nonPtoTrips = state.plannedDays.filter(day => day.type === 'non-pto');
             if (nonPtoTrips.length > 0) {
                 html += '<div class="projection">';
