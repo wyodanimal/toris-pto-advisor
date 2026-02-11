@@ -145,95 +145,67 @@
             color: #155724;
         }
         
-        .trip-list {
-            list-style: none;
-        }
-        
-        .trip-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .trip-item h4 {
-            color: #667eea;
-            margin-bottom: 8px;
-        }
-        
-        .trip-item p {
-            font-size: 13px;
-            color: #666;
-            margin: 4px 0;
-        }
-        
-        .trip-item .days {
-            font-weight: 600;
-            color: #764ba2;
-        }
-        
+        /* Condensed trip cards */
         .trip-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 5px solid #667eea;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: #e8f0ff;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
         }
         
-        .trip-card h4 {
-            color: #667eea;
-            font-size: 18px;
-            margin-bottom: 12px;
+        .trip-card.admin {
+            background: #f5f5f5;
+            border-left-color: #6c757d;
+        }
+        
+        .trip-main-line {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
             display: flex;
             align-items: center;
             gap: 8px;
+            min-width: 300px;
         }
         
-        .trip-card .trip-dates {
-            font-size: 14px;
-            color: #495057;
-            margin-bottom: 8px;
-            font-weight: 600;
+        .trip-emoji {
+            font-size: 18px;
         }
         
-        .trip-card .trip-detail {
-            font-size: 13px;
-            color: #6c757d;
-            margin: 6px 0;
-            padding-left: 20px;
-            position: relative;
+        .trip-divider {
+            color: #999;
+            margin: 0 4px;
         }
         
-        .trip-card .trip-detail:before {
-            content: "•";
-            position: absolute;
-            left: 8px;
+        .trip-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .trip-notes-compact {
+            width: 100%;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .trip-balance-compact {
+            width: 100%;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            font-size: 12px;
             color: #667eea;
-        }
-        
-        .trip-card .trip-balance {
-            background: white;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
-            font-size: 13px;
-            border: 1px solid #dee2e6;
-        }
-        
-        .trip-card .trip-balance strong {
-            color: #667eea;
-        }
-        
-        .trip-card .trip-notes {
-            background: #fff;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 8px;
-            font-size: 13px;
-            border-left: 3px solid #ffc107;
-            color: #495057;
+            font-weight: 500;
         }
         
         .no-trips {
@@ -276,19 +248,97 @@
             margin-bottom: 10px;
         }
         
+        /* Projection table styling */
+        .projection-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        
+        .projection-table th {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .projection-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .projection-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .projection-table tr.has-pto {
+            background: #fff3cd;
+            font-weight: 600;
+        }
+        
+        .projection-table tr.has-pto td {
+            color: #856404;
+        }
+        
+        .projection-table .pto-used {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .projection-table .trip-name {
+            color: #667eea;
+            font-style: italic;
+        }
+        
         .delete-btn {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
-            margin-top: 8px;
+            font-size: 11px;
+            white-space: nowrap;
         }
         
         .delete-btn:hover {
             background: #c82333;
+        }
+        
+        .edit-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        
+        .edit-btn:hover {
+            background: #138496;
+        }
+        
+        /* Inline edit form */
+        .edit-form-inline {
+            background: #fff9e6;
+            border: 2px solid #17a2b8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .inline-form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 2px solid #667eea;
         }
     </style>
 </head>
@@ -335,58 +385,58 @@
                 
                 <button onclick="showProjections()" class="btn-success" style="margin-bottom: 20px;">📊 View Balance Projections</button>
                 
+                <!-- Plan PTO Card - inline above trips -->
+                <div id="planPTOCard" class="inline-form-card hidden">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">Plan New PTO</h3>
+                    
+                    <div class="form-group">
+                        <label>PTO Type</label>
+                        <select id="ptoType" onchange="toggleAdminHoursInput()">
+                            <option value="pto">PTO (Vacation)</option>
+                            <option value="admin">Admin Time (No Balance Impact)</option>
+                            <option value="split">Split (Admin + PTO)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group hidden" id="adminHoursGroup">
+                        <label>Admin Hours to Use</label>
+                        <input type="number" id="adminHours" step="0.01" min="0" placeholder="e.g., 12">
+                        <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">Remaining hours will be deducted from PTO</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="startDate" onchange="syncEndDate()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Destination / Purpose</label>
+                        <input type="text" id="destination" placeholder="e.g., Hawaii vacation, Family visit">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Reservations / Notes (optional)</label>
+                        <textarea id="reservations" rows="3" placeholder="Flight info, hotel, etc."></textarea>
+                    </div>
+                    
+                    <div id="ptoWarnings"></div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <button onclick="savePlannedPTO()">Save PTO</button>
+                        <button onclick="cancelPlanPTO()" class="btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
                 <!-- Planned Trips Section -->
                 <div id="plannedTripsMain">
-                    <h3 style="color: #667eea; margin: 20px 0 15px 0; border-bottom: 2px solid #667eea; padding-bottom: 10px;">🗓️ Your Planned Trips</h3>
+                    <h3 style="color: #667eea; margin: 20px 0 12px 0; border-bottom: 2px solid #667eea; padding-bottom: 8px;">🗓️ Your Planned Trips</h3>
                     <div id="mainTripsList"></div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Plan PTO Modal -->
-        <div id="planPTOCard" class="card hidden">
-            <h3 style="color: #667eea; margin-bottom: 20px;">Plan New PTO</h3>
-            
-            <div class="form-group">
-                <label>PTO Type</label>
-                <select id="ptoType" onchange="toggleAdminHoursInput()">
-                    <option value="pto">PTO (Vacation)</option>
-                    <option value="admin">Admin Time (No Balance Impact)</option>
-                    <option value="split">Split (Admin + PTO)</option>
-                </select>
-            </div>
-            
-            <div class="form-group hidden" id="adminHoursGroup">
-                <label>Admin Hours to Use</label>
-                <input type="number" id="adminHours" step="0.01" min="0" placeholder="e.g., 12">
-                <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">Remaining hours will be deducted from PTO</p>
-            </div>
-            
-            <div class="form-group">
-                <label>Start Date</label>
-                <input type="date" id="startDate">
-            </div>
-            
-            <div class="form-group">
-                <label>End Date</label>
-                <input type="date" id="endDate">
-            </div>
-            
-            <div class="form-group">
-                <label>Destination / Purpose</label>
-                <input type="text" id="destination" placeholder="e.g., Hawaii vacation, Family visit">
-            </div>
-            
-            <div class="form-group">
-                <label>Reservations / Notes (optional)</label>
-                <textarea id="reservations" rows="3" placeholder="Flight info, hotel, etc."></textarea>
-            </div>
-            
-            <div id="ptoWarnings"></div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <button onclick="savePlannedPTO()">Save PTO</button>
-                <button onclick="cancelPlanPTO()" class="btn-secondary">Cancel</button>
             </div>
         </div>
         
@@ -411,7 +461,7 @@
         const SHEET_BALANCE = 'Balance';
         const SHEET_TRIPS = 'Trips';
         
-        // Service Account Credentials (for write access)
+        // Service Account Credentials
         const SERVICE_ACCOUNT = {
             client_email: "tori-pto-service@tori-pto-advisor.iam.gserviceaccount.com",
             private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCzCb9Z3IONbhi2\nMlP5OLTFyGmqpt0UZhggB3rZdn+myXle4qzJbDvqe4NcZMq0n+EMbY+UOQHzj4WE\nf1w0cYg0b6gLBTLbZXrJ446ab1pgCVbq9DuHEfIpfG3G07SkISj8rrbb0uFwiaA0\n5tcbBZ2nLdZYipAM0ujRyOsrFaiv4JUMk6vE9SuyyI3PVK6LCoPqb9iQyBlNYhPk\nB+1SL/KGjRVjkPEk68+x1w48BKcRMy0YN015V/eo45Oh2KRd3dV1ubJ4D7IcSzsg\nFGeVV+C//MrRLeOYEy1BaCaGKTT+VHtJeUt06robTyJaWJnZt7YSARRuJb3kxoRH\nJMy2bk0PAgMBAAECggEAAvwMHQ7ggIiPz+W54aMw3EUxgb9DWzYye8I0KZDgouKj\n69GCiN8NhqSldXJWsLkjksX2yUVEA4/mbWWEH3mvCBS+a+Sbyu1/pQLumyN1EbnG\nIaeNoHxLmaZx3Akmb0AAQ2oUMUjsKiiZK5iXiGNJFALfGl3A9f3EFM8xIGg9hiUE\nm1ePBPPXY2VItEG9Z8ry+AFHDreT7x/fekMXTfnpqFRLddE2ioucSshRzW7U+UAN\nOvt1V166PrUuIHtAveKaStTULzEPZS6By6viRpUIIDftvfgAptEFMLnpOC/QrZVo\n7tif6V36o03om42zQtrc6ygYwgD0Tj/sPa6kJHxQtQKBgQDrrmLZKbLKeK1A6ngC\niEWqKAd9NrUfbcbUIXEJVlAYbqEWQhJs10UJgWkqvnbgOmimX24YvKQrr4EV2Yan\nDTCtqeanRbMXpuSWCFjftp1RtmhKdrUQ4zIIgjD0ESbviRKWHJwdJiGxUZrkPvMV\n3nPeXRAWnAWmLeeNHYa15muEswKBgQDCeTdqkEdWgnkByIWVChEt5I+1c3d3TprB\nqWIm3i5vxTdho2METSWy/+XX1Qrtmb5YjUZCfD8xc7hLA2X41KNFsCVJwbYYWgIB\n9fKcB6nfeCsuexpcpjGh75R4nU39bUUOAUQbNlLu8h09pbF68nLguUXWUEJ3RWd2\nQl3O2FbcNQKBgBWjWB36Dxk5xSZdoJES89pwfGeJm018ZbHaNCeYThhAJ/gELu7h\nQMxjnkU3YXCqzCriPhh1UVlVbrOT2iICOwLmw29+HbhBMWF4+Lfpaz4yUhbsGSmo\nwlI3qcjuvjVlz1gK3mZqttMx29ey09yhJOA4iR6aSoZ8VnMFT/XpZtuzAoGBAI7O\n8PDiLmDKww2aMO43TFJFK3r15d7I7EAWoKsmMTeGvZqHnujDtlFyNVh/a9z7L5pb\ndCLSlp07+zOqtTE7BQLhzSASjiPnxN2nvJbz0bz2w88IO12Z9YyTIJZJ/cGCglk8\neMT66X/qb6qbiG9epxl7NFui6IwpfUaMidKhb3eZAoGAEmcmFmtljyUU1NOvbtgM\nIrFA0QlDalsJD/HSZsslCrrwsHpgX6oxhyg425wgmFcC8MiBRkqyMJMPouxqKToo\njIfXjTWVU3pF89QW+MRN0gCHsLppH/rXMFgU7liCuCIw94NqJ3xKS7bnsuGbYKey\nSVB5YETSRSvhZb6+LKJFgH4=\n-----END PRIVATE KEY-----\n"
@@ -425,17 +475,36 @@
         };
         
         let accessToken = null;
+        let editingIndex = -1;
         
-        // Get OAuth access token using service account
+        // Get emoji for trip destination
+        function getEmojiForDestination(destination) {
+            const lower = destination.toLowerCase();
+            
+            if (lower.includes('camp')) return '⛺';
+            if (lower.includes('cruise')) return '🚢';
+            if (lower.includes('family') || lower.includes('visit')) return '👨‍👩‍👧‍👦';
+            if (lower.includes('shop')) return '🛍️';
+            if (lower.includes('beach') || lower.includes('hawaii') || lower.includes('mexico')) return '🏖️';
+            if (lower.includes('disney') || lower.includes('theme park')) return '🎢';
+            if (lower.includes('mountain') || lower.includes('ski')) return '⛰️';
+            
+            return '✈️'; // Generic vacation
+        }
+        
+        // Sync end date to start date
+        function syncEndDate() {
+            const startDate = document.getElementById('startDate').value;
+            if (startDate) {
+                document.getElementById('endDate').value = startDate;
+            }
+        }
+        
+        // Get OAuth access token
         async function getAccessToken() {
             if (accessToken) return accessToken;
             
-            // Create JWT
-            const header = {
-                alg: 'RS256',
-                typ: 'JWT'
-            };
-            
+            const header = { alg: 'RS256', typ: 'JWT' };
             const now = Math.floor(Date.now() / 1000);
             const claim = {
                 iss: SERVICE_ACCOUNT.client_email,
@@ -448,7 +517,6 @@
             const base64Header = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
             const base64Claim = btoa(JSON.stringify(claim)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
             
-            // Import private key and sign
             const pemHeader = "-----BEGIN PRIVATE KEY-----";
             const pemFooter = "-----END PRIVATE KEY-----";
             const pemContents = SERVICE_ACCOUNT.private_key.substring(
@@ -457,13 +525,10 @@
             ).replace(/\s/g, '');
             
             const binaryKey = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
-            
             const cryptoKey = await crypto.subtle.importKey(
-                'pkcs8',
-                binaryKey,
+                'pkcs8', binaryKey,
                 { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-                false,
-                ['sign']
+                false, ['sign']
             );
             
             const signatureData = new TextEncoder().encode(`${base64Header}.${base64Claim}`);
@@ -473,7 +538,6 @@
             
             const jwt = `${base64Header}.${base64Claim}.${base64Signature}`;
             
-            // Exchange JWT for access token
             const response = await fetch('https://oauth2.googleapis.com/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -482,8 +546,6 @@
             
             const data = await response.json();
             accessToken = data.access_token;
-            
-            // Refresh token before expiry
             setTimeout(() => { accessToken = null; }, 3500 * 1000);
             
             return accessToken;
@@ -494,7 +556,6 @@
             try {
                 const token = await getAccessToken();
                 
-                // Load balance
                 const balanceResponse = await fetch(
                     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BALANCE}!B1`,
                     { headers: { 'Authorization': `Bearer ${token}` } }
@@ -505,7 +566,6 @@
                     state.currentBalance = parseFloat(balanceData.values[0][0]);
                 }
                 
-                // Load trips
                 const tripsResponse = await fetch(
                     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:K1000`,
                     { headers: { 'Authorization': `Bearer ${token}` } }
@@ -533,8 +593,7 @@
                 
                 console.log('✓ Loaded from Google Sheets');
             } catch (error) {
-                console.error('Error loading from Google Sheets:', error);
-                alert('Unable to load data from Google Sheets. Check your internet connection.');
+                console.error('Error loading:', error);
             }
         }
         
@@ -543,7 +602,6 @@
             try {
                 const token = await getAccessToken();
                 
-                // Update balance
                 await fetch(
                     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BALANCE}!B1?valueInputOption=RAW`,
                     {
@@ -556,7 +614,6 @@
                     }
                 );
                 
-                // Clear trips
                 await fetch(
                     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:K1000:clear`,
                     {
@@ -565,7 +622,6 @@
                     }
                 );
                 
-                // Save trips if any
                 if (state.plannedTrips.length > 0) {
                     const tripRows = state.plannedTrips.map(trip => [
                         trip.type,
@@ -596,26 +652,22 @@
                 
                 console.log('✓ Saved to Google Sheets');
             } catch (error) {
-                console.error('Error saving to Google Sheets:', error);
-                alert('Failed to save data to Google Sheets. Please try again.');
+                console.error('Error saving:', error);
             }
         }
         
-        // Format hours to "HH:MM" format
+        // Format hours to "HH:MM"
         function formatHours(hours) {
             const wholeHours = Math.floor(hours);
             const minutes = Math.round((hours - wholeHours) * 60);
-            
             return `${wholeHours}:${minutes.toString().padStart(2, '0')}`;
         }
         
-        // Parse user input - accepts "73:20" or "73.33" or "73.5"
+        // Parse user input
         function parseHoursInput(input) {
             if (!input) return null;
-            
             input = input.trim();
             
-            // Try to parse "HH:MM" format
             const colonMatch = input.match(/(\d+):(\d+)/);
             if (colonMatch) {
                 const hours = parseInt(colonMatch[1]);
@@ -623,71 +675,55 @@
                 return hours + (minutes / 60);
             }
             
-            // Try to parse as decimal
             const decimal = parseFloat(input);
-            if (!isNaN(decimal)) {
-                return decimal;
-            }
+            if (!isNaN(decimal)) return decimal;
             
             return null;
         }
         
-        // Wyoming State Holidays (with weekend observation rules)
+        // Wyoming State Holidays
         function getHolidays(year) {
             const holidays = [];
             
-            // Helper to get observed date if weekend
             const observeWeekend = (date) => {
                 const day = date.getDay();
-                if (day === 6) { // Saturday
-                    date.setDate(date.getDate() - 1); // Friday
-                } else if (day === 0) { // Sunday
-                    date.setDate(date.getDate() + 1); // Monday
-                }
+                if (day === 6) date.setDate(date.getDate() - 1);
+                else if (day === 0) date.setDate(date.getDate() + 1);
                 return date;
             };
             
-            // New Year's Day
             holidays.push({ name: "New Year's Day", date: observeWeekend(new Date(year, 0, 1)) });
             
-            // MLK Day - 3rd Monday in January
             const mlkDay = new Date(year, 0, 1);
             mlkDay.setDate(1 + (7 - mlkDay.getDay() + 1) % 7 + 14);
             holidays.push({ name: "MLK / Wyoming Equality Day", date: mlkDay });
             
-            // President's Day - 3rd Monday in February
             const presDay = new Date(year, 1, 1);
             presDay.setDate(1 + (7 - presDay.getDay() + 1) % 7 + 14);
             holidays.push({ name: "President's Day", date: presDay });
             
-            // Memorial Day - Last Monday in May
             const memDay = new Date(year, 4, 31);
             memDay.setDate(31 - (memDay.getDay() + 6) % 7);
             holidays.push({ name: "Memorial Day", date: memDay });
             
-            // Independence Day
             holidays.push({ name: "Independence Day", date: observeWeekend(new Date(year, 6, 4)) });
             
-            // Labor Day - First Monday in September
             const laborDay = new Date(year, 8, 1);
             laborDay.setDate(1 + (7 - laborDay.getDay() + 1) % 7);
             holidays.push({ name: "Labor Day", date: laborDay });
             
-            // Veterans Day
             holidays.push({ name: "Veterans Day", date: observeWeekend(new Date(year, 10, 11)) });
             
-            // Thanksgiving - 4th Thursday in November
             const thanksgiving = new Date(year, 10, 1);
             thanksgiving.setDate(1 + (7 - thanksgiving.getDay() + 4) % 7 + 21);
             holidays.push({ name: "Thanksgiving", date: thanksgiving });
             
-            // Christmas
             holidays.push({ name: "Christmas", date: observeWeekend(new Date(year, 11, 25)) });
             
             return holidays;
         }
         
-        // Calculate weekdays between two dates
+        // Count weekdays
         function countWeekdays(startDate, endDate) {
             let count = 0;
             let current = new Date(startDate);
@@ -695,31 +731,26 @@
             
             while (current <= end) {
                 const day = current.getDay();
-                if (day !== 0 && day !== 6) { // Not Sunday (0) or Saturday (6)
-                    count++;
-                }
+                if (day !== 0 && day !== 6) count++;
                 current.setDate(current.getDate() + 1);
             }
             
             return count;
         }
         
-        // Calculate accrual based on date
+        // Get monthly accrual
         function getMonthlyAccrual(date) {
             const checkDate = new Date(date);
-            const may2027 = new Date(2027, 4, 1); // May 1, 2027
+            const may2027 = new Date(2027, 4, 1);
             
-            if (checkDate < may2027) {
-                return 10;
-            }
+            if (checkDate < may2027) return 10;
             
-            // After May 1, 2027, increase by 2 hours every 4 years
-            const yearsSince2027 = (checkDate.getFullYear() - 2027);
+            const yearsSince2027 = checkDate.getFullYear() - 2027;
             const cyclesPassed = Math.floor(yearsSince2027 / 4);
             return 10 + (cyclesPassed + 1) * 2;
         }
         
-        // Check if date is within 2 weeks of a holiday
+        // Check holiday proximity
         function checkHolidayProximity(startDate, endDate) {
             const start = new Date(startDate);
             const end = new Date(endDate);
@@ -735,11 +766,9 @@
                 const twoWeeksAfter = new Date(holidayDate);
                 twoWeeksAfter.setDate(twoWeeksAfter.getDate() + 14);
                 
-                // Check if PTO is within 2 weeks of holiday
                 if ((start >= twoWeeksBefore && start <= twoWeeksAfter) ||
                     (end >= twoWeeksBefore && end <= twoWeeksAfter)) {
                     
-                    // Check if holiday is already covered
                     if (holidayDate >= start && holidayDate <= end) {
                         warnings.push({
                             type: 'info',
@@ -748,8 +777,7 @@
                     } else {
                         warnings.push({
                             type: 'warning',
-                            message: `⚠️ ${holiday.name} is on ${holidayDate.toLocaleDateString()}. Consider adjusting your dates to include this holiday!`,
-                            holiday: holiday
+                            message: `⚠️ ${holiday.name} is on ${holidayDate.toLocaleDateString()}. Consider adjusting your dates to include this holiday!`
                         });
                     }
                 }
@@ -758,18 +786,44 @@
             return warnings;
         }
         
+        // Get projected balance
+        function getProjectedBalance(targetDate) {
+            const today = new Date();
+            const target = new Date(targetDate);
+            let balance = state.currentBalance;
+            
+            let current = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            
+            while (current <= target) {
+                const accrual = getMonthlyAccrual(current);
+                balance += accrual;
+                if (balance > 400) balance = 400;
+                current.setMonth(current.getMonth() + 1);
+            }
+            
+            return balance;
+        }
+        
+        // Get PTO between dates
+        function getPTOBetween(startDate, endDate) {
+            return state.plannedTrips.filter(trip => {
+                const tripStart = new Date(trip.startDate);
+                return tripStart >= startDate && tripStart <= endDate;
+            });
+        }
+        
         // Step 1: Confirm Balance
         function confirmBalance() {
             const input = document.getElementById('currentBalance').value;
             const balance = parseHoursInput(input);
             
             if (balance === null || balance < 0) {
-                alert('Please enter a valid PTO balance (e.g., "73:20" or "73.33")');
+                alert('Please enter a valid PTO balance');
                 return;
             }
             
             if (balance > 400) {
-                alert('Balance cannot exceed 400 hours (state maximum)');
+                alert('Balance cannot exceed 400 hours');
                 return;
             }
             
@@ -794,37 +848,23 @@
                 state.plannedTrips.forEach((trip, idx) => {
                     const startDate = new Date(trip.startDate);
                     const endDate = new Date(trip.endDate);
-                    const tripMonth = startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                     const dateRange = `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
                     
-                    const isPTO = trip.type === 'pto';
-                    const isSplit = trip.type === 'split';
-                    const icon = (isPTO || isSplit) ? '🏖️' : '⚙️';
+                    const emoji = getEmojiForDestination(trip.destination);
                     
                     html += `
-                        <div class="trip-card">
-                            <h4>${icon} ${trip.destination}</h4>
-                            <div class="trip-dates">📅 ${dateRange}</div>
-                            <div class="trip-detail">Duration: ${trip.daysUsed} weekdays (${formatHours(trip.hoursUsed)}${!isPTO && !isSplit ? ' - Admin Time' : ''})</div>
-                            ${trip.reservations ? `
-                                <div class="trip-notes">
-                                    📝 <strong>Notes:</strong> ${trip.reservations}
-                                </div>
-                            ` : ''}
-                            ${isPTO || isSplit ? `
-                                <div class="trip-balance">
-                                    <strong>Projected Balance in ${tripMonth}:</strong> ${formatHours(trip.projectedBalance)}<br>
-                                    <strong>After this trip:</strong> ${formatHours(trip.balanceAfter)} (${(trip.balanceAfter / 8).toFixed(1)} days)
-                                </div>
-                            ` : `
-                                <div class="trip-balance">
-                                    ℹ️ Admin time does not impact PTO balance
-                                </div>
-                            `}
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-                                <button class="delete-btn" onclick="modifyTrip(${idx})">✏️ Modify</button>
-                                <button class="delete-btn" onclick="deletePlannedTrip(${idx})">🗑️ Cancel</button>
+                        <div class="trip-card ${trip.type === 'admin' ? 'admin' : ''}">
+                            <div class="trip-main-line">
+                                <span class="trip-emoji">${emoji}</span> ${trip.destination}
+                                <span class="trip-divider">•</span> ${dateRange}
+                                <span class="trip-divider">•</span> ${formatHours(trip.hoursUsed)}
                             </div>
+                            <div class="trip-actions">
+                                <button class="edit-btn" onclick="modifyTrip(${idx})">✏️</button>
+                                <button class="delete-btn" onclick="deletePlannedTrip(${idx})">🗑️</button>
+                            </div>
+                            ${trip.reservations ? `<div class="trip-notes-compact">📝 ${trip.reservations}</div>` : ''}
+                            ${trip.type !== 'admin' ? `<div class="trip-balance-compact">After: ${formatHours(trip.balanceAfter)}</div>` : ''}
                         </div>
                     `;
                 });
@@ -836,7 +876,6 @@
         function modifyTrip(idx) {
             const trip = state.plannedTrips[idx];
             
-            // Pre-fill the form
             document.getElementById('ptoType').value = trip.type;
             document.getElementById('startDate').value = trip.startDate;
             document.getElementById('endDate').value = trip.endDate;
@@ -848,11 +887,9 @@
                 toggleAdminHoursInput();
             }
             
-            // Delete the old trip
             state.plannedTrips.splice(idx, 1);
             saveState();
             
-            // Show the plan PTO form
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.remove('hidden');
             updateMainBalance();
@@ -860,16 +897,16 @@
             showPlanPTO();
         }
         
-        // Delete planned trip (from validation step)
+        // Delete planned trip
         function deletePlannedTrip(idx) {
-            if (confirm('Are you sure you want to cancel this trip?')) {
+            if (confirm('Cancel this trip?')) {
                 state.plannedTrips.splice(idx, 1);
                 saveState();
                 displayPlannedTrips();
             }
         }
         
-        // Step 2: Validate Planned PTO
+        // Validate planned PTO
         function validatePlannedPTO() {
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.remove('hidden');
@@ -877,8 +914,8 @@
             displayMainTrips();
         }
         
-        // Display trips in main interface as cards
-        function displayMainTrips() {
+        // Display main trips - condensed with inline edit
+        function displayMainTrips(editIdx = -1, editFormHtml = '') {
             const container = document.getElementById('mainTripsList');
             
             if (state.plannedTrips.length === 0) {
@@ -888,49 +925,34 @@
             
             let html = '';
             state.plannedTrips.forEach((trip, idx) => {
+                // Inject edit form above this trip
+                if (editIdx === idx && editFormHtml) {
+                    html += editFormHtml;
+                }
+                
                 const startDate = new Date(trip.startDate);
                 const endDate = new Date(trip.endDate);
-                const tripMonth = startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                const dateRange = `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+                const dateStr = trip.startDate === trip.endDate 
+                    ? startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                    : `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}-${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
                 
-                const isPTO = trip.type === 'pto';
-                const isSplit = trip.type === 'split';
+                const emoji = getEmojiForDestination(trip.destination);
                 const isAdmin = trip.type === 'admin';
-                const icon = (isPTO || isSplit) ? '🏖️' : '⚙️';
                 
-                // Duration text
-                let durationText = `Duration: ${trip.daysUsed} weekdays (${formatHours(trip.hoursUsed)}`;
-                if (isSplit) {
-                    durationText += ` - ${formatHours(trip.adminHours)} Admin + ${formatHours(trip.ptoHours)} PTO`;
-                } else if (isAdmin) {
-                    durationText += ' - Admin Time';
-                }
-                durationText += ')';
+                let mainLine = `<span class="trip-emoji">${emoji}</span> ${trip.destination}`;
+                mainLine += ` <span class="trip-divider">•</span> ${dateStr}`;
+                mainLine += ` <span class="trip-divider">•</span> ${formatHours(trip.hoursUsed)}`;
+                if (isAdmin) mainLine += ' (Admin)';
                 
                 html += `
-                    <div class="trip-card">
-                        <h4>${icon} ${trip.destination}</h4>
-                        <div class="trip-dates">📅 ${dateRange}</div>
-                        <div class="trip-detail">${durationText}</div>
-                        ${trip.reservations ? `
-                            <div class="trip-notes">
-                                📝 <strong>Notes:</strong> ${trip.reservations}
-                            </div>
-                        ` : ''}
-                        ${isPTO || isSplit ? `
-                            <div class="trip-balance">
-                                <strong>Projected Balance in ${tripMonth}:</strong> ${formatHours(trip.projectedBalance)}<br>
-                                <strong>After this trip:</strong> ${formatHours(trip.balanceAfter)} (${(trip.balanceAfter / 8).toFixed(1)} days)
-                            </div>
-                        ` : `
-                            <div class="trip-balance">
-                                ℹ️ Admin time does not impact PTO balance
-                            </div>
-                        `}
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-                            <button class="delete-btn" onclick="modifyMainTrip(${idx})">✏️ Modify</button>
-                            <button class="delete-btn" onclick="deleteMainTrip(${idx})">🗑️ Delete</button>
+                    <div class="trip-card ${isAdmin ? 'admin' : ''}">
+                        <div class="trip-main-line">${mainLine}</div>
+                        <div class="trip-actions">
+                            <button class="edit-btn" onclick="editMainTrip(${idx})">✏️</button>
+                            <button class="delete-btn" onclick="deleteMainTrip(${idx})">🗑️</button>
                         </div>
+                        ${trip.reservations ? `<div class="trip-notes-compact">📝 ${trip.reservations}</div>` : ''}
+                        ${!isAdmin ? `<div class="trip-balance-compact">After: ${formatHours(trip.balanceAfter)}</div>` : ''}
                     </div>
                 `;
             });
@@ -938,147 +960,184 @@
             container.innerHTML = html;
         }
         
-        // Modify trip from main view
-        function modifyMainTrip(idx) {
+        // Edit trip inline
+        function editMainTrip(idx) {
             const trip = state.plannedTrips[idx];
+            editingIndex = idx;
             
-            // Pre-fill the form
-            document.getElementById('ptoType').value = trip.type;
-            document.getElementById('startDate').value = trip.startDate;
-            document.getElementById('endDate').value = trip.endDate;
-            document.getElementById('destination').value = trip.destination;
-            document.getElementById('reservations').value = trip.reservations || '';
+            let formHtml = `
+                <div class="edit-form-inline" id="inlineEditForm">
+                    <h3 style="color: #17a2b8; margin-bottom: 15px;">✏️ Edit Trip</h3>
+                    
+                    <div class="form-group">
+                        <label>PTO Type</label>
+                        <select id="ptoTypeEdit" onchange="toggleAdminHoursInputEdit()">
+                            <option value="pto" ${trip.type === 'pto' ? 'selected' : ''}>PTO (Vacation)</option>
+                            <option value="admin" ${trip.type === 'admin' ? 'selected' : ''}>Admin Time</option>
+                            <option value="split" ${trip.type === 'split' ? 'selected' : ''}>Split</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group ${trip.type !== 'split' ? 'hidden' : ''}" id="adminHoursGroupEdit">
+                        <label>Admin Hours</label>
+                        <input type="number" id="adminHoursEdit" step="0.01" value="${trip.adminHours || 0}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="startDateEdit" value="${trip.startDate}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="endDateEdit" value="${trip.endDate}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Destination</label>
+                        <input type="text" id="destinationEdit" value="${trip.destination}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="reservationsEdit" rows="2">${trip.reservations || ''}</textarea>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <button onclick="saveEditedTrip()" style="background: #17a2b8;">Save</button>
+                        <button onclick="cancelEdit()" class="btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            `;
             
-            if (trip.type === 'split') {
-                document.getElementById('adminHours').value = trip.adminHours || 0;
-                toggleAdminHoursInput();
-            }
-            
-            // Delete the old trip
-            state.plannedTrips.splice(idx, 1);
-            saveState();
-            displayMainTrips();
-            
-            // Show the plan PTO form
-            showPlanPTO();
+            displayMainTrips(idx, formHtml);
+            document.getElementById('inlineEditForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
-        // Delete trip from main view
+        function toggleAdminHoursInputEdit() {
+            const type = document.getElementById('ptoTypeEdit').value;
+            const group = document.getElementById('adminHoursGroupEdit');
+            if (type === 'split') group.classList.remove('hidden');
+            else group.classList.add('hidden');
+        }
+        
+        function cancelEdit() {
+            editingIndex = -1;
+            displayMainTrips();
+        }
+        
+        function saveEditedTrip() {
+            const type = document.getElementById('ptoTypeEdit').value;
+            const startDate = document.getElementById('startDateEdit').value;
+            const endDate = document.getElementById('endDateEdit').value;
+            const destination = document.getElementById('destinationEdit').value;
+            const reservations = document.getElementById('reservationsEdit').value;
+            const adminHours = type === 'split' ? parseFloat(document.getElementById('adminHoursEdit').value) || 0 : 0;
+            
+            if (!startDate || !endDate || !destination) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const daysUsed = countWeekdays(startDate, endDate);
+            const totalHours = daysUsed * 8;
+            const ptoHours = type === 'split' ? totalHours - adminHours : totalHours;
+            
+            const projectedBalance = getProjectedBalance(startDate);
+            const today = new Date();
+            const tripStart = new Date(startDate);
+            const priorTrips = getPTOBetween(today, tripStart);
+            let priorPTOUsed = 0;
+            priorTrips.forEach(trip => {
+                if (trip.type === 'pto' || trip.type === 'split') {
+                    priorPTOUsed += trip.ptoHours || trip.hoursUsed;
+                }
+            });
+            
+            const availableBalance = projectedBalance - priorPTOUsed;
+            
+            const trip = {
+                type,
+                startDate,
+                endDate,
+                destination,
+                reservations,
+                daysUsed,
+                hoursUsed: totalHours,
+                adminHours: type === 'split' ? adminHours : 0,
+                ptoHours: type === 'split' ? ptoHours : (type === 'pto' ? totalHours : 0),
+                projectedBalance,
+                balanceAfter: (type === 'pto' || type === 'split') ? availableBalance - ptoHours : availableBalance
+            };
+            
+            state.plannedTrips[editingIndex] = trip;
+            state.plannedTrips.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+            
+            saveState();
+            editingIndex = -1;
+            displayMainTrips();
+            
+            alert('✅ Trip updated');
+        }
+        
+        // Delete main trip
         function deleteMainTrip(idx) {
-            if (confirm('Are you sure you want to delete this trip?')) {
+            if (confirm('Delete this trip?')) {
                 state.plannedTrips.splice(idx, 1);
                 saveState();
                 displayMainTrips();
             }
         }
         
-        // Update main balance display
+        // Update main balance
         function updateMainBalance() {
             document.getElementById('mainBalance').textContent = formatHours(state.currentBalance);
         }
         
-        // Edit balance from main interface
+        // Edit balance
         function editBalance() {
-            const currentBalance = state.currentBalance;
-            const newBalance = prompt(`Update your current PTO balance:\n\n(Current: ${formatHours(currentBalance)})\n\nEnter new balance:\n- As HH:MM (e.g., "73:20")\n- Or as decimal (e.g., "73.33")`, formatHours(currentBalance));
+            const newBalance = prompt(`Update PTO balance:\n\n(Current: ${formatHours(state.currentBalance)})\n\nEnter new balance:`, formatHours(state.currentBalance));
             
-            if (newBalance === null) return; // User cancelled
+            if (newBalance === null) return;
             
-            const parsedBalance = parseHoursInput(newBalance);
+            const parsed = parseHoursInput(newBalance);
             
-            if (parsedBalance === null || parsedBalance < 0) {
-                alert('Please enter a valid positive number (e.g., "73:20" or "73.33")');
+            if (parsed === null || parsed < 0) {
+                alert('Please enter a valid balance');
                 return;
             }
             
-            if (parsedBalance > 400) {
-                alert('Balance cannot exceed 400 hours (state maximum)');
+            if (parsed > 400) {
+                alert('Balance cannot exceed 400 hours');
                 return;
             }
             
-            state.currentBalance = parsedBalance;
+            state.currentBalance = parsed;
             saveState();
             updateMainBalance();
-            
-            alert(`✅ Balance updated to ${formatHours(parsedBalance)}`);
+            alert(`✅ Balance updated to ${formatHours(parsed)}`);
         }
         
-        // Show plan PTO form
+        // Show plan PTO
         function showPlanPTO() {
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
             
-            // Set minimum date to today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('startDate').min = today;
             document.getElementById('endDate').min = today;
             
-            // Add listener to check holidays when dates change
-            document.getElementById('startDate').onchange = checkDatesForHolidays;
-            document.getElementById('endDate').onchange = checkDatesForHolidays;
+            document.getElementById('planPTOCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
-        // Check dates for holiday proximity
-        function checkDatesForHolidays() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            
-            if (!startDate || !endDate) return;
-            
-            const warnings = checkHolidayProximity(startDate, endDate);
-            const warningsDiv = document.getElementById('ptoWarnings');
-            
-            if (warnings.length > 0) {
-                let html = '';
-                warnings.forEach(w => {
-                    const alertClass = w.type === 'warning' ? 'alert-warning' : 'alert-info';
-                    html += `<div class="alert ${alertClass}">${w.message}</div>`;
-                });
-                warningsDiv.innerHTML = html;
-            } else {
-                warningsDiv.innerHTML = '';
-            }
-        }
-        
-        // Calculate projected balance at a future date
-        function getProjectedBalance(targetDate) {
-            const today = new Date();
-            const target = new Date(targetDate);
-            let balance = state.currentBalance;
-            
-            // Calculate months between now and target
-            let current = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-            
-            while (current <= target) {
-                const accrual = getMonthlyAccrual(current);
-                balance += accrual;
-                
-                // Cap at 400
-                if (balance > 400) balance = 400;
-                
-                current.setMonth(current.getMonth() + 1);
-            }
-            
-            return balance;
-        }
-        
-        // Get all planned PTO between two dates
-        function getPTOBetween(startDate, endDate) {
-            return state.plannedTrips.filter(trip => {
-                const tripStart = new Date(trip.startDate);
-                return tripStart >= startDate && tripStart <= endDate;
-            });
-        }
-        
-        // Toggle admin hours input based on PTO type
+        // Toggle admin hours input
         function toggleAdminHoursInput() {
             const type = document.getElementById('ptoType').value;
-            const adminHoursGroup = document.getElementById('adminHoursGroup');
+            const group = document.getElementById('adminHoursGroup');
             
-            if (type === 'split') {
-                adminHoursGroup.classList.remove('hidden');
-            } else {
-                adminHoursGroup.classList.add('hidden');
+            if (type === 'split') group.classList.remove('hidden');
+            else {
+                group.classList.add('hidden');
                 document.getElementById('adminHours').value = '';
             }
         }
@@ -1098,7 +1157,7 @@
             }
             
             if (type === 'split' && adminHours <= 0) {
-                alert('Please enter the number of admin hours to use');
+                alert('Please enter admin hours');
                 return;
             }
             
@@ -1106,17 +1165,13 @@
             const totalHours = daysUsed * 8;
             
             if (type === 'split' && adminHours >= totalHours) {
-                alert(`Admin hours (${formatHours(adminHours)}) must be less than total hours (${formatHours(totalHours)})`);
+                alert(`Admin hours must be less than total (${formatHours(totalHours)})`);
                 return;
             }
             
-            // For split, PTO hours = total - admin
             const ptoHours = type === 'split' ? totalHours - adminHours : totalHours;
-            
-            // Calculate projected balance at trip start date
             const projectedBalance = getProjectedBalance(startDate);
             
-            // Subtract any already-planned PTO between now and this trip
             const today = new Date();
             const tripStart = new Date(startDate);
             const priorTrips = getPTOBetween(today, tripStart);
@@ -1129,10 +1184,8 @@
             
             const availableBalance = projectedBalance - priorPTOUsed;
             
-            // Check if enough PTO for pto or split types
             if ((type === 'pto' || type === 'split') && ptoHours > availableBalance) {
-                const tripMonth = new Date(startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                alert(`Insufficient PTO for ${tripMonth}.\n\nProjected balance: ${formatHours(projectedBalance)}\nAlready planned PTO: ${formatHours(priorPTOUsed)}\nAvailable: ${formatHours(availableBalance)}\nPTO needed: ${formatHours(ptoHours)}\n\nShortfall: ${formatHours(ptoHours - availableBalance)}`);
+                alert(`Insufficient PTO.\n\nProjected: ${formatHours(projectedBalance)}\nPlanned: ${formatHours(priorPTOUsed)}\nAvailable: ${formatHours(availableBalance)}\nNeeded: ${formatHours(ptoHours)}\n\nShortfall: ${formatHours(ptoHours - availableBalance)}`);
                 return;
             }
             
@@ -1146,26 +1199,21 @@
                 hoursUsed: totalHours,
                 adminHours: type === 'split' ? adminHours : 0,
                 ptoHours: type === 'split' ? ptoHours : (type === 'pto' ? totalHours : 0),
-                projectedBalance: projectedBalance,
+                projectedBalance,
                 balanceAfter: (type === 'pto' || type === 'split') ? availableBalance - ptoHours : availableBalance
             };
             
             state.plannedTrips.push(trip);
-            
-            // Sort trips by date
             state.plannedTrips.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
             
             saveState();
             cancelPlanPTO();
-            displayMainTrips(); // Refresh the trips display
+            displayMainTrips();
             
-            const tripMonth = new Date(startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
             if (type === 'admin') {
-                alert(`Admin time saved for ${tripMonth}!\n\nThis does not affect your PTO balance.`);
-            } else if (type === 'split') {
-                alert(`Split time saved for ${tripMonth}!\n\nTotal: ${formatHours(totalHours)}\nAdmin: ${formatHours(adminHours)}\nPTO: ${formatHours(ptoHours)}\n\nProjected balance: ${formatHours(projectedBalance)}\nRemaining: ${formatHours(availableBalance - ptoHours)}`);
+                alert('✅ Admin time saved (no PTO impact)');
             } else {
-                alert(`PTO saved for ${tripMonth}!\n\nProjected balance: ${formatHours(projectedBalance)}\nMinus this trip: ${formatHours(totalHours)}\nRemaining: ${formatHours(availableBalance - totalHours)}`);
+                alert(`✅ PTO saved\n\nProjected: ${formatHours(projectedBalance)}\nUsed: ${formatHours(ptoHours)}\nRemaining: ${formatHours(availableBalance - ptoHours)}`);
             }
         }
         
@@ -1184,13 +1232,10 @@
         // Show holidays
         function showHolidays() {
             const currentYear = new Date().getFullYear();
-            const holidaysYear1 = getHolidays(currentYear);
-            const holidaysYear2 = getHolidays(currentYear + 1);
-            const holidaysYear3 = getHolidays(currentYear + 2);
+            const holidays = [...getHolidays(currentYear), ...getHolidays(currentYear + 1), ...getHolidays(currentYear + 2)];
             
             let html = '<div class="holiday-list">';
-            
-            [...holidaysYear1, ...holidaysYear2, ...holidaysYear3].forEach(h => {
+            holidays.forEach(h => {
                 html += `
                     <div class="holiday-item">
                         <strong>${h.name}</strong><br>
@@ -1198,8 +1243,8 @@
                     </div>
                 `;
             });
-            
             html += '</div>';
+            
             document.getElementById('holidaysList').innerHTML = html;
             document.getElementById('holidaysCard').classList.remove('hidden');
         }
@@ -1208,14 +1253,13 @@
             document.getElementById('holidaysCard').classList.add('hidden');
         }
         
-        // Show projections
+        // Show projections - cleaned up table format
         function showProjections() {
             let html = '<div class="projection">';
-            html += '<h4>Current Balance (as of today)</h4>';
+            html += '<h4>Current Balance</h4>';
             html += `<p><strong>${formatHours(state.currentBalance)}</strong> (${(state.currentBalance / 8).toFixed(1)} days)</p>`;
             html += '</div>';
             
-            // Project 24 months with planned PTO
             const projections = [];
             let runningBalance = state.currentBalance;
             const today = new Date();
@@ -1224,11 +1268,8 @@
                 const projDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
                 const accrual = getMonthlyAccrual(projDate);
                 runningBalance += accrual;
-                
-                // Cap at 400 hours
                 if (runningBalance > 400) runningBalance = 400;
                 
-                // Check for planned PTO in this month
                 const monthStart = new Date(projDate.getFullYear(), projDate.getMonth(), 1);
                 const monthEnd = new Date(projDate.getFullYear(), projDate.getMonth() + 1, 0);
                 const tripsThisMonth = state.plannedTrips.filter(trip => {
@@ -1250,32 +1291,44 @@
                     accrual,
                     ptoUsed,
                     tripNames,
-                    balance: runningBalance
+                    balance: runningBalance,
+                    hasPTO: ptoUsed > 0
                 });
             }
             
             html += '<div class="projection">';
-            html += '<h4>24-Month Projection (includes accrual and planned PTO)</h4>';
+            html += '<h4>24-Month Projection</h4>';
+            html += '<table class="projection-table">';
+            html += '<tr><th>Month</th><th>Accrual</th><th>PTO Used</th><th>Balance</th><th>Days</th></tr>';
+            
             projections.forEach(p => {
-                let monthLine = `<p><strong>${p.month}:</strong> +${formatHours(p.accrual)}`;
-                if (p.ptoUsed > 0) {
-                    monthLine += ` - ${formatHours(p.ptoUsed)} (${p.tripNames.join(', ')})`;
-                }
-                monthLine += ` → <strong>${formatHours(p.balance)}</strong> (${(p.balance / 8).toFixed(1)} days)</p>`;
-                html += monthLine;
+                const rowClass = p.hasPTO ? 'has-pto' : '';
+                const ptoCell = p.ptoUsed > 0 
+                    ? `<span class="pto-used">-${formatHours(p.ptoUsed)}</span><br><span class="trip-name">${p.tripNames.join(', ')}</span>`
+                    : '-';
+                
+                html += `
+                    <tr class="${rowClass}">
+                        <td>${p.month}</td>
+                        <td>+${formatHours(p.accrual)}</td>
+                        <td>${ptoCell}</td>
+                        <td><strong>${formatHours(p.balance)}</strong></td>
+                        <td>${(p.balance / 8).toFixed(1)}</td>
+                    </tr>
+                `;
             });
+            
+            html += '</table>';
             html += '</div>';
             
-            // Show note about May 2027 increase
             html += '<div class="alert alert-info">';
-            html += '<strong>📅 Accrual Increase:</strong> Starting May 1, 2027, monthly accrual increases to 12 hrs/month (+2 hrs). The increase continues every 4 years.';
+            html += '<strong>📅 Accrual Increase:</strong> Starting May 1, 2027, monthly accrual increases to 12 hrs/month. Increases every 4 years.';
             html += '</div>';
             
-            // Show cap warning if approaching
             const maxProjected = Math.max(...projections.map(p => p.balance));
             if (maxProjected >= 380) {
                 html += '<div class="alert alert-warning">';
-                html += '<strong>⚠️ Approaching Cap:</strong> You are approaching the 400-hour PTO cap. Consider using some PTO to avoid losing accrual.';
+                html += '<strong>⚠️ Approaching Cap:</strong> You are approaching the 400-hour cap. Consider using PTO to avoid losing accrual.';
                 html += '</div>';
             }
             
@@ -1287,28 +1340,7 @@
             document.getElementById('projectionsCard').classList.add('hidden');
         }
         
-        // Sync end date picker with start date
-        document.addEventListener('DOMContentLoaded', function() {
-            const startDateInput = document.getElementById('startDate');
-            const endDateInput = document.getElementById('endDate');
-            
-            startDateInput.addEventListener('change', function() {
-                if (this.value) {
-                    // Set end date minimum to start date
-                    endDateInput.min = this.value;
-                    // If end date is before start date, reset it to start date
-                    if (endDateInput.value && endDateInput.value < this.value) {
-                        endDateInput.value = this.value;
-                    }
-                    // Set end date value to start date if empty
-                    if (!endDateInput.value) {
-                        endDateInput.value = this.value;
-                    }
-                }
-            });
-        });
-        
-        // Initialize - wait for data to load from Sheets
+        // Initialize
         async function init() {
             await loadState();
             document.getElementById('currentBalance').value = formatHours(state.currentBalance);
