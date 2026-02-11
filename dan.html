@@ -106,6 +106,29 @@
             border-color: #2c5f2d;
         }
         
+        /* Checkbox styling */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
         button {
             width: 100%;
             padding: 14px;
@@ -174,12 +197,11 @@
             color: #721c24;
         }
         
-        /* FIX 5: Super condensed single-line trip cards */
         .trip-card {
-            background: #e8f5e9; /* Light green for PTO */
-            padding: 10px 12px; /* Even more reduced */
+            background: #e8f5e9;
+            padding: 10px 12px;
             border-radius: 6px;
-            margin-bottom: 8px; /* Tighter spacing */
+            margin-bottom: 8px;
             border-left: 4px solid #2c5f2d;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             display: flex;
@@ -189,11 +211,10 @@
         }
         
         .trip-card.non-pto {
-            background: #f5f5f5; /* Light gray for non-PTO */
+            background: #f5f5f5;
             border-left-color: #6c757d;
         }
         
-        /* FIX 5: Single line main info */
         .trip-main-line {
             flex: 1;
             font-size: 14px;
@@ -205,7 +226,6 @@
             min-width: 300px;
         }
         
-        /* FIX 4: Orange text for hunting */
         .trip-main-line.hunting {
             color: #ff6600;
             font-weight: 600;
@@ -220,13 +240,11 @@
             margin: 0 4px;
         }
         
-        /* Buttons on same line */
         .trip-actions {
             display: flex;
             gap: 6px;
         }
         
-        /* Notes on separate line if present */
         .trip-notes-compact {
             width: 100%;
             margin-top: 6px;
@@ -335,7 +353,6 @@
             color: #2c5f2d;
         }
         
-        /* Form cards */
         .inline-form-card {
             background: white;
             border-radius: 12px;
@@ -345,7 +362,6 @@
             border: 2px solid #2c5f2d;
         }
         
-        /* FIX 2: Edit form injected inline */
         .edit-form-inline {
             background: #fff9e6;
             border: 2px solid #17a2b8;
@@ -400,7 +416,7 @@
                     <button onclick="showProjections()" class="btn-success">📊 View Projections</button>
                 </div>
                 
-                <!-- Plan PTO Modal - above planned days -->
+                <!-- Plan PTO Modal -->
                 <div id="planPTOCard" class="inline-form-card hidden">
                     <h3 style="color: #2c5f2d; margin-bottom: 15px;" id="ptoFormTitle">Plan PTO Days</h3>
                     
@@ -412,6 +428,12 @@
                     <div class="form-group">
                         <label>End Date</label>
                         <input type="date" id="ptoEndDate" onchange="calculateWorkdays()">
+                    </div>
+                    
+                    <!-- FIX: Half day checkbox -->
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="ptoHalfDay" onchange="calculateWorkdays()">
+                        <label for="ptoHalfDay">Half day only (divide PTO by 2)</label>
                     </div>
                     
                     <div id="workdayCalculation" class="hidden"></div>
@@ -434,14 +456,14 @@
                     </div>
                 </div>
                 
-                <!-- Plan Non-PTO Modal - above planned days -->
+                <!-- Plan Non-PTO Modal - FIX: Added syncEndDateMonthNonPTO -->
                 <div id="planNonPTOCard" class="inline-form-card hidden">
                     <h3 style="color: #6c757d; margin-bottom: 15px;" id="nonPtoFormTitle">Plan Non-PTO Days</h3>
                     <p style="color: #666; margin-bottom: 15px; font-size: 13px;">Track what you're doing on your regular days off (Thu/Fri) - doesn't impact PTO balance</p>
                     
                     <div class="form-group">
                         <label>Start Date</label>
-                        <input type="date" id="nonPtoStartDate">
+                        <input type="date" id="nonPtoStartDate" onchange="syncEndDateMonthNonPTO()">
                     </div>
                     
                     <div class="form-group">
@@ -516,11 +538,10 @@
         // Work schedule - Dan works Sat/Sun/Mon
         const WORK_DAYS = [0, 1, 6];
         
-        // FIX 4: Emoji mapping based on keywords
+        // Get emoji for purpose
         function getEmojiForPurpose(purpose) {
             const lower = purpose.toLowerCase();
             
-            // Check for specific keywords
             if (lower.includes('elk')) return '🦌';
             if (lower.includes('deer')) return '🦌';
             if (lower.includes('bear')) return '🐻';
@@ -532,22 +553,29 @@
             if (lower.includes('biking') || lower.includes('bike') || lower.includes('cycling')) return '🚴‍♂️';
             if (lower.includes('cruise')) return '🚢';
             
-            // Default vacation emoji
             return '🏖️';
         }
         
-        // FIX 4: Check if purpose is hunting-related
+        // Check if hunting
         function isHunting(purpose) {
             const lower = purpose.toLowerCase();
             return lower.includes('hunt') || lower.includes('elk') || 
                    lower.includes('deer') || lower.includes('bear') || lower.includes('turkey');
         }
         
-        // Sync end date calendar to start date month
+        // Sync end date calendar to start date month (PTO)
         function syncEndDateMonth() {
             const startDate = document.getElementById('ptoStartDate').value;
             if (startDate) {
                 document.getElementById('ptoEndDate').value = startDate;
+            }
+        }
+        
+        // FIX: Sync end date calendar to start date month (Non-PTO)
+        function syncEndDateMonthNonPTO() {
+            const startDate = document.getElementById('nonPtoStartDate').value;
+            if (startDate) {
+                document.getElementById('nonPtoEndDate').value = startDate;
             }
         }
         
@@ -736,10 +764,11 @@
             return count;
         }
         
-        // Calculate workdays and display
+        // FIX: Calculate workdays with half day support
         function calculateWorkdays() {
             const startDate = document.getElementById('ptoStartDate').value;
             const endDate = document.getElementById('ptoEndDate').value;
+            const halfDay = document.getElementById('ptoHalfDay').checked;
             
             if (!startDate || !endDate) {
                 document.getElementById('workdayCalculation').classList.add('hidden');
@@ -753,7 +782,13 @@
                 return;
             }
             
-            const workdays = countWorkdaysInRange(startDate, endDate);
+            let workdays = countWorkdaysInRange(startDate, endDate);
+            
+            // FIX: Apply half day division
+            if (halfDay) {
+                workdays = workdays / 2;
+            }
+            
             calculatedWorkdays = workdays;
             
             const start = new Date(startDate + 'T00:00:00');
@@ -762,7 +797,10 @@
             
             let html = '<div class="date-calc-display">';
             html += `<strong>Date Range:</strong> ${totalDays} total ${totalDays === 1 ? 'day' : 'days'}<br>`;
-            html += `<strong>Your Workdays (Sat/Sun/Mon):</strong> ${workdays} ${workdays === 1 ? 'day' : 'days'}<br>`;
+            html += `<strong>Your Workdays (Sat/Sun/Mon):</strong> ${countWorkdaysInRange(startDate, endDate)} ${countWorkdaysInRange(startDate, endDate) === 1 ? 'day' : 'days'}<br>`;
+            if (halfDay) {
+                html += `<strong>Half day applied:</strong> ÷ 2<br>`;
+            }
             html += `<strong>PTO to be deducted:</strong> ${formatDays(workdays)}`;
             html += '</div>';
             
@@ -842,6 +880,7 @@
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
             document.getElementById('workdayCalculation').classList.add('hidden');
+            document.getElementById('ptoHalfDay').checked = false;
             calculatedWorkdays = 0;
             
             const today = new Date().toISOString().split('T')[0];
@@ -859,21 +898,19 @@
             document.getElementById('ptoEndDate').value = '';
             document.getElementById('ptoPurpose').value = '';
             document.getElementById('ptoNotes').value = '';
+            document.getElementById('ptoHalfDay').checked = false;
             document.getElementById('workdayCalculation').classList.add('hidden');
             calculatedWorkdays = 0;
         }
         
-        // FIX 2: Edit day - inject form right above the trip
+        // Edit day - inject form right above the trip
         function editDay(idx) {
             const day = state.plannedDays[idx];
             
             if (day.type === 'pto') {
-                // Restore balance before editing
                 state.currentBalance += day.daysUsed;
-                
                 editingIndex = idx;
                 
-                // Build inline edit form HTML
                 let formHtml = `
                     <div class="edit-form-inline" id="inlineEditForm">
                         <h3 style="color: #17a2b8; margin-bottom: 15px;">✏️ Edit PTO Days</h3>
@@ -886,6 +923,11 @@
                         <div class="form-group">
                             <label>End Date</label>
                             <input type="date" id="ptoEndDateEdit" value="${day.endDate}" onchange="calculateWorkdaysEdit()">
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="ptoHalfDayEdit" onchange="calculateWorkdaysEdit()">
+                            <label for="ptoHalfDayEdit">Half day only (divide PTO by 2)</label>
                         </div>
                         
                         <div id="workdayCalculationEdit" class="hidden"></div>
@@ -907,13 +949,9 @@
                     </div>
                 `;
                 
-                // Inject form right above this trip card
                 displayPlannedDays(idx, formHtml);
-                
-                // Scroll to form
                 document.getElementById('inlineEditForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
-                // Edit non-PTO - same approach
                 editingIndex = idx;
                 
                 let formHtml = `
@@ -964,6 +1002,7 @@
         function calculateWorkdaysEdit() {
             const startDate = document.getElementById('ptoStartDateEdit').value;
             const endDate = document.getElementById('ptoEndDateEdit').value;
+            const halfDay = document.getElementById('ptoHalfDayEdit').checked;
             
             if (!startDate || !endDate) {
                 document.getElementById('workdayCalculationEdit').classList.add('hidden');
@@ -977,7 +1016,12 @@
                 return;
             }
             
-            const workdays = countWorkdaysInRange(startDate, endDate);
+            let workdays = countWorkdaysInRange(startDate, endDate);
+            
+            if (halfDay) {
+                workdays = workdays / 2;
+            }
+            
             calculatedWorkdays = workdays;
             
             const start = new Date(startDate + 'T00:00:00');
@@ -986,7 +1030,10 @@
             
             let html = '<div class="date-calc-display">';
             html += `<strong>Date Range:</strong> ${totalDays} total ${totalDays === 1 ? 'day' : 'days'}<br>`;
-            html += `<strong>Your Workdays (Sat/Sun/Mon):</strong> ${workdays} ${workdays === 1 ? 'day' : 'days'}<br>`;
+            html += `<strong>Your Workdays (Sat/Sun/Mon):</strong> ${countWorkdaysInRange(startDate, endDate)} ${countWorkdaysInRange(startDate, endDate) === 1 ? 'day' : 'days'}<br>`;
+            if (halfDay) {
+                html += `<strong>Half day applied:</strong> ÷ 2<br>`;
+            }
             html += `<strong>PTO to be deducted:</strong> ${formatDays(workdays)}`;
             html += '</div>';
             
@@ -996,7 +1043,6 @@
         
         function cancelEdit() {
             if (editingIndex >= 0 && state.plannedDays[editingIndex].type === 'pto') {
-                // Restore the balance we added when we started editing
                 const day = state.plannedDays[editingIndex];
                 state.currentBalance -= day.daysUsed;
             }
@@ -1020,7 +1066,7 @@
                 return;
             }
             
-            const workdays = countWorkdaysInRange(startDate, endDate);
+            const workdays = calculatedWorkdays;
             
             if (workdays === 0) {
                 alert('This date range contains no workdays (Sat/Sun/Mon). No PTO will be deducted.');
@@ -1125,7 +1171,7 @@
                 return;
             }
             
-            const workdays = countWorkdaysInRange(startDate, endDate);
+            const workdays = calculatedWorkdays;
             
             if (workdays === 0) {
                 alert('This date range contains no workdays (Sat/Sun/Mon). No PTO will be deducted.');
@@ -1238,7 +1284,7 @@
             alert(`✅ Days planned (no PTO impact)`);
         }
         
-        // FIX 2, 4, 5: Display planned days with inline edit, emojis, hunting orange text, single-line format
+        // Display planned days with inline edit, emojis, hunting orange text, single-line format
         function displayPlannedDays(editIdx = -1, editFormHtml = '') {
             const container = document.getElementById('mainDaysList');
             
@@ -1249,7 +1295,6 @@
             
             let html = '';
             state.plannedDays.forEach((day, idx) => {
-                // FIX 2: Inject edit form above this specific trip
                 if (editIdx === idx && editFormHtml) {
                     html += editFormHtml;
                 }
@@ -1258,7 +1303,6 @@
                 const endDate = new Date(day.endDate + 'T00:00:00');
                 const isSingleDay = day.startDate === day.endDate;
                 
-                // FIX 5: Compact date format
                 let dateStr;
                 if (isSingleDay) {
                     dateStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -1271,11 +1315,9 @@
                 const isPTO = day.type === 'pto';
                 const cardClass = isPTO ? '' : 'non-pto';
                 
-                // FIX 4: Get emoji and check if hunting
                 const emoji = getEmojiForPurpose(day.purpose);
                 const huntingClass = isHunting(day.purpose) ? 'hunting' : '';
                 
-                // FIX 5: Single line format
                 let mainLine = `<span class="trip-emoji">${emoji}</span> ${day.purpose}`;
                 mainLine += ` <span class="trip-divider">•</span> ${dateStr}`;
                 
@@ -1338,7 +1380,6 @@
             html += '<div class="holiday-list">';
             
             for (let year = currentYear; year <= currentYear + 2; year++) {
-                // Thanksgiving - 4th Thursday of November
                 const nov1 = new Date(year, 10, 1);
                 let thursdayCount = 0;
                 let thanksgiving = new Date(nov1);
@@ -1362,7 +1403,6 @@
                     </div>
                 `;
                 
-                // Christmas - December 25
                 const christmas = new Date(year, 11, 25);
                 const christmasStr = christmas.toISOString().split('T')[0];
                 const christmasIsWorkday = isWorkDay(christmasStr);
