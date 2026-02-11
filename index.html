@@ -476,6 +476,7 @@
         
         let accessToken = null;
         let editingIndex = -1;
+        let originalTrip = null; // FIX: Store original trip for cancel
         
         // Get emoji for trip destination
         function getEmojiForDestination(destination) {
@@ -489,7 +490,7 @@
             if (lower.includes('disney') || lower.includes('theme park')) return '🎢';
             if (lower.includes('mountain') || lower.includes('ski')) return '⛰️';
             
-            return '✈️'; // Generic vacation
+            return '✈️';
         }
         
         // Sync end date to start date
@@ -872,7 +873,7 @@
             }
         }
         
-        // Modify trip
+        // Modify trip (from validation screen)
         function modifyTrip(idx) {
             const trip = state.plannedTrips[idx];
             
@@ -960,10 +961,11 @@
             container.innerHTML = html;
         }
         
-        // Edit trip inline
+        // FIX: Edit trip inline - save original first
         function editMainTrip(idx) {
             const trip = state.plannedTrips[idx];
             editingIndex = idx;
+            originalTrip = JSON.parse(JSON.stringify(trip)); // Deep copy
             
             let formHtml = `
                 <div class="edit-form-inline" id="inlineEditForm">
@@ -1021,8 +1023,13 @@
             else group.classList.add('hidden');
         }
         
+        // FIX: Cancel edit - restore original trip
         function cancelEdit() {
+            if (originalTrip !== null) {
+                state.plannedTrips[editingIndex] = originalTrip;
+            }
             editingIndex = -1;
+            originalTrip = null;
             displayMainTrips();
         }
         
@@ -1075,6 +1082,7 @@
             
             saveState();
             editingIndex = -1;
+            originalTrip = null;
             displayMainTrips();
             
             alert('✅ Trip updated');
