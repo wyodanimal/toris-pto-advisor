@@ -476,12 +476,28 @@
         
         let accessToken = null;
         let editingIndex = -1;
-        let originalTrip = null; // FIX: Store original trip for cancel
+        let originalTrip = null;
+
+        // =====================================================
+        // FIX: Parse date strings as LOCAL time, not UTC.
+        // "2026-06-23" parsed with new Date() = UTC midnight,
+        // which in Mountain Time (UTC-6/7) displays as June 22.
+        // This helper adds T00:00:00 to force local interpretation.
+        // =====================================================
+        function parseLocalDate(dateStr) {
+            if (!dateStr) return new Date();
+            // Append local midnight time so JS doesn't shift to UTC
+            return new Date(dateStr + 'T00:00:00');
+        }
+
+        // Format a stored date string (YYYY-MM-DD) for display
+        function formatDateForDisplay(dateStr, options) {
+            return parseLocalDate(dateStr).toLocaleDateString('en-US', options);
+        }
         
         // Get emoji for trip destination
         function getEmojiForDestination(destination) {
             const lower = destination.toLowerCase();
-            
             if (lower.includes('camp')) return '⛺';
             if (lower.includes('cruise')) return '🚢';
             if (lower.includes('family') || lower.includes('visit')) return '👨‍👩‍👧‍👦';
@@ -489,7 +505,6 @@
             if (lower.includes('beach') || lower.includes('hawaii') || lower.includes('mexico')) return '🏖️';
             if (lower.includes('disney') || lower.includes('theme park')) return '🎢';
             if (lower.includes('mountain') || lower.includes('ski')) return '⛰️';
-            
             return '✈️';
         }
         
@@ -724,11 +739,11 @@
             return holidays;
         }
         
-        // Count weekdays
+        // Count weekdays - FIX: use parseLocalDate to avoid timezone shift
         function countWeekdays(startDate, endDate) {
             let count = 0;
-            let current = new Date(startDate);
-            const end = new Date(endDate);
+            let current = parseLocalDate(startDate);
+            const end = parseLocalDate(endDate);
             
             while (current <= end) {
                 const day = current.getDay();
@@ -751,10 +766,10 @@
             return 10 + (cyclesPassed + 1) * 2;
         }
         
-        // Check holiday proximity
+        // Check holiday proximity - FIX: use parseLocalDate
         function checkHolidayProximity(startDate, endDate) {
-            const start = new Date(startDate);
-            const end = new Date(endDate);
+            const start = parseLocalDate(startDate);
+            const end = parseLocalDate(endDate);
             const warnings = [];
             
             const year = start.getFullYear();
@@ -790,7 +805,7 @@
         // Get projected balance
         function getProjectedBalance(targetDate) {
             const today = new Date();
-            const target = new Date(targetDate);
+            const target = parseLocalDate(targetDate);
             let balance = state.currentBalance;
             
             let current = new Date(today.getFullYear(), today.getMonth() + 1, 1);
@@ -808,7 +823,7 @@
         // Get PTO between dates
         function getPTOBetween(startDate, endDate) {
             return state.plannedTrips.filter(trip => {
-                const tripStart = new Date(trip.startDate);
+                const tripStart = parseLocalDate(trip.startDate);
                 return tripStart >= startDate && tripStart <= endDate;
             });
         }
@@ -838,7 +853,7 @@
             displayPlannedTrips();
         }
         
-        // Display planned trips for validation
+        // Display planned trips for validation - FIX: use formatDateForDisplay
         function displayPlannedTrips() {
             const section = document.getElementById('plannedTripsSection');
             
@@ -847,10 +862,7 @@
             } else {
                 let html = '';
                 state.plannedTrips.forEach((trip, idx) => {
-                    const startDate = new Date(trip.startDate);
-                    const endDate = new Date(trip.endDate);
-                    const dateRange = `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-                    
+                    const dateRange = `${formatDateForDisplay(trip.startDate, { month: 'short', day: 'numeric' })} - ${formatDateForDisplay(trip.endDate, { month: 'short', day: 'numeric', year: 'numeric' })}`;
                     const emoji = getEmojiForDestination(trip.destination);
                     
                     html += `
@@ -915,7 +927,7 @@
             displayMainTrips();
         }
         
-        // Display main trips - condensed with inline edit
+        // Display main trips - FIX: use formatDateForDisplay
         function displayMainTrips(editIdx = -1, editFormHtml = '') {
             const container = document.getElementById('mainTripsList');
             
@@ -926,16 +938,14 @@
             
             let html = '';
             state.plannedTrips.forEach((trip, idx) => {
-                // Inject edit form above this trip
                 if (editIdx === idx && editFormHtml) {
                     html += editFormHtml;
                 }
                 
-                const startDate = new Date(trip.startDate);
-                const endDate = new Date(trip.endDate);
-                const dateStr = trip.startDate === trip.endDate 
-                    ? startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                    : `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}-${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                // FIX: Use formatDateForDisplay instead of new Date(trip.startDate)
+                const dateStr = trip.startDate === trip.endDate
+                    ? formatDateForDisplay(trip.startDate, { month: 'short', day: 'numeric' })
+                    : `${formatDateForDisplay(trip.startDate, { month: 'short', day: 'numeric' })}-${formatDateForDisplay(trip.endDate, { month: 'short', day: 'numeric' })}`;
                 
                 const emoji = getEmojiForDestination(trip.destination);
                 const isAdmin = trip.type === 'admin';
@@ -961,11 +971,11 @@
             container.innerHTML = html;
         }
         
-        // FIX: Edit trip inline - save original first
+        // Edit trip inline
         function editMainTrip(idx) {
             const trip = state.plannedTrips[idx];
             editingIndex = idx;
-            originalTrip = JSON.parse(JSON.stringify(trip)); // Deep copy
+            originalTrip = JSON.parse(JSON.stringify(trip));
             
             let formHtml = `
                 <div class="edit-form-inline" id="inlineEditForm">
@@ -1023,7 +1033,7 @@
             else group.classList.add('hidden');
         }
         
-        // FIX: Cancel edit - restore original trip
+        // Cancel edit - restore original trip
         function cancelEdit() {
             if (originalTrip !== null) {
                 state.plannedTrips[editingIndex] = originalTrip;
@@ -1052,7 +1062,7 @@
             
             const projectedBalance = getProjectedBalance(startDate);
             const today = new Date();
-            const tripStart = new Date(startDate);
+            const tripStart = parseLocalDate(startDate);
             const priorTrips = getPTOBetween(today, tripStart);
             let priorPTOUsed = 0;
             priorTrips.forEach(trip => {
@@ -1078,7 +1088,7 @@
             };
             
             state.plannedTrips[editingIndex] = trip;
-            state.plannedTrips.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+            state.plannedTrips.sort((a, b) => parseLocalDate(a.startDate) - parseLocalDate(b.startDate));
             
             saveState();
             editingIndex = -1;
@@ -1181,7 +1191,7 @@
             const projectedBalance = getProjectedBalance(startDate);
             
             const today = new Date();
-            const tripStart = new Date(startDate);
+            const tripStart = parseLocalDate(startDate);
             const priorTrips = getPTOBetween(today, tripStart);
             let priorPTOUsed = 0;
             priorTrips.forEach(trip => {
@@ -1212,7 +1222,7 @@
             };
             
             state.plannedTrips.push(trip);
-            state.plannedTrips.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+            state.plannedTrips.sort((a, b) => parseLocalDate(a.startDate) - parseLocalDate(b.startDate));
             
             saveState();
             cancelPlanPTO();
@@ -1261,7 +1271,7 @@
             document.getElementById('holidaysCard').classList.add('hidden');
         }
         
-        // Show projections - cleaned up table format
+        // Show projections
         function showProjections() {
             let html = '<div class="projection">';
             html += '<h4>Current Balance</h4>';
@@ -1281,7 +1291,7 @@
                 const monthStart = new Date(projDate.getFullYear(), projDate.getMonth(), 1);
                 const monthEnd = new Date(projDate.getFullYear(), projDate.getMonth() + 1, 0);
                 const tripsThisMonth = state.plannedTrips.filter(trip => {
-                    const tripStart = new Date(trip.startDate);
+                    const tripStart = parseLocalDate(trip.startDate);
                     return tripStart >= monthStart && tripStart <= monthEnd && (trip.type === 'pto' || trip.type === 'split');
                 });
                 
