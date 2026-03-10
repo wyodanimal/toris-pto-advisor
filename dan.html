@@ -342,6 +342,155 @@
         .day-note { font-size: 12px; color: var(--text-dim); margin-top: 4px; font-style: italic; }
         .day-actions { display: flex; gap: 5px; flex-shrink: 0; padding-top: 1px; }
 
+        /* ── EXPANDED DETAIL PANEL ── */
+        .day-row { cursor: pointer; }
+        .day-row.expanded { border-color: var(--accent); background: var(--surface2); }
+        .day-row.expanded.holiday-flag { border-color: var(--warn); }
+        .day-chevron {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            flex-shrink: 0;
+            align-self: center;
+            padding: 0 2px;
+            transition: transform 0.2s;
+            user-select: none;
+        }
+        .day-row.expanded .day-chevron { transform: rotate(90deg); color: var(--accent); }
+
+        .day-detail {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            width: 100%;
+        }
+        .day-row.expanded .day-detail { display: block; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .detail-field label {
+            font-family: var(--mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .detail-field input,
+        .detail-field textarea {
+            width: 100%;
+            padding: 8px 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-bright);
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+        .detail-field input:focus,
+        .detail-field textarea:focus { outline: none; border-color: var(--accent); }
+        .detail-field textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
+        .detail-field.full { grid-column: 1 / -1; }
+
+        .detail-stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            margin-right: 8px;
+        }
+        .detail-stat strong { color: var(--accent); font-size: 13px; }
+
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text);
+        }
+        .checklist-item input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
+        .checklist-item.checked span { text-decoration: line-through; color: var(--text-dim); }
+        .checklist-add {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .checklist-add input { flex: 1; padding: 6px 10px; font-size: 12px; }
+        .checklist-add button { padding: 6px 12px; font-size: 11px; white-space: nowrap; }
+
+        /* ── LODGING BOOKINGS ── */
+        .booking-list { margin-bottom: 8px; }
+        .booking-card {
+            background: var(--surface3);
+            border: 1px solid var(--border2);
+            border-radius: 5px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 8px;
+            align-items: end;
+        }
+        .booking-card .bf { display: flex; flex-direction: column; gap: 3px; }
+        .booking-card .bf label {
+            font-family: var(--mono);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin: 0;
+        }
+        .booking-card .bf input {
+            padding: 6px 8px;
+            font-size: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-bright);
+            font-family: var(--mono);
+        }
+        .booking-card .bf input:focus { outline: none; border-color: var(--accent); }
+        .booking-card .bf-dates {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        .booking-remove {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 6px 9px;
+            font-size: 12px;
+            transition: all 0.15s;
+            align-self: end;
+        }
+        .booking-remove:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+
         .empty-state {
             text-align: center;
             padding: 44px 20px;
@@ -799,10 +948,12 @@ let state = {
     settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS))
 };
 
-let accessToken  = null;
-let editingIdx   = -1;
-let calcedDays   = 0;
-let pendingHolidayItems = []; // items awaiting user confirmation in the prompt
+let accessToken     = null;
+let editingIdx      = -1;
+let editingBackup   = null;
+let expandedIdx     = -1;
+let calcedDays      = 0;
+let pendingHolidayItems = [];
 
 // ═══════════════════════════════════════
 // COMPUTED BALANCE — single source of truth
@@ -1049,7 +1200,8 @@ async function loadState() {
             state.plannedDays = tData.values.filter(r=>r[0]).map(r=>({
                 type:r[0], startDate:r[1], endDate:r[2]||r[1],
                 purpose:r[3], notes:r[4]||'', daysUsed:parseFloat(r[5])||0,
-                autoHoliday:r[6]==='true', toriComing:r[7]==='true'
+                autoHoliday:r[6]==='true', toriComing:r[7]==='true',
+                details: (() => { try { return r[8] ? JSON.parse(r[8]) : {}; } catch(e) { return {}; } })()
             }));
         }
         setStatus('Synced');
@@ -1077,7 +1229,8 @@ async function saveState() {
             const rows = state.plannedDays.map(d=>[
                 d.type, d.startDate, d.endDate||d.startDate,
                 d.purpose, d.notes||'', d.daysUsed,
-                d.autoHoliday?'true':'false', d.toriComing?'true':'false'
+                d.autoHoliday?'true':'false', d.toriComing?'true':'false',
+                JSON.stringify(d.details||{})
             ]);
             await fetch(
                 `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2?valueInputOption=RAW`,
@@ -1104,6 +1257,10 @@ function setStatus(msg) {
 function fullRefresh() {
     updateBalanceStrip();
     renderDaysList();
+    // Restore expanded card if one was open
+    if (expandedIdx >= 0) {
+        document.getElementById(`dayrow-${expandedIdx}`)?.classList.add('expanded');
+    }
 }
 
 function updateBalanceStrip() {
@@ -1146,6 +1303,11 @@ function renderDaysList() {
         const dateStr = single ? fmtDate(d.startDate)
                       : `${fmtDate(d.startDate)} – ${fmtDate(d.endDate)}`;
 
+        // Calendar days for trip length
+        const calDays = Math.floor(
+            (new Date(d.endDate+'T00:00:00') - new Date(d.startDate+'T00:00:00')) / 86400000
+        ) + 1;
+
         const rowCls = ['day-row',
             isPTO ? '' : 'non-pto',
             isAuto ? 'holiday-flag' : ''
@@ -1161,22 +1323,211 @@ function renderDaysList() {
             meta += `<span class="m-ok">No PTO</span>`;
         }
 
-        const editBtn = isAuto ? '' : `<button class="btn btn-sm btn-ghost" onclick="editDay(${idx})">Edit</button>`;
+        const det = d.details || {};
+        const gear = det.gear || [];
 
-        html += `<div class="${rowCls}">
+        // Gear checklist items
+        let gearHtml = gear.map((item, gi) => `
+            <div class="checklist-item${item.done?' checked':''}" id="gear-${idx}-${gi}">
+                <input type="checkbox" ${item.done?'checked':''} onclick="toggleGear(event,${idx},${gi})">
+                <span>${item.text}</span>
+                <button class="btn btn-sm btn-danger" style="padding:2px 7px;font-size:10px;margin-left:auto" onclick="removeGear(event,${idx},${gi})">✕</button>
+            </div>`).join('');
+
+        const editBtn = isAuto ? '' : `<button class="btn btn-sm btn-ghost" onclick="editDayBtn(event,${idx})">Edit</button>`;
+
+        html += `
+        <div class="${rowCls}" id="dayrow-${idx}" onclick="toggleExpand(${idx})">
             ${getTypeTag(d.type, isAuto)}
             <div class="day-body">
                 <div class="${nameCls}">${d.purpose}</div>
                 <div class="day-meta">${meta}</div>
                 ${d.notes ? `<div class="day-note">${d.notes}</div>` : ''}
+
+                <!-- EXPANDED DETAIL PANEL -->
+                <div class="day-detail" onclick="event.stopPropagation()">
+
+                    <div class="detail-stat">
+                        <span>Trip length</span>
+                        <strong>${calDays} ${calDays===1?'day':'days'}</strong>
+                    </div>
+                    ${isPTO ? `<div class="detail-stat"><span>PTO used</span><strong>${fmtDays(d.daysUsed)}</strong></div>` : ''}
+
+                    <div class="detail-grid">
+                        <div class="detail-field full">
+                            <label>Lodging / Bookings</label>
+                            <div class="booking-list" id="bookings-${idx}">
+                                ${renderBookingsHTML(det.bookings||[], idx)}
+                            </div>
+                            <button class="btn btn-sm" onclick="addBooking(event,${idx})">+ Add Booking</button>
+                        </div>
+                        <div class="detail-field full">
+                            <label>Travel Notes</label>
+                            <input type="text" placeholder="Flight info, drive time, route…"
+                                value="${(det.travel||'').replace(/"/g,'&quot;')}"
+                                onchange="saveDetail(${idx},'travel',this.value)">
+                        </div>
+                        <div class="detail-field full">
+                            <label>Trip Notes</label>
+                            <textarea placeholder="Plans, reminders, links…"
+                                onchange="saveDetail(${idx},'tripnotes',this.value)">${det.tripnotes||''}</textarea>
+                        </div>
+                        <div class="detail-field full">
+                            <label>Gear Checklist</label>
+                            <div id="gearlist-${idx}">${gearHtml}</div>
+                            <div class="checklist-add">
+                                <input type="text" id="gearinput-${idx}" placeholder="Add gear item…"
+                                    onkeydown="if(event.key==='Enter'){addGear(${idx});event.preventDefault();}">
+                                <button class="btn btn-sm" onclick="addGear(${idx})">+ Add</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-actions">
+                        ${editBtn}
+                        <button class="btn btn-sm btn-danger" onclick="deleteDayBtn(event,${idx})">Delete</button>
+                    </div>
+                </div>
             </div>
-            <div class="day-actions">
-                ${editBtn}
-                <button class="btn btn-sm btn-danger" onclick="deleteDay(${idx})">Del</button>
-            </div>
+            <span class="day-chevron">›</span>
         </div>`;
     });
     el.innerHTML = html;
+}
+
+// Track which card is expanded
+let expandedIdx = -1;
+
+function toggleExpand(idx) {
+    const rows = document.querySelectorAll('.day-row');
+    if (expandedIdx === idx) {
+        // Collapse
+        rows.forEach(r => r.classList.remove('expanded'));
+        expandedIdx = -1;
+    } else {
+        rows.forEach(r => r.classList.remove('expanded'));
+        document.getElementById(`dayrow-${idx}`)?.classList.add('expanded');
+        expandedIdx = idx;
+    }
+}
+
+function saveDetail(idx, field, value) {
+    if (!state.plannedDays[idx].details) state.plannedDays[idx].details = {};
+    state.plannedDays[idx].details[field] = value;
+    saveState();
+}
+
+function renderBookingsHTML(bookings, idx) {
+    if (!bookings.length) return '';
+    return bookings.map((b, bi) => `
+        <div class="booking-card" id="booking-${idx}-${bi}">
+            <div class="bf">
+                <label>Hotel / Property</label>
+                <input type="text" value="${(b.name||'').replace(/"/g,'&quot;')}" placeholder="Hotel name"
+                    onchange="saveBookingField(${idx},${bi},'name',this.value)">
+            </div>
+            <div class="bf">
+                <label>Phone</label>
+                <input type="text" value="${(b.phone||'').replace(/"/g,'&quot;')}" placeholder="(555) 555-5555"
+                    onchange="saveBookingField(${idx},${bi},'phone',this.value)">
+            </div>
+            <div class="bf">
+                <label>Check-in / Check-out</label>
+                <div class="bf-dates">
+                    <input type="date" value="${b.checkin||''}"
+                        onchange="saveBookingField(${idx},${bi},'checkin',this.value)">
+                    <input type="date" value="${b.checkout||''}"
+                        onchange="saveBookingField(${idx},${bi},'checkout',this.value)">
+                </div>
+            </div>
+            <div class="bf">
+                <label>Confirmation #</label>
+                <input type="text" value="${(b.conf||'').replace(/"/g,'&quot;')}" placeholder="ABC123"
+                    onchange="saveBookingField(${idx},${bi},'conf',this.value)">
+            </div>
+            <button class="booking-remove" onclick="removeBooking(event,${idx},${bi})" title="Remove booking">✕</button>
+        </div>`).join('');
+}
+
+function addBooking(event, idx) {
+    event.stopPropagation();
+    if (!state.plannedDays[idx].details) state.plannedDays[idx].details = {};
+    if (!state.plannedDays[idx].details.bookings) state.plannedDays[idx].details.bookings = [];
+    state.plannedDays[idx].details.bookings.push({ name:'', phone:'', checkin:'', checkout:'', conf:'' });
+    saveState();
+    rerenderBookings(idx);
+}
+
+function removeBooking(event, idx, bi) {
+    event.stopPropagation();
+    state.plannedDays[idx].details.bookings.splice(bi, 1);
+    saveState();
+    rerenderBookings(idx);
+}
+
+function saveBookingField(idx, bi, field, value) {
+    if (!state.plannedDays[idx].details?.bookings?.[bi]) return;
+    state.plannedDays[idx].details.bookings[bi][field] = value;
+    saveState();
+}
+
+function rerenderBookings(idx) {
+    const container = document.getElementById(`bookings-${idx}`);
+    if (!container) return;
+    const bookings = state.plannedDays[idx]?.details?.bookings || [];
+    container.innerHTML = renderBookingsHTML(bookings, idx);
+}
+
+function addGear(idx) {
+    const input = document.getElementById(`gearinput-${idx}`);
+    const text = input.value.trim();
+    if (!text) return;
+    if (!state.plannedDays[idx].details) state.plannedDays[idx].details = {};
+    if (!state.plannedDays[idx].details.gear) state.plannedDays[idx].details.gear = [];
+    state.plannedDays[idx].details.gear.push({ text, done: false });
+    input.value = '';
+    saveState();
+    // Re-render just the gear list without collapsing
+    rerenderGear(idx);
+}
+
+function removeGear(event, idx, gi) {
+    event.stopPropagation();
+    state.plannedDays[idx].details.gear.splice(gi, 1);
+    saveState();
+    rerenderGear(idx);
+}
+
+function toggleGear(event, idx, gi) {
+    event.stopPropagation();
+    state.plannedDays[idx].details.gear[gi].done = event.target.checked;
+    const item = document.getElementById(`gear-${idx}-${gi}`);
+    if (item) item.classList.toggle('checked', event.target.checked);
+    saveState();
+}
+
+function rerenderGear(idx) {
+    const gear = state.plannedDays[idx]?.details?.gear || [];
+    const container = document.getElementById(`gearlist-${idx}`);
+    if (!container) return;
+    container.innerHTML = gear.map((item, gi) => `
+        <div class="checklist-item${item.done?' checked':''}" id="gear-${idx}-${gi}">
+            <input type="checkbox" ${item.done?'checked':''} onclick="toggleGear(event,${idx},${gi})">
+            <span>${item.text}</span>
+            <button class="btn btn-sm btn-danger" style="padding:2px 7px;font-size:10px;margin-left:auto" onclick="removeGear(event,${idx},${gi})">✕</button>
+        </div>`).join('');
+}
+
+function editDayBtn(event, idx) {
+    event.stopPropagation();
+    expandedIdx = -1;
+    editDay(idx);
+}
+
+function deleteDayBtn(event, idx) {
+    event.stopPropagation();
+    expandedIdx = -1;
+    deleteDay(idx);
 }
 
 // ═══════════════════════════════════════
@@ -1271,7 +1622,15 @@ function openForm(type) {
 
 function closeForm(type) {
     document.getElementById(type==='pto'?'ptoForm':'nonptoForm').classList.add('hidden');
-    if (type==='pto') { editingIdx=-1; calcedDays=0; }
+    // If we were editing, restore the original entry
+    if (editingBackup) {
+        state.plannedDays.splice(editingBackup.idx, 0, editingBackup.entry);
+        state.plannedDays.sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+        editingBackup = null;
+    }
+    editingIdx = -1;
+    calcedDays = 0;
+    fullRefresh();
 }
 
 // ═══════════════════════════════════════
@@ -1322,6 +1681,7 @@ function savePTO() {
     }
 
     state.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
+    editingBackup = null;
     closeForm('pto');
     saveState();
     fullRefresh();
@@ -1349,6 +1709,7 @@ function saveNonPTO() {
     }
 
     state.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
+    editingBackup = null;
     closeForm('nonpto');
     saveState();
     fullRefresh();
@@ -1359,9 +1720,10 @@ function saveNonPTO() {
 // ═══════════════════════════════════════
 function editDay(idx) {
     const day = state.plannedDays[idx];
-    // Remove entry from array so balance calc is clean during edit
+    // Store backup and index so cancel can restore it
+    editingBackup = { entry: JSON.parse(JSON.stringify(day)), idx };
+    // Remove from array so balance calc reflects reality during the edit
     state.plannedDays.splice(idx, 1);
-    editingIdx = -1; // will be a fresh push on save
 
     if (day.type==='pto') {
         document.getElementById('ptoFormTitle').textContent = 'Edit PTO Days';
