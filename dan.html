@@ -608,32 +608,6 @@
         .proj-line.neg  span:last-child { color: var(--danger); }
         .proj-line.ok   span:last-child { color: var(--ok); }
 
-        /* ── SETUP SCREEN ── */
-        .setup-wrap {
-            max-width: 400px;
-            margin: 80px auto;
-        }
-        .setup-card {
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: 8px;
-            padding: 32px;
-        }
-        .setup-title {
-            font-family: var(--mono);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent);
-            margin-bottom: 6px;
-        }
-        .setup-headline {
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--text-bright);
-            margin-bottom: 24px;
-        }
-
         /* ── HOLIDAY PROMPT MODAL ── */
         .prompt-overlay {
             position: fixed;
@@ -711,26 +685,6 @@
 </div>
 
 <div class="app">
-
-    <!-- SETUP -->
-    <div id="setupScreen" class="setup-wrap">
-        <div class="setup-card">
-            <div class="setup-title">Initial Setup</div>
-            <div class="setup-headline">What's your annual PTO allowance?</div>
-            <div class="form-group">
-                <label>Annual Planning Balance (days)</label>
-                <input type="number" id="setupBalance" step="0.5" value="36" placeholder="e.g. 36">
-            </div>
-            <p style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
-                Enter your full annual PTO grant — not your remaining balance. The app tracks usage and computes what's left automatically.<br>
-                Reserve days are set separately in Settings.
-            </p>
-            <div style="display:flex;gap:10px">
-                <button class="btn btn-primary" style="flex:1" onclick="confirmBalance()">Confirm Balance</button>
-                <button class="btn btn-ghost" onclick="toggleSettings()">Settings</button>
-            </div>
-        </div>
-    </div>
 
     <!-- MAIN VIEW -->
     <div id="mainView" class="hidden">
@@ -1531,19 +1485,8 @@ function deleteDayBtn(event, idx) {
 }
 
 // ═══════════════════════════════════════
-// SETUP / BALANCE
+// BALANCE
 // ═══════════════════════════════════════
-function confirmBalance() {
-    const val = parseFloat(document.getElementById('setupBalance').value);
-    if (isNaN(val)) { alert('Enter a valid number.'); return; }
-    state.rawBalance = val;
-    document.getElementById('setupScreen').classList.add('hidden');
-    document.getElementById('mainView').classList.remove('hidden');
-    saveState();
-    checkAndPromptHolidays();
-    fullRefresh();
-}
-
 function editBalance() {
     const cur = currentBalance();
     const input = prompt(
@@ -1951,16 +1894,10 @@ function showProjections() {
 // INIT
 // ═══════════════════════════════════════
 async function init() {
+    document.getElementById('mainView').classList.remove('hidden');
     await loadState();
-    document.getElementById('setupBalance').value = state.rawBalance;
-
-    // If we have saved data, skip setup screen
-    if (state.plannedDays.length > 0 || state.rawBalance !== 36) {
-        document.getElementById('setupScreen').classList.add('hidden');
-        document.getElementById('mainView').classList.remove('hidden');
-        checkAndPromptHolidays();
-        fullRefresh();
-    }
+    checkAndPromptHolidays();
+    fullRefresh();
 }
 
 init();
