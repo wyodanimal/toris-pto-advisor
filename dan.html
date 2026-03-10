@@ -567,14 +567,14 @@
     <div id="setupScreen" class="setup-wrap">
         <div class="setup-card">
             <div class="setup-title">Initial Setup</div>
-            <div class="setup-headline">What's your current planning balance?</div>
+            <div class="setup-headline">What's your annual PTO allowance?</div>
             <div class="form-group">
-                <label>Planning Balance (days)</label>
-                <input type="number" id="setupBalance" step="0.5" value="22" placeholder="e.g. 22 or 18.5">
+                <label>Annual Planning Balance (days)</label>
+                <input type="number" id="setupBalance" step="0.5" value="36" placeholder="e.g. 36">
             </div>
             <p style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
-                Enter the balance you have available to plan with. Reserve days are tracked separately.<br>
-                This can be changed any time.
+                Enter your full annual PTO grant — not your remaining balance. The app tracks usage and computes what's left automatically.<br>
+                Reserve days are set separately in Settings.
             </p>
             <div style="display:flex;gap:10px">
                 <button class="btn btn-primary" style="flex:1" onclick="confirmBalance()">Confirm Balance</button>
@@ -589,9 +589,9 @@
         <!-- Balance Strip -->
         <div class="balance-strip">
             <div class="bal-cell clickable" onclick="editBalance()" title="Click to edit balance">
-                <div class="bal-label">Planning Balance <span class="edit-hint">✎</span></div>
+                <div class="bal-label">Remaining Balance <span class="edit-hint">✎</span></div>
                 <div class="bal-val" id="dispBalance">—</div>
-                <div class="bal-sub" id="dispBalSub">click to edit</div>
+                <div class="bal-sub" id="dispBalSub">of <span id="dispAnnual">—</span> annual</div>
             </div>
             <div class="bal-cell">
                 <div class="bal-label">Emergency Reserve</div>
@@ -794,7 +794,7 @@ const DEFAULT_SETTINGS = {
 };
 
 let state = {
-    rawBalance: 22,       // baseline before any planned PTO
+    rawBalance: 36,       // annual PTO grant (planning allowance, not including reserve)
     plannedDays: [],
     settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS))
 };
@@ -1028,7 +1028,13 @@ async function loadState() {
             {headers:{Authorization:`Bearer ${token}`}}
         );
         const bData = await bRes.json();
-        if (bData.values?.[0]?.[0]) state.rawBalance = parseFloat(bData.values[0][0]);
+        if (bData.values?.[0]?.[0]) {
+            const loaded = parseFloat(bData.values[0][0]);
+            // Migration: old code stored remaining balance (~10), new code stores annual grant (36).
+            // If loaded value looks like a remaining balance (less than annualPTO setting),
+            // we can't auto-fix it — user must confirm via the balance display.
+            state.rawBalance = loaded;
+        }
         if (bData.values?.[1]?.[0]) {
             try { state.settings = Object.assign({},DEFAULT_SETTINGS,JSON.parse(bData.values[1][0])); }
             catch(e){}
@@ -1111,9 +1117,8 @@ function updateBalanceStrip() {
     balEl.textContent = fmtDays(bal);
     balEl.className = 'bal-val' + (bal < 0 ? ' neg' : bal <= 3 ? ' warn' : ' ok');
 
-    document.getElementById('dispBalSub').textContent = bal < 0
-        ? `${fmtDays(Math.abs(bal))} into reserve`
-        : 'click to edit';
+    document.getElementById('dispAnnual').textContent = fmtDays(state.rawBalance);
+    document.getElementById('dispBalSub').querySelector('span').textContent = fmtDays(state.rawBalance);
 
     const resEl = document.getElementById('dispReserve');
     resEl.textContent = fmtDays(resRem);
@@ -1191,14 +1196,16 @@ function confirmBalance() {
 function editBalance() {
     const cur = currentBalance();
     const input = prompt(
-        `Current planning balance: ${fmtDays(cur)}\n\nEnter the new planning balance you want to show:`,
-        cur
+        `Annual planning balance: ${fmtDays(state.rawBalance)}\n` +
+        `Currently used: ${fmtDays(totalPTOUsed())}\n` +
+        `Remaining: ${fmtDays(cur)}\n\n` +
+        `Enter corrected ANNUAL balance (full year grant):`,
+        state.rawBalance
     );
     if (input === null) return;
     const val = parseFloat(input);
     if (isNaN(val)) { alert('Invalid number.'); return; }
-    // Adjust rawBalance so that currentBalance() equals the entered value
-    state.rawBalance = +(val + totalPTOUsed()).toFixed(2);
+    state.rawBalance = +val.toFixed(2);
     saveState();
     fullRefresh();
 }
@@ -1585,8 +1592,8 @@ async function init() {
     await loadState();
     document.getElementById('setupBalance').value = state.rawBalance;
 
-    // If we have data already, skip setup and go straight to main
-    if (state.plannedDays.length > 0 || state.rawBalance !== 22) {
+    // If we have saved data, skip setup screen
+    if (state.plannedDays.length > 0 || state.rawBalance !== 36) {
         document.getElementById('setupScreen').classList.add('hidden');
         document.getElementById('mainView').classList.remove('hidden');
         checkAndPromptHolidays();
