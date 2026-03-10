@@ -4,790 +4,315 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dan's PTO Advisor</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg:       #0d0f14;
-            --surface:  #1c2133;
+            --bg: #0d0f14;
+            --surface: #1c2133;
             --surface2: #222840;
             --surface3: #283050;
-            --border:   #323b55;
-            --border2:  #3d4868;
-            --accent:   #5b9bfa;
-            --accent-dim: #2a4a8a;
-            --accent-glow: rgba(91,155,250,0.12);
-            --danger:   #e05252;
+            --border: #323b55;
+            --border2: #3d4868;
+            --accent: #5b9bfa;
+            --accent-dim: #1e3a6e;
+            --danger: #e05252;
             --danger-dim: rgba(224,82,82,0.15);
-            --warn:     #e8a32a;
+            --warn: #e8a32a;
             --warn-dim: rgba(232,163,42,0.15);
-            --ok:       #4caf82;
-            --ok-dim:   rgba(76,175,130,0.12);
-            --text:     #c8d3e8;
+            --ok: #4caf82;
+            --ok-dim: rgba(76,175,130,0.12);
+            --text: #c8d3e8;
             --text-dim: #8a96b0;
             --text-bright: #eef2fc;
             --mono: 'DM Mono', monospace;
             --sans: 'DM Sans', sans-serif;
         }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:var(--sans); background:var(--bg); color:var(--text); min-height:100vh; font-size:14px; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* HEADER */
+        .header { background:var(--surface); border-bottom:1px solid var(--border); padding:16px 28px; display:flex; align-items:center; gap:16px; }
+        .header-logo { font-family:var(--mono); font-size:13px; font-weight:500; color:var(--accent); }
+        .header-div { width:1px; height:16px; background:var(--border2); }
+        .header-sub { font-family:var(--mono); font-size:11px; color:var(--text-dim); }
+        .header-status { font-family:var(--mono); font-size:11px; color:var(--text-dim); margin-left:auto; }
 
-        body {
-            font-family: var(--sans);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+        /* LAYOUT */
+        .app { max-width:900px; margin:0 auto; padding:24px 20px 60px; }
 
-        /* ── HEADER ── */
-        .header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 18px 32px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .header-logo {
-            font-family: var(--mono);
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--accent);
-            letter-spacing: 0.5px;
-        }
-        .header-divider {
-            width: 1px;
-            height: 16px;
-            background: var(--border2);
-        }
-        .header-sub {
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--text-dim);
-            letter-spacing: 0.5px;
-        }
-        .header-spacer { flex: 1; }
-        .header-status {
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--text-dim);
-        }
+        /* BALANCE STRIP */
+        .bal-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:20px; }
+        .bal-cell { background:var(--surface); padding:18px 22px; }
+        .bal-cell.clickable { cursor:pointer; }
+        .bal-cell.clickable:hover { background:var(--surface2); }
+        .bal-label { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-dim); margin-bottom:8px; }
+        .bal-val { font-family:var(--mono); font-size:28px; font-weight:500; color:var(--text-bright); line-height:1; }
+        .bal-val.ok { color:var(--ok); }
+        .bal-val.warn { color:var(--warn); }
+        .bal-val.neg { color:var(--danger); }
+        .bal-val.accent { color:var(--accent); }
+        .bal-sub { font-family:var(--mono); font-size:10px; color:var(--text-dim); margin-top:5px; }
 
-        /* ── LAYOUT ── */
-        .app { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+        /* TOOLBAR */
+        .toolbar { display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+        .btn { font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:0.5px; padding:9px 16px; border-radius:5px; border:1px solid var(--border2); background:var(--surface); color:var(--text); cursor:pointer; transition:all 0.15s; white-space:nowrap; text-transform:uppercase; }
+        .btn:hover { background:var(--surface2); color:var(--text-bright); border-color:var(--border2); }
+        .btn-primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+        .btn-primary:hover { background:#6baafb; border-color:#6baafb; color:#fff; }
+        .btn-ghost { background:transparent; border-color:transparent; color:var(--text-dim); }
+        .btn-ghost:hover { background:var(--surface2); border-color:var(--border); color:var(--text); }
+        .btn-danger { background:transparent; border-color:transparent; color:var(--danger); }
+        .btn-danger:hover { background:var(--danger-dim); border-color:var(--danger); }
+        .btn-sm { padding:5px 10px; font-size:10px; }
 
-        /* ── BALANCE STRIP ── */
-        .balance-strip {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        .bal-cell {
-            background: var(--surface);
-            padding: 20px 22px;
-            transition: background 0.15s;
-        }
-        .bal-cell.clickable { cursor: pointer; }
-        .bal-cell.clickable:hover { background: var(--surface2); }
-        .bal-label {
-            font-family: var(--mono);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--text-dim);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .bal-label .edit-hint {
-            color: var(--accent-dim);
-            font-size: 10px;
-        }
-        .bal-val {
-            font-family: var(--mono);
-            font-size: 30px;
-            font-weight: 500;
-            color: var(--text-bright);
-            line-height: 1;
-            letter-spacing: -0.5px;
-        }
-        .bal-val.ok    { color: var(--ok); }
-        .bal-val.warn  { color: var(--warn); }
-        .bal-val.neg   { color: var(--danger); }
-        .bal-val.accent { color: var(--accent); }
-        .bal-sub {
-            font-family: var(--mono);
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-top: 6px;
-        }
+        /* FORM PANEL */
+        .form-panel { background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:22px; margin-bottom:18px; }
+        .form-title { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin-bottom:18px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        .form-group { margin-bottom:14px; }
+        label { display:block; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:5px; }
+        input[type=text], input[type=number], input[type=date], select, textarea { width:100%; padding:9px 11px; background:var(--bg); border:1px solid var(--border); border-radius:5px; color:var(--text-bright); font-family:var(--mono); font-size:12px; transition:border-color 0.15s; -webkit-appearance:none; }
+        input:focus, select:focus, textarea:focus { outline:none; border-color:var(--accent); }
+        input[type=date]::-webkit-calendar-picker-indicator { filter:invert(0.4); }
+        textarea { resize:vertical; min-height:56px; line-height:1.5; }
+        .check-row { display:flex; align-items:center; gap:10px; padding:9px 11px; background:var(--bg); border:1px solid var(--border); border-radius:5px; margin-bottom:14px; cursor:pointer; }
+        .check-row input[type=checkbox] { width:15px; height:15px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+        .check-row label { margin:0; font-size:11px; color:var(--text); cursor:pointer; text-transform:none; letter-spacing:0; }
 
-        /* ── TOOLBAR ── */
-        .toolbar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            font-family: var(--mono);
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            padding: 9px 16px;
-            border-radius: 5px;
-            border: 1px solid var(--border2);
-            background: var(--surface);
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.15s;
-            white-space: nowrap;
-            text-transform: uppercase;
-        }
-        .btn:hover { border-color: var(--border2); background: var(--surface2); color: var(--text-bright); }
-        .btn-primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-            font-weight: 600;
-        }
-        .btn-primary:hover { background: #6ba0f9; border-color: #6ba0f9; color: #fff; }
-        .btn-ghost { background: transparent; border-color: transparent; color: var(--text-dim); }
-        .btn-ghost:hover { background: var(--surface2); border-color: var(--border); color: var(--text); }
-        .btn-danger { border-color: transparent; color: var(--danger); background: transparent; }
-        .btn-danger:hover { background: var(--danger-dim); border-color: var(--danger); }
-        .btn-sm { padding: 5px 10px; font-size: 10px; }
-        .btn-ok { background: var(--ok-dim); border-color: var(--ok); color: var(--ok); }
-        .btn-ok:hover { background: rgba(76,175,130,0.2); }
+        /* CALC BOX */
+        .calc-box { background:var(--bg); border:1px solid var(--accent-dim); border-left:3px solid var(--accent); border-radius:5px; padding:10px 13px; font-family:var(--mono); font-size:11px; color:var(--text-dim); margin-bottom:14px; line-height:1.9; }
+        .calc-box strong { color:var(--accent); }
+        .calc-deduct { color:var(--text-bright); font-weight:500; font-size:13px; }
 
-        /* ── FORM PANEL ── */
-        .form-panel {
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-        .form-panel-title {
-            font-family: var(--mono);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent);
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .form-group { margin-bottom: 14px; }
-        .form-group:last-child { margin-bottom: 0; }
-        label {
-            display: block;
-            font-family: var(--mono);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin-bottom: 5px;
-        }
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 9px 12px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            color: var(--text-bright);
-            font-family: var(--mono);
-            font-size: 12px;
-            transition: border-color 0.15s;
-            -webkit-appearance: none;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.4); }
-        textarea { resize: vertical; min-height: 56px; line-height: 1.5; }
+        /* ALERTS */
+        .alert { padding:10px 14px; border-radius:5px; font-family:var(--mono); font-size:11px; line-height:1.7; margin-bottom:14px; }
+        .alert-warn { background:var(--warn-dim); border:1px solid rgba(232,163,42,0.35); color:var(--warn); }
+        .alert-danger { background:var(--danger-dim); border:1px solid rgba(224,82,82,0.35); color:var(--danger); }
+        .alert-ok { background:var(--ok-dim); border:1px solid rgba(76,175,130,0.35); color:var(--ok); }
+        .alert-info { background:var(--surface2); border:1px solid var(--border); color:var(--text-dim); }
 
-        .check-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 12px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            margin-bottom: 14px;
-            cursor: pointer;
-        }
-        .check-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
-        .check-row label { margin: 0; font-size: 11px; color: var(--text); cursor: pointer; text-transform: none; letter-spacing: 0; }
+        /* DAYS LIST */
+        .list-header { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-dim); margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+        .list-header::after { content:''; flex:1; height:1px; background:var(--border); }
 
-        /* ── CALC DISPLAY ── */
-        .calc-box {
-            background: var(--bg);
-            border: 1px solid var(--accent-dim);
-            border-left: 3px solid var(--accent);
-            border-radius: 5px;
-            padding: 11px 14px;
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 14px;
-            line-height: 1.9;
-        }
-        .calc-box strong { color: var(--accent); }
-        .calc-box .deduct { color: var(--text-bright); font-weight: 500; font-size: 13px; }
+        .day-row { display:flex; align-items:flex-start; gap:10px; padding:13px 15px; background:var(--surface); border:1px solid var(--border); border-radius:6px; margin-bottom:5px; cursor:pointer; transition:border-color 0.15s, background 0.15s; user-select:none; }
+        .day-row:hover { border-color:var(--border2); background:var(--surface2); }
+        .day-row.expanded { border-color:var(--accent); background:var(--surface2); }
+        .day-row.non-pto { opacity:0.6; border-style:dashed; }
+        .day-row.non-pto:hover { opacity:0.9; }
+        .day-row.holiday-flag { border-left:3px solid var(--warn); }
+        .day-row.holiday-flag.expanded { border-color:var(--warn); }
 
-        /* ── ALERTS ── */
-        .alert {
-            padding: 11px 14px;
-            border-radius: 5px;
-            font-family: var(--mono);
-            font-size: 11px;
-            line-height: 1.7;
-            margin-bottom: 14px;
-        }
-        .alert-warn  { background: var(--warn-dim);   border: 1px solid rgba(232,163,42,0.35);  color: var(--warn); }
-        .alert-danger{ background: var(--danger-dim); border: 1px solid rgba(224,82,82,0.35);   color: var(--danger); }
-        .alert-ok    { background: var(--ok-dim);     border: 1px solid rgba(76,175,130,0.35);  color: var(--ok); }
-        .alert-info  { background: var(--surface2);   border: 1px solid var(--border);          color: var(--text-dim); }
+        .type-tag { font-family:var(--mono); font-size:9px; font-weight:600; letter-spacing:1px; padding:3px 7px; border-radius:3px; flex-shrink:0; margin-top:2px; }
+        .tag-pto { background:var(--accent-dim); color:var(--accent); border:1px solid var(--accent-dim); }
+        .tag-holiday { background:var(--warn-dim); color:var(--warn); border:1px solid rgba(232,163,42,0.3); }
+        .tag-off { background:var(--surface3); color:var(--text-dim); border:1px solid var(--border); }
 
-        /* ── DAYS LIST ── */
-        .list-header {
-            font-family: var(--mono);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-dim);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .list-header::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
+        .day-body { flex:1; min-width:0; }
+        .day-name { font-size:14px; font-weight:500; color:var(--text-bright); margin-bottom:3px; }
+        .day-name.hunting { color:var(--warn); }
+        .day-meta { display:flex; flex-wrap:wrap; gap:12px; font-family:var(--mono); font-size:13px; color:var(--text-dim); }
+        .m-date { color:var(--text-dim); }
+        .m-pto { color:var(--accent); }
+        .m-off { color:var(--text-dim); }
+        .m-auto { color:var(--warn); font-style:italic; }
+        .day-note { font-size:12px; color:var(--text-dim); margin-top:4px; font-style:italic; }
+        .day-chevron { font-family:var(--mono); font-size:13px; color:var(--text-dim); flex-shrink:0; align-self:center; transition:transform 0.2s; }
+        .day-row.expanded .day-chevron { transform:rotate(90deg); color:var(--accent); }
 
-        .day-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 13px 16px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            margin-bottom: 5px;
-            transition: border-color 0.15s, background 0.15s;
-        }
-        .day-row:hover { border-color: var(--border2); background: var(--surface2); }
-        .day-row.non-pto { opacity: 0.55; border-style: dashed; }
-        .day-row.non-pto:hover { opacity: 0.85; }
-        .day-row.holiday-flag { border-color: var(--warn); border-left: 3px solid var(--warn); }
-        .day-row.holiday-flag:hover { border-color: var(--warn); }
+        /* EXPANDED DETAIL */
+        .day-detail { display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+        .day-row.expanded .day-detail { display:block; }
+        .detail-stats { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+        .detail-stat { background:var(--bg); border:1px solid var(--border); border-radius:4px; padding:6px 12px; font-family:var(--mono); font-size:11px; color:var(--text-dim); }
+        .detail-stat strong { color:var(--accent); font-size:13px; }
+        .detail-section-title { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin:12px 0 8px; }
+        .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+        .detail-full { grid-column:1/-1; }
+        .detail-field label { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:4px; display:block; }
+        .detail-field input, .detail-field textarea { width:100%; padding:7px 10px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--text-bright); font-family:var(--mono); font-size:12px; }
+        .detail-field input:focus, .detail-field textarea:focus { outline:none; border-color:var(--accent); }
+        .detail-field textarea { resize:vertical; min-height:50px; line-height:1.5; }
 
-        .type-tag {
-            font-family: var(--mono);
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            padding: 3px 7px;
-            border-radius: 3px;
-            flex-shrink: 0;
-            align-self: flex-start;
-            margin-top: 2px;
-        }
-        .tag-pto     { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-dim); }
-        .tag-holiday { background: var(--warn-dim);   color: var(--warn);   border: 1px solid rgba(232,163,42,0.3); }
-        .tag-off     { background: var(--surface3);   color: var(--text-dim); border: 1px solid var(--border); }
-        .day-body { flex: 1; min-width: 0; }
-        .day-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-bright);
-            margin-bottom: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .day-name.hunting { color: var(--warn); }
-        .day-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            font-family: var(--mono);
-            font-size: 13px;
-            color: var(--text-dim);
-        }
-        .day-meta .m-date  { color: var(--text-dim); }
-        .day-meta .m-pto   { color: var(--accent); }
-        .day-meta .m-warn  { color: var(--warn); }
-        .day-meta .m-ok    { color: var(--ok-dim); }
-        .day-meta .m-auto  { color: var(--warn); font-style: italic; }
-        .day-note { font-size: 12px; color: var(--text-dim); margin-top: 4px; font-style: italic; }
-        .day-actions { display: flex; gap: 5px; flex-shrink: 0; padding-top: 1px; }
+        /* BOOKINGS */
+        .booking-card { background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:10px 12px; margin-bottom:8px; }
+        .booking-row { display:grid; grid-template-columns:2fr 1fr; gap:8px; margin-bottom:6px; }
+        .booking-dates { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:6px; }
+        .booking-footer { display:flex; justify-content:flex-end; }
+        .booking-field label { font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:3px; display:block; }
+        .booking-field input { width:100%; padding:6px 9px; background:var(--surface); border:1px solid var(--border); border-radius:4px; color:var(--text-bright); font-family:var(--mono); font-size:12px; }
+        .booking-field input:focus { outline:none; border-color:var(--accent); }
 
-        /* ── EXPANDED DETAIL PANEL ── */
-        .day-row { cursor: pointer; }
-        .day-row.expanded { border-color: var(--accent); background: var(--surface2); }
-        .day-row.expanded.holiday-flag { border-color: var(--warn); }
-        .day-chevron {
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--text-dim);
-            flex-shrink: 0;
-            align-self: center;
-            padding: 0 2px;
-            transition: transform 0.2s;
-            user-select: none;
-        }
-        .day-row.expanded .day-chevron { transform: rotate(90deg); color: var(--accent); }
+        /* GEAR */
+        .gear-item { display:flex; align-items:center; gap:8px; padding:5px 0; font-family:var(--mono); font-size:12px; color:var(--text); border-bottom:1px solid var(--border); }
+        .gear-item:last-child { border-bottom:none; }
+        .gear-item input[type=checkbox] { accent-color:var(--accent); width:14px; height:14px; cursor:pointer; flex-shrink:0; }
+        .gear-item.done span { text-decoration:line-through; color:var(--text-dim); }
+        .gear-add { display:flex; gap:6px; margin-top:8px; }
+        .gear-add input { flex:1; padding:6px 9px; }
 
-        .day-detail {
-            display: none;
-            margin-top: 14px;
-            padding-top: 14px;
-            border-top: 1px solid var(--border);
-            width: 100%;
-        }
-        .day-row.expanded .day-detail { display: block; }
+        /* DETAIL ACTIONS */
+        .detail-actions { display:flex; gap:8px; justify-content:flex-end; padding-top:12px; border-top:1px solid var(--border); margin-top:4px; }
 
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .detail-field label {
-            font-family: var(--mono);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin-bottom: 4px;
-            display: block;
-        }
-        .detail-field input,
-        .detail-field textarea {
-            width: 100%;
-            padding: 8px 10px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-bright);
-            font-family: var(--mono);
-            font-size: 12px;
-        }
-        .detail-field input:focus,
-        .detail-field textarea:focus { outline: none; border-color: var(--accent); }
-        .detail-field textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
-        .detail-field.full { grid-column: 1 / -1; }
+        /* EMPTY */
+        .empty-state { text-align:center; padding:44px 20px; font-family:var(--mono); font-size:12px; color:var(--text-dim); border:1px dashed var(--border); border-radius:6px; }
 
-        .detail-stat {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 6px 12px;
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 12px;
-            margin-right: 8px;
-        }
-        .detail-stat strong { color: var(--accent); font-size: 13px; }
+        /* SETTINGS */
+        .settings-wrap { background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:22px; margin-bottom:18px; }
+        .settings-title { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin-bottom:18px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+        .settings-block { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:15px; margin-bottom:12px; }
+        .settings-block-title { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:12px; }
+        .wd-grid { display:flex; gap:10px; flex-wrap:wrap; }
+        .wd-toggle { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; }
+        .wd-toggle input[type=checkbox] { width:15px; height:15px; accent-color:var(--accent); cursor:pointer; }
+        .wd-toggle span { font-family:var(--mono); font-size:10px; color:var(--text-dim); }
+        .wd-toggle input:checked ~ span { color:var(--accent); }
+        .h-entry { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+        .h-entry input[type=text] { flex:1; }
+        .h-entry select { flex:2; }
 
-        .detail-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            padding-top: 10px;
-            border-top: 1px solid var(--border);
-        }
+        /* MODAL */
+        .modal-card { background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:22px; margin-bottom:18px; }
+        .modal-title { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+        .hol-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px; margin-top:12px; }
+        .hol-item { background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:11px; font-family:var(--mono); font-size:11px; line-height:1.8; }
+        .hol-item.needs-pto { border-color:rgba(232,163,42,0.5); background:var(--warn-dim); }
+        .hol-name { font-weight:500; color:var(--text-bright); }
+        .hol-ok { color:var(--ok); }
+        .hol-warn { color:var(--warn); }
+        .proj-block { background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:14px; margin-bottom:10px; font-family:var(--mono); font-size:11px; }
+        .proj-block-title { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+        .proj-line { display:flex; justify-content:space-between; line-height:2; color:var(--text-dim); }
+        .proj-line span:last-child { color:var(--text-bright); font-weight:500; }
+        .proj-line.warn span:last-child { color:var(--warn); }
+        .proj-line.neg span:last-child { color:var(--danger); }
+        .proj-line.ok span:last-child { color:var(--ok); }
 
-        .checklist-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 5px 0;
-            font-family: var(--mono);
-            font-size: 12px;
-            color: var(--text);
-        }
-        .checklist-item input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
-        .checklist-item.checked span { text-decoration: line-through; color: var(--text-dim); }
-        .checklist-add {
-            display: flex;
-            gap: 6px;
-            margin-top: 6px;
-        }
-        .checklist-add input { flex: 1; padding: 6px 10px; font-size: 12px; }
-        .checklist-add button { padding: 6px 12px; font-size: 11px; white-space: nowrap; }
+        /* HOLIDAY PROMPT */
+        .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:100; padding:20px; }
+        .overlay-card { background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:26px; max-width:460px; width:100%; }
+        .overlay-title { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--warn); margin-bottom:12px; }
+        .overlay-body { font-size:14px; color:var(--text); margin-bottom:18px; line-height:1.6; }
+        .prompt-item { background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:10px 13px; margin-bottom:8px; display:flex; align-items:center; gap:12px; font-family:var(--mono); font-size:12px; }
+        .prompt-item input[type=checkbox] { width:15px; height:15px; accent-color:var(--accent); flex-shrink:0; }
+        .prompt-item-name { color:var(--text-bright); font-weight:500; }
+        .prompt-item-date { color:var(--text-dim); font-size:11px; margin-top:2px; }
+        .overlay-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:16px; }
 
-        /* ── LODGING BOOKINGS ── */
-        .booking-list { margin-bottom: 8px; }
-        .booking-card {
-            background: var(--surface3);
-            border: 1px solid var(--border2);
-            border-radius: 5px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 8px;
-            align-items: end;
-        }
-        .booking-card .bf { display: flex; flex-direction: column; gap: 3px; }
-        .booking-card .bf label {
-            font-family: var(--mono);
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin: 0;
-        }
-        .booking-card .bf input {
-            padding: 6px 8px;
-            font-size: 12px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-bright);
-            font-family: var(--mono);
-        }
-        .booking-card .bf input:focus { outline: none; border-color: var(--accent); }
-        .booking-card .bf-dates {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
-        .booking-remove {
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-dim);
-            cursor: pointer;
-            padding: 6px 9px;
-            font-size: 12px;
-            transition: all 0.15s;
-            align-self: end;
-        }
-        .booking-remove:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
-
-        .empty-state {
-            text-align: center;
-            padding: 44px 20px;
-            font-family: var(--mono);
-            font-size: 12px;
-            color: var(--text-dim);
-            border: 1px dashed var(--border);
-            border-radius: 6px;
-        }
-
-        /* ── SETTINGS ── */
-        .settings-wrap {
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-        .settings-title {
-            font-family: var(--mono);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent);
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        .settings-block {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .settings-block-title {
-            font-family: var(--mono);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin-bottom: 12px;
-        }
-        .wd-grid { display: flex; gap: 10px; flex-wrap: wrap; }
-        .wd-toggle { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
-        .wd-toggle input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
-        .wd-toggle span { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.5px; }
-        .wd-toggle input:checked ~ span { color: var(--accent); }
-
-        .h-entry { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-        .h-entry input[type="text"] { flex: 1; }
-        .h-entry select { flex: 2; }
-
-        /* ── MODAL CARDS ── */
-        .modal-card {
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-        .modal-title {
-            font-family: var(--mono);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent);
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .hol-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 8px; margin-top: 12px; }
-        .hol-item {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 12px;
-            font-family: var(--mono);
-            font-size: 11px;
-            line-height: 1.8;
-        }
-        .hol-item.needs-pto { border-color: rgba(232,163,42,0.5); background: var(--warn-dim); }
-        .hol-name  { font-weight: 500; color: var(--text-bright); }
-        .hol-date  { color: var(--text-dim); }
-        .hol-ok    { color: var(--ok); }
-        .hol-warn  { color: var(--warn); }
-
-        .proj-block {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            font-family: var(--mono);
-            font-size: 11px;
-        }
-        .proj-block-title {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-        .proj-line {
-            display: flex;
-            justify-content: space-between;
-            line-height: 2;
-            color: var(--text-dim);
-        }
-        .proj-line span:last-child { color: var(--text-bright); font-weight: 500; }
-        .proj-line.warn span:last-child { color: var(--warn); }
-        .proj-line.neg  span:last-child { color: var(--danger); }
-        .proj-line.ok   span:last-child { color: var(--ok); }
-
-        /* ── HOLIDAY PROMPT MODAL ── */
-        .prompt-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            padding: 20px;
-        }
-        .prompt-card {
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: 8px;
-            padding: 28px;
-            max-width: 460px;
-            width: 100%;
-        }
-        .prompt-title {
-            font-family: var(--mono);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--warn);
-            margin-bottom: 14px;
-        }
-        .prompt-body {
-            font-size: 14px;
-            color: var(--text);
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-        .prompt-item {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 10px 14px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: var(--mono);
-            font-size: 12px;
-        }
-        .prompt-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); flex-shrink: 0; }
-        .prompt-item-text { flex: 1; }
-        .prompt-item-name { color: var(--text-bright); font-weight: 500; }
-        .prompt-item-date { color: var(--text-dim); font-size: 11px; margin-top: 2px; }
-        .prompt-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
-        .hidden { display: none !important; }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-        @media (max-width: 600px) {
-            .balance-strip { grid-template-columns: 1fr; }
-            .form-row { grid-template-columns: 1fr; }
-            .header { padding: 14px 16px; }
-            .app { padding: 16px 12px 40px; }
-        }
+        .hidden { display:none !important; }
+        ::-webkit-scrollbar { width:5px; }
+        ::-webkit-scrollbar-track { background:var(--bg); }
+        ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+        @media(max-width:600px) { .bal-strip { grid-template-columns:1fr; } .form-row { grid-template-columns:1fr; } .detail-grid { grid-template-columns:1fr; } .booking-row { grid-template-columns:1fr; } }
     </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
     <span class="header-logo">PTO Advisor</span>
-    <div class="header-divider"></div>
+    <div class="header-div"></div>
     <span class="header-sub">Dan — Salary / Day-Based</span>
-    <div class="header-spacer"></div>
-    <span class="header-status" id="headerStatus">Loading…</span>
+    <span class="header-status" id="hStatus">Loading…</span>
 </div>
 
 <div class="app">
 
-    <!-- MAIN VIEW -->
-    <div id="mainView">
-
-        <!-- Balance Strip -->
-        <div class="balance-strip">
-            <div class="bal-cell clickable" onclick="editBalance()" title="Click to edit balance">
-                <div class="bal-label">Remaining Balance <span class="edit-hint">✎</span></div>
-                <div class="bal-val" id="dispBalance">—</div>
-                <div class="bal-sub" id="dispBalSub">of <span id="dispAnnual">—</span> annual</div>
-            </div>
-            <div class="bal-cell">
-                <div class="bal-label">Emergency Reserve</div>
-                <div class="bal-val accent" id="dispReserve">—</div>
-                <div class="bal-sub" id="dispResSub">—</div>
-            </div>
-            <div class="bal-cell">
-                <div class="bal-label">PTO Planned</div>
-                <div class="bal-val" id="dispUsed">—</div>
-                <div class="bal-sub" id="dispUsedSub">—</div>
-            </div>
+    <!-- BALANCE STRIP -->
+    <div class="bal-strip">
+        <div class="bal-cell clickable" onclick="editBalance()" title="Click to edit">
+            <div class="bal-label">Remaining Balance ✎</div>
+            <div class="bal-val" id="dispBal">—</div>
+            <div class="bal-sub">of <span id="dispAnnual">—</span> annual</div>
         </div>
-
-        <!-- Toolbar -->
-        <div class="toolbar">
-            <button class="btn btn-primary" onclick="openForm('pto')">+ Plan PTO</button>
-            <button class="btn" onclick="openForm('nonpto')">+ Non-PTO Day</button>
-            <button class="btn btn-ghost" onclick="showHolidays()">Holidays</button>
-            <button class="btn btn-ghost" onclick="showProjections()">Projections</button>
-            <button class="btn btn-ghost" onclick="toggleSettings()">Settings</button>
+        <div class="bal-cell">
+            <div class="bal-label">Emergency Reserve</div>
+            <div class="bal-val accent" id="dispRes">—</div>
+            <div class="bal-sub" id="dispResSub">—</div>
         </div>
-
-        <!-- PTO Form -->
-        <div id="ptoForm" class="form-panel hidden">
-            <div class="form-panel-title" id="ptoFormTitle">Plan PTO Days</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Start Date</label>
-                    <input type="date" id="ptoStart" onchange="syncEnd('pto');calcWD();">
-                </div>
-                <div class="form-group">
-                    <label>End Date</label>
-                    <input type="date" id="ptoEnd" onchange="calcWD();">
-                </div>
-            </div>
-            <div class="check-row">
-                <input type="checkbox" id="ptoHalf" onchange="calcWD();">
-                <label for="ptoHalf">Half day — divide PTO by 2</label>
-            </div>
-            <div id="ptoCalcBox" class="calc-box hidden"></div>
-            <div class="form-group">
-                <label>Purpose</label>
-                <input type="text" id="ptoPurpose" placeholder="Elk hunt, Family trip, Doctor appt…">
-            </div>
-            <div class="form-group">
-                <label>Notes (optional)</label>
-                <textarea id="ptoNotes" placeholder="Additional details"></textarea>
-            </div>
-            <div id="ptoWarnBox"></div>
-            <div style="display:flex;gap:10px">
-                <button class="btn btn-primary" onclick="savePTO()">Save PTO</button>
-                <button class="btn btn-ghost" onclick="closeForm('pto')">Cancel</button>
-            </div>
+        <div class="bal-cell">
+            <div class="bal-label">PTO Planned</div>
+            <div class="bal-val" id="dispUsed">—</div>
+            <div class="bal-sub" id="dispUsedSub">—</div>
         </div>
-
-        <!-- Non-PTO Form -->
-        <div id="nonptoForm" class="form-panel hidden">
-            <div class="form-panel-title" id="nonptoFormTitle">Plan Non-PTO Days</div>
-            <p style="font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:16px">Track activities on days off — zero PTO impact</p>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Start Date</label>
-                    <input type="date" id="nonptoStart" onchange="syncEnd('nonpto');">
-                </div>
-                <div class="form-group">
-                    <label>End Date</label>
-                    <input type="date" id="nonptoEnd">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Activity</label>
-                <input type="text" id="nonptoPurpose" placeholder="Hunting trip, Bike ride, Camping…">
-            </div>
-            <div class="form-group">
-                <label>Notes (optional)</label>
-                <textarea id="nonptoNotes"></textarea>
-            </div>
-            <div style="display:flex;gap:10px">
-                <button class="btn btn-primary" onclick="saveNonPTO()">Save Days</button>
-                <button class="btn btn-ghost" onclick="closeForm('nonpto')">Cancel</button>
-            </div>
-        </div>
-
-        <!-- Days List -->
-        <div class="list-header">Planned Days</div>
-        <div id="daysList"></div>
-
     </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <button class="btn btn-primary" onclick="openForm('pto')">+ Plan PTO</button>
+        <button class="btn" onclick="openForm('nonpto')">+ Non-PTO Day</button>
+        <button class="btn btn-ghost" onclick="showHolidays()">Holidays</button>
+        <button class="btn btn-ghost" onclick="showProjections()">Projections</button>
+        <button class="btn btn-ghost" onclick="toggleSettings()">Settings</button>
+    </div>
+
+    <!-- PTO FORM -->
+    <div id="ptoForm" class="form-panel hidden">
+        <div class="form-title" id="ptoFormTitle">Plan PTO Days</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" id="ptoStart" onchange="syncEnd();calcWD();">
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" id="ptoEnd" onchange="calcWD();">
+            </div>
+        </div>
+        <div class="check-row">
+            <input type="checkbox" id="ptoHalf" onchange="calcWD();">
+            <label for="ptoHalf">Half day — divide PTO by 2</label>
+        </div>
+        <div id="calcBox" class="calc-box hidden"></div>
+        <div class="form-group">
+            <label>Purpose</label>
+            <input type="text" id="ptoPurpose" placeholder="Elk hunt, Family trip, Doctor appt…">
+        </div>
+        <div class="form-group">
+            <label>Notes (optional)</label>
+            <textarea id="ptoNotes" placeholder="Additional details"></textarea>
+        </div>
+        <div id="ptoWarn"></div>
+        <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="savePTO()">Save PTO</button>
+            <button class="btn btn-ghost" onclick="closeForm('pto')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- NON-PTO FORM -->
+    <div id="nonptoForm" class="form-panel hidden">
+        <div class="form-title" id="nonptoFormTitle">Plan Non-PTO Days</div>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:14px;">Track activities on days off — zero PTO impact</p>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" id="nonptoStart" onchange="syncEndNon();">
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" id="nonptoEnd">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Activity</label>
+            <input type="text" id="nonptoPurpose" placeholder="Hunting trip, Bike ride, Camping…">
+        </div>
+        <div class="form-group">
+            <label>Notes (optional)</label>
+            <textarea id="nonptoNotes"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="saveNonPTO()">Save Days</button>
+            <button class="btn btn-ghost" onclick="closeForm('nonpto')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- DAYS LIST -->
+    <div class="list-header">Planned Days</div>
+    <div id="daysList"></div>
 
     <!-- SETTINGS -->
     <div id="settingsPanel" class="settings-wrap hidden">
         <div class="settings-title">Settings</div>
-
         <div class="settings-block">
             <div class="settings-block-title">Work Days</div>
             <div class="wd-grid">
@@ -800,42 +325,32 @@
                 <div class="wd-toggle"><input type="checkbox" id="wdSat"><span>Sat</span></div>
             </div>
         </div>
-
         <div class="settings-block">
             <div class="settings-block-title">PTO Allocation</div>
             <div class="form-row">
-                <div class="form-group"><label>Annual PTO (days)</label><input type="number" id="setAnnual" step="0.5" value="37" min="0"></div>
-                <div class="form-group"><label>Reserve Days</label><input type="number" id="setReserve" step="0.5" value="5" min="0"></div>
+                <div class="form-group"><label>Annual PTO (days)</label><input type="number" id="setAnnual" step="0.5" value="37"></div>
+                <div class="form-group"><label>Reserve Days</label><input type="number" id="setReserve" step="0.5" value="5"></div>
             </div>
-            <p style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:4px;line-height:1.7">Planning allowance = Annual − Reserve. Reserve is an emergency buffer not counted in planning balance.</p>
         </div>
-
         <div class="settings-block">
             <div class="settings-block-title">PTO Year Start</div>
             <div class="form-row">
                 <div class="form-group"><label>Month</label>
                     <select id="setYearMonth">
-                        <option value="1">January</option><option value="2" selected>February</option>
-                        <option value="3">March</option><option value="4">April</option>
-                        <option value="5">May</option><option value="6">June</option>
-                        <option value="7">July</option><option value="8">August</option>
-                        <option value="9">September</option><option value="10">October</option>
-                        <option value="11">November</option><option value="12">December</option>
+                        <option value="1">January</option><option value="2" selected>February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option>
                     </select>
                 </div>
                 <div class="form-group"><label>Day</label><input type="number" id="setYearDay" value="1" min="1" max="31"></div>
             </div>
         </div>
-
         <div class="settings-block">
             <div class="settings-block-title">Paid Holidays</div>
             <div id="holidayEntries"></div>
-            <button class="btn btn-sm" style="margin-top:8px" onclick="addHolidayEntry()">+ Add Holiday</button>
+            <button class="btn btn-sm" style="margin-top:8px;" onclick="addHEntry()">+ Add Holiday</button>
         </div>
-
-        <div style="display:flex;gap:10px;margin-top:16px">
+        <div style="display:flex;gap:10px;margin-top:14px;">
             <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
-            <button class="btn btn-ghost" onclick="cancelSettings()">Cancel</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('settingsPanel').classList.add('hidden')">Cancel</button>
         </div>
     </div>
 
@@ -843,716 +358,416 @@
     <div id="holidaysModal" class="modal-card hidden">
         <div class="modal-title">Paid Holidays</div>
         <div id="holidayContent"></div>
-        <button class="btn btn-ghost" style="margin-top:16px" onclick="document.getElementById('holidaysModal').classList.add('hidden')">Close</button>
+        <button class="btn btn-ghost" style="margin-top:14px;" onclick="document.getElementById('holidaysModal').classList.add('hidden')">Close</button>
     </div>
 
     <!-- PROJECTIONS MODAL -->
     <div id="projectionsModal" class="modal-card hidden">
         <div class="modal-title">PTO Projections</div>
         <div id="projectionsContent"></div>
-        <button class="btn btn-ghost" style="margin-top:16px" onclick="document.getElementById('projectionsModal').classList.add('hidden')">Close</button>
+        <button class="btn btn-ghost" style="margin-top:14px;" onclick="document.getElementById('projectionsModal').classList.add('hidden')">Close</button>
     </div>
 
 </div>
 
 <!-- HOLIDAY PROMPT OVERLAY -->
-<div id="holidayPrompt" class="prompt-overlay hidden">
-    <div class="prompt-card">
-        <div class="prompt-title">⚠ Holiday Falls on a Workday</div>
-        <div class="prompt-body" id="promptBody">The following paid holidays fall on your scheduled workdays. Add them as PTO entries?</div>
+<div id="holidayOverlay" class="overlay hidden">
+    <div class="overlay-card">
+        <div class="overlay-title">⚠ Holiday Falls on a Workday</div>
+        <div class="overlay-body">These paid holidays fall on your scheduled workdays this year. Add them as PTO?</div>
         <div id="promptItems"></div>
-        <div class="prompt-actions">
-            <button class="btn btn-ghost" onclick="dismissHolidayPrompt()">Skip</button>
-            <button class="btn btn-primary" onclick="confirmHolidayPrompt()">Add Selected</button>
+        <div class="overlay-actions">
+            <button class="btn btn-ghost" onclick="dismissPrompt()">Skip</button>
+            <button class="btn btn-primary" onclick="confirmPrompt()">Add Selected</button>
         </div>
     </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════
+// ── CONFIG ──────────────────────────────────────
 const SPREADSHEET_ID = '107ByQVrvKaBV-IgB9WzSKJnTx5k-9m-VXNg6j25WEec';
-const SHEET_BALANCE  = 'Dan_Balance';
-const SHEET_TRIPS    = 'Dan_Trips';
-
-const SERVICE_ACCOUNT = {
+const SHEET_BAL  = 'Dan_Balance';
+const SHEET_TRIPS = 'Dan_Trips';
+const SA = {
     client_email: "tori-pto-service@tori-pto-advisor.iam.gserviceaccount.com",
     private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCzCb9Z3IONbhi2\nMlP5OLTFyGmqpt0UZhggB3rZdn+myXle4qzJbDvqe4NcZMq0n+EMbY+UOQHzj4WE\nf1w0cYg0b6gLBTLbZXrJ446ab1pgCVbq9DuHEfIpfG3G07SkISj8rrbb0uFwiaA0\n5tcbBZ2nLdZYipAM0ujRyOsrFaiv4JUMk6vE9SuyyI3PVK6LCoPqb9iQyBlNYhPk\nB+1SL/KGjRVjkPEk68+x1w48BKcRMy0YN015V/eo45Oh2KRd3dV1ubJ4D7IcSzsg\nFGeVV+C//MrRLeOYEy1BaCaGKTT+VHtJeUt06robTyJaWJnZt7YSARRuJb3kxoRH\nJMy2bk0PAgMBAAECggEAAvwMHQ7ggIiPz+W54aMw3EUxgb9DWzYye8I0KZDgouKj\n69GCiN8NhqSldXJWsLkjksX2yUVEA4/mbWWEH3mvCBS+a+Sbyu1/pQLumyN1EbnG\nIaeNoHxLmaZx3Akmb0AAQ2oUMUjsKiiZK5iXiGNJFALfGl3A9f3EFM8xIGg9hiUE\nm1ePBPPXY2VItEG9Z8ry+AFHDreT7x/fekMXTfnpqFRLddE2ioucSshRzW7U+UAN\nOvt1V166PrUuIHtAveKaStTULzEPZS6By6viRpUIIDftvfgAptEFMLnpOC/QrZVo\n7tif6V36o03om42zQtrc6ygYwgD0Tj/sPa6kJHxQtQKBgQDrrmLZKbLKeK1A6ngC\niEWqKAd9NrUfbcbUIXEJVlAYbqEWQhJs10UJgWkqvnbgOmimX24YvKQrr4EV2Yan\nDTCtqeanRbMXpuSWCFjftp1RtmhKdrUQ4zIIgjD0ESbviRKWHJwdJiGxUZrkPvMV\n3nPeXRAWnAWmLeeNHYa15muEswKBgQDCeTdqkEdWgnkByIWVChEt5I+1c3d3TprB\nqWIm3i5vxTdho2METSWy/+XX1Qrtmb5YjUZCfD8xc7hLA2X41KNFsCVJwbYYWgIB\n9fKcB6nfeCsuexpcpjGh75R4nU39bUUOAUQbNlLu8h09pbF68nLguUXWUEJ3RWd2\nQl3O2FbcNQKBgBWjWB36Dxk5xSZdoJES89pwfGeJm018ZbHaNCeYThhAJ/gELu7h\nQMxjnkU3YXCqzCriPhh1UVlVbrOT2iICOwLmw29+HbhBMWF4+Lfpaz4yUhbsGSmo\nwlI3qcjuvjVlz1gK3mZqttMx29ey09yhJOA4iR6aSoZ8VnMFT/XpZtuzAoGBAI7O\n8PDiLmDKww2aMO43TFJFK3r15d7I7EAWoKsmMTeGvZqHnujDtlFyNVh/a9z7L5pb\ndCLSlp07+zOqtTE7BQLhzSASjiPnxN2nvJbz0bz2w88IO12Z9YyTIJZJ/cGCglk8\neMT66X/qb6qbiG9epxl7NFui6IwpfUaMidKhb3eZAoGAEmcmFmtljyUU1NOvbtgM\nIrFA0QlDalsJD/HSZsslCrrwsHpgX6oxhyg425wgmFcC8MiBRkqyMJMPouxqKToo\njIfXjTWVU3pF89QW+MRN0gCHsLppH/rXMFgU7liCuCIw94NqJ3xKS7bnsuGbYKey\nSVB5YETSRSvhZb6+LKJFgH4=\n-----END PRIVATE KEY-----\n"
 };
 
-// ═══════════════════════════════════════
-// DEFAULTS & STATE
-// ═══════════════════════════════════════
-const DEFAULT_SETTINGS = {
+// ── DEFAULTS ─────────────────────────────────────
+const DEF_SETTINGS = {
     workDays: [1,2,3,4,5],
     annualPTO: 37,
     reserveDays: 5,
     yearStartMonth: 2,
     yearStartDay: 1,
     holidays: [
-        { name: "Thanksgiving", date: "dynamic-thanksgiving" },
-        { name: "Christmas",    date: "dynamic-christmas" }
+        { name:'Thanksgiving', date:'dynamic-thanksgiving' },
+        { name:'Christmas',    date:'dynamic-christmas' }
     ]
 };
 
-let state = {
-    rawBalance: 36,       // annual PTO grant (planning allowance, not including reserve)
+// ── STATE ────────────────────────────────────────
+let S = {
+    rawBalance: 36,
     plannedDays: [],
-    settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS))
+    settings: JSON.parse(JSON.stringify(DEF_SETTINGS))
 };
+let token = null;
+let calcedDays = 0;
+let expandedIdx = -1;
+let editBackup = null;
+let pendingHols = [];
 
-let accessToken     = null;
-let editingIdx      = -1;
-let editingBackup   = null;
-let expandedIdx     = -1;
-let calcedDays      = 0;
-let pendingHolidayItems = [];
+// ── COMPUTED ─────────────────────────────────────
+function ptoUsed()   { return +S.plannedDays.filter(d=>d.type==='pto').reduce((s,d)=>s+(d.daysUsed||0),0).toFixed(2); }
+function remaining() { return +(S.rawBalance - ptoUsed()).toFixed(2); }
+function resUsed()   { const r=remaining(); return r<0 ? +Math.abs(r).toFixed(2) : 0; }
+function resLeft()   { return +Math.max(0, S.settings.reserveDays - resUsed()).toFixed(2); }
 
-// ═══════════════════════════════════════
-// COMPUTED BALANCE — single source of truth
-// ═══════════════════════════════════════
-function totalPTOUsed() {
-    return state.plannedDays
-        .filter(d => d.type === 'pto')
-        .reduce((s, d) => s + (d.daysUsed || 0), 0);
-}
+// ── DATE HELPERS ──────────────────────────────────
+function workDays()  { return S.settings.workDays; }
+function isWD(ds)    { return workDays().includes(new Date(ds+'T00:00:00').getDay()); }
 
-function currentBalance() {
-    return +(state.rawBalance - totalPTOUsed()).toFixed(2);
-}
-
-function reserveUsed() {
-    const bal = currentBalance();
-    return bal < 0 ? +Math.abs(bal).toFixed(2) : 0;
-}
-
-function reserveRemaining() {
-    return +Math.max(0, state.settings.reserveDays - reserveUsed()).toFixed(2);
-}
-
-// ═══════════════════════════════════════
-// DATE / WORKDAY
-// ═══════════════════════════════════════
-function wds() { return state.settings.workDays; }
-
-function isWorkDay(ds) {
-    return wds().includes(new Date(ds + 'T00:00:00').getDay());
-}
-
-function countWD(start, end) {
-    let n = 0;
-    const cur = new Date(start + 'T00:00:00');
-    const fin = new Date(end + 'T00:00:00');
-    while (cur <= fin) { if (wds().includes(cur.getDay())) n++; cur.setDate(cur.getDate()+1); }
+function countWD(s, e) {
+    let n=0, cur=new Date(s+'T00:00:00'), fin=new Date(e+'T00:00:00');
+    while(cur<=fin){ if(workDays().includes(cur.getDay())) n++; cur.setDate(cur.getDate()+1); }
     return n;
 }
 
-function fmtDays(n) {
-    const a = Math.abs(n);
-    return `${n} ${a===1?'day':'days'}`;
-}
+function fmtD(n)  { return `${n} ${Math.abs(n)===1?'day':'days'}`; }
+function fmtDate(ds) { return new Date(ds+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
+function fmtDateLong(ds) { return new Date(ds+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
+function monthName(n) { return ['','January','February','March','April','May','June','July','August','September','October','November','December'][n]||''; }
 
-function fmtDate(ds) {
-    return new Date(ds + 'T00:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-}
-
-function fmtDateFull(ds) {
-    return new Date(ds + 'T00:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
-}
-
-function monthName(n) {
-    return ['','January','February','March','April','May','June',
-            'July','August','September','October','November','December'][n]||'';
-}
-
-function getNthWeekday(yr, mo0, nth, wd) {
-    let c=0; const d=new Date(yr,mo0,1);
-    while(true){if(d.getDay()===wd){c++;if(c===nth)break;}d.setDate(d.getDate()+1);}
+function getNthWD(yr,mo,nth,wd) {
+    let c=0, d=new Date(yr,mo,1);
+    while(true){ if(d.getDay()===wd){c++;if(c===nth)break;} d.setDate(d.getDate()+1); }
     return d.toISOString().split('T')[0];
 }
-
-function getLastWeekday(yr, mo0, wd) {
-    const d=new Date(yr,mo0+1,0);
-    while(d.getDay()!==wd)d.setDate(d.getDate()-1);
+function getLastWD(yr,mo,wd) {
+    let d=new Date(yr,mo+1,0);
+    while(d.getDay()!==wd) d.setDate(d.getDate()-1);
     return d.toISOString().split('T')[0];
 }
-
-function resolveHoliday(h, yr) {
-    if (!h.date.startsWith('dynamic-')) return h.date;
-    switch(h.date){
-        case 'dynamic-thanksgiving':  return getNthWeekday(yr,10,4,4);
-        case 'dynamic-christmas':     return `${yr}-12-25`;
-        case 'dynamic-newyears':      return `${yr}-01-01`;
-        case 'dynamic-laborday':      return getNthWeekday(yr,8,1,1);
-        case 'dynamic-memorialday':   return getLastWeekday(yr,4,1);
-        case 'dynamic-july4':         return `${yr}-07-04`;
+function resolveHol(h, yr) {
+    if(!h.date.startsWith('dynamic-')) return h.date;
+    switch(h.date) {
+        case 'dynamic-thanksgiving': return getNthWD(yr,10,4,4);
+        case 'dynamic-christmas':    return `${yr}-12-25`;
+        case 'dynamic-newyears':     return `${yr}-01-01`;
+        case 'dynamic-laborday':     return getNthWD(yr,8,1,1);
+        case 'dynamic-memorialday':  return getLastWD(yr,4,1);
+        case 'dynamic-july4':        return `${yr}-07-04`;
         default: return null;
     }
 }
 
-// ═══════════════════════════════════════
-// HOLIDAY PROMPT FLOW
-// ═══════════════════════════════════════
-function buildPendingHolidayList() {
+function isHunting(p) {
+    const l=p.toLowerCase();
+    return l.includes('hunt')||l.includes('elk')||l.includes('deer')||l.includes('bear')||(l.includes('turkey')&&!l.includes('thanksgiving'));
+}
+
+// ── WORK YEAR ─────────────────────────────────────
+function getWorkYear() {
     const today = new Date();
-    const s = state.settings;
+    const s = S.settings;
+    let start = new Date(today.getFullYear(), s.yearStartMonth-1, s.yearStartDay);
+    if(start > today) start = new Date(today.getFullYear()-1, s.yearStartMonth-1, s.yearStartDay);
+    const end = new Date(start.getFullYear()+1, s.yearStartMonth-1, s.yearStartDay-1);
+    return { start, end };
+}
 
-    // Determine the current work year window based on settings
-    // Work year runs from yearStartMonth/yearStartDay to one day before the next start
-    let workYearStart = new Date(today.getFullYear(), s.yearStartMonth - 1, s.yearStartDay);
-    if (workYearStart > today) {
-        // We're before this year's start date, so current work year started last calendar year
-        workYearStart = new Date(today.getFullYear() - 1, s.yearStartMonth - 1, s.yearStartDay);
-    }
-    let workYearEnd = new Date(workYearStart.getFullYear() + 1, s.yearStartMonth - 1, s.yearStartDay - 1);
-
-    // Collect the calendar years that overlap this work year window
+// ── HOLIDAY PROMPT ────────────────────────────────
+function buildPendingHols() {
+    const today = new Date();
+    const { start, end } = getWorkYear();
     const years = new Set();
-    for (let y = workYearStart.getFullYear(); y <= workYearEnd.getFullYear(); y++) {
-        years.add(y);
-    }
-
+    for(let y=start.getFullYear(); y<=end.getFullYear(); y++) years.add(y);
     const results = [];
     years.forEach(yr => {
-        state.settings.holidays.forEach(h => {
-            const ds = resolveHoliday(h, yr);
-            if (!ds) return;
-            const date = new Date(ds + 'T00:00:00');
-            if (date < today) return;                          // already past
-            if (date < workYearStart || date > workYearEnd) return; // outside work year
-            if (!isWorkDay(ds)) return;                        // already a day off
-            const alreadyIn = state.plannedDays.some(d =>
-                d.type==='pto' && d.autoHoliday && d.startDate===ds
-            );
-            if (!alreadyIn) results.push({ name: h.name, date: ds, year: yr });
+        S.settings.holidays.forEach(h => {
+            const ds = resolveHol(h, yr);
+            if(!ds) return;
+            const d = new Date(ds+'T00:00:00');
+            if(d < today || d < start || d > end) return;
+            if(!isWD(ds)) return;
+            if(S.plannedDays.some(p=>p.type==='pto'&&p.autoHoliday&&p.startDate===ds)) return;
+            results.push({ name:h.name, date:ds, year:yr });
         });
     });
     return results;
 }
 
-function checkAndPromptHolidays() {
-    pendingHolidayItems = buildPendingHolidayList();
-    if (pendingHolidayItems.length === 0) return;
-
-    // Build prompt items HTML
-    let itemsHtml = '';
-    pendingHolidayItems.forEach((item, i) => {
-        itemsHtml += `
+function checkAndPromptHols() {
+    pendingHols = buildPendingHols();
+    if(!pendingHols.length) return;
+    document.getElementById('promptItems').innerHTML = pendingHols.map((h,i)=>`
         <div class="prompt-item">
-            <input type="checkbox" id="hpCheck${i}" checked>
-            <div class="prompt-item-text">
-                <div class="prompt-item-name">${item.name} ${item.year}</div>
-                <div class="prompt-item-date">${fmtDateFull(item.date)} — 1 workday PTO</div>
+            <input type="checkbox" id="hc${i}" checked>
+            <div>
+                <div class="prompt-item-name">${h.name} ${h.year}</div>
+                <div class="prompt-item-date">${fmtDateLong(h.date)} — 1 workday PTO</div>
             </div>
-        </div>`;
-    });
-
-    document.getElementById('promptItems').innerHTML = itemsHtml;
-    document.getElementById('holidayPrompt').classList.remove('hidden');
+        </div>`).join('');
+    document.getElementById('holidayOverlay').classList.remove('hidden');
 }
 
-function confirmHolidayPrompt() {
-    pendingHolidayItems.forEach((item, i) => {
-        const checked = document.getElementById(`hpCheck${i}`)?.checked;
-        if (!checked) return;
-        state.plannedDays.push({
-            type: 'pto',
-            startDate: item.date,
-            endDate: item.date,
-            purpose: `${item.name} (Company Holiday)`,
-            notes: `Paid holiday falls on a workday — ${item.year}`,
-            daysUsed: 1,
-            autoHoliday: true,
-            toriComing: false
-        });
+function confirmPrompt() {
+    pendingHols.forEach((h,i)=>{
+        if(!document.getElementById(`hc${i}`)?.checked) return;
+        S.plannedDays.push({ type:'pto', startDate:h.date, endDate:h.date,
+            purpose:`${h.name} (Company Holiday)`, notes:`Paid holiday on a workday`,
+            daysUsed:1, autoHoliday:true, toriComing:false, details:{} });
     });
-    state.plannedDays.sort((a,b) => new Date(a.startDate)-new Date(b.startDate));
-    document.getElementById('holidayPrompt').classList.add('hidden');
-    pendingHolidayItems = [];
+    S.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
+    document.getElementById('holidayOverlay').classList.add('hidden');
+    pendingHols = [];
     saveState();
-    fullRefresh();
+    refresh();
 }
 
-function dismissHolidayPrompt() {
-    document.getElementById('holidayPrompt').classList.add('hidden');
-    pendingHolidayItems = [];
+function dismissPrompt() {
+    document.getElementById('holidayOverlay').classList.add('hidden');
+    pendingHols = [];
 }
 
-// ═══════════════════════════════════════
-// EMOJI / DISPLAY
-// ═══════════════════════════════════════
-function getTypeTag(type, isAuto) {
-    if (isAuto)      return '<span class="type-tag tag-holiday">HOLIDAY</span>';
-    if (type==='pto') return '<span class="type-tag tag-pto">PTO</span>';
-    return '<span class="type-tag tag-off">OFF</span>';
-}
-
-function isHunting(p) {
-    const l = p.toLowerCase();
-    return (l.includes('hunt')||l.includes('elk')||l.includes('deer')||l.includes('bear')) ||
-           (l.includes('turkey') && !l.includes('thanksgiving'));
-}
-
-// ═══════════════════════════════════════
-// GOOGLE SHEETS AUTH
-// ═══════════════════════════════════════
-async function getAccessToken() {
-    if (accessToken) return accessToken;
-    const hdr = {alg:'RS256',typ:'JWT'};
-    const now = Math.floor(Date.now()/1000);
-    const clm = {iss:SERVICE_ACCOUNT.client_email,scope:'https://www.googleapis.com/auth/spreadsheets',
-                  aud:'https://oauth2.googleapis.com/token',exp:now+3600,iat:now};
-    const b64 = o => btoa(JSON.stringify(o)).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-    const h64=b64(hdr), c64=b64(clm);
-    const pem=SERVICE_ACCOUNT.private_key.replace('-----BEGIN PRIVATE KEY-----','').replace('-----END PRIVATE KEY-----','').replace(/\s/g,'');
-    const bin=Uint8Array.from(atob(pem),c=>c.charCodeAt(0));
+// ── GOOGLE SHEETS AUTH ────────────────────────────
+async function getToken() {
+    if(token) return token;
+    const hdr={alg:'RS256',typ:'JWT'}, now=Math.floor(Date.now()/1000);
+    const clm={iss:SA.client_email,scope:'https://www.googleapis.com/auth/spreadsheets',aud:'https://oauth2.googleapis.com/token',exp:now+3600,iat:now};
+    const b64=o=>btoa(JSON.stringify(o)).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+    const h=b64(hdr), c=b64(clm);
+    const pem=SA.private_key.replace('-----BEGIN PRIVATE KEY-----','').replace('-----END PRIVATE KEY-----','').replace(/\s/g,'');
+    const bin=Uint8Array.from(atob(pem),x=>x.charCodeAt(0));
     const key=await crypto.subtle.importKey('pkcs8',bin,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);
-    const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,new TextEncoder().encode(`${h64}.${c64}`));
-    const s64=btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-    const jwt=`${h64}.${c64}.${s64}`;
-    const r=await fetch('https://oauth2.googleapis.com/token',{
-        method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body:`grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
-    });
+    const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,new TextEncoder().encode(`${h}.${c}`));
+    const s=btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+    const r=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${h}.${c}.${s}`});
     const d=await r.json();
-    accessToken=d.access_token;
-    setTimeout(()=>{accessToken=null;},3500*1000);
-    return accessToken;
+    token=d.access_token;
+    setTimeout(()=>{token=null;},3500000);
+    return token;
 }
 
-// ═══════════════════════════════════════
-// LOAD / SAVE
-// ═══════════════════════════════════════
+// ── LOAD / SAVE ───────────────────────────────────
 async function loadState() {
     setStatus('Syncing…');
     try {
-        const token = await getAccessToken();
-        const bRes = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BALANCE}!B1:B2`,
-            {headers:{Authorization:`Bearer ${token}`}}
-        );
-        const bData = await bRes.json();
-        if (bData.values?.[0]?.[0]) {
-            const loaded = parseFloat(bData.values[0][0]);
-            // Migration: old code stored remaining balance (~10), new code stores annual grant (36).
-            // If loaded value looks like a remaining balance (less than annualPTO setting),
-            // we can't auto-fix it — user must confirm via the balance display.
-            state.rawBalance = loaded;
-        }
-        if (bData.values?.[1]?.[0]) {
-            try { state.settings = Object.assign({},DEFAULT_SETTINGS,JSON.parse(bData.values[1][0])); }
-            catch(e){}
-        }
-        const tRes = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:K1000`,
-            {headers:{Authorization:`Bearer ${token}`}}
-        );
-        const tData = await tRes.json();
-        state.plannedDays = [];
-        if (tData.values?.length > 0) {
-            state.plannedDays = tData.values.filter(r=>r[0]).map(r=>({
+        const tk = await getToken();
+        const br = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BAL}!B1:B2`,{headers:{Authorization:`Bearer ${tk}`}});
+        const bd = await br.json();
+        if(bd.values?.[0]?.[0]) S.rawBalance = parseFloat(bd.values[0][0]);
+        if(bd.values?.[1]?.[0]) { try{ S.settings=Object.assign({},DEF_SETTINGS,JSON.parse(bd.values[1][0])); }catch(e){} }
+
+        const tr = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:I1000`,{headers:{Authorization:`Bearer ${tk}`}});
+        const td = await tr.json();
+        S.plannedDays = [];
+        if(td.values?.length) {
+            S.plannedDays = td.values.filter(r=>r[0]).map(r=>({
                 type:r[0], startDate:r[1], endDate:r[2]||r[1],
-                purpose:r[3], notes:r[4]||'', daysUsed:parseFloat(r[5])||0,
+                purpose:r[3]||'', notes:r[4]||'', daysUsed:parseFloat(r[5])||0,
                 autoHoliday:r[6]==='true', toriComing:r[7]==='true',
-                details: (() => { try { return r[8] ? JSON.parse(r[8]) : {}; } catch(e) { return {}; } })()
+                details: (()=>{ try{ return r[8]?JSON.parse(r[8]):{} }catch(e){ return {} } })()
             }));
         }
-        setStatus('Synced');
-        console.log('✓ Loaded');
+        setStatus('Synced ✓');
     } catch(e) {
         setStatus('Offline');
-        console.error('Load error:', e);
+        console.error(e);
     }
 }
 
 async function saveState() {
     setStatus('Saving…');
     try {
-        const token = await getAccessToken();
-        await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BALANCE}!B1:B2?valueInputOption=RAW`,
-            {method:'PUT',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
-             body:JSON.stringify({values:[[state.rawBalance],[JSON.stringify(state.settings)]]})}
-        );
-        await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:K1000:clear`,
-            {method:'POST',headers:{Authorization:`Bearer ${token}`}}
-        );
-        if (state.plannedDays.length > 0) {
-            const rows = state.plannedDays.map(d=>[
-                d.type, d.startDate, d.endDate||d.startDate,
-                d.purpose, d.notes||'', d.daysUsed,
-                d.autoHoliday?'true':'false', d.toriComing?'true':'false',
-                JSON.stringify(d.details||{})
-            ]);
-            await fetch(
-                `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2?valueInputOption=RAW`,
-                {method:'PUT',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
-                 body:JSON.stringify({values:rows})}
-            );
+        const tk = await getToken();
+        await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BAL}!B1:B2?valueInputOption=RAW`,
+            {method:'PUT',headers:{Authorization:`Bearer ${tk}`,'Content-Type':'application/json'},
+             body:JSON.stringify({values:[[S.rawBalance],[JSON.stringify(S.settings)]]})});
+        await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:I1000:clear`,
+            {method:'POST',headers:{Authorization:`Bearer ${tk}`}});
+        if(S.plannedDays.length) {
+            await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2?valueInputOption=RAW`,
+                {method:'PUT',headers:{Authorization:`Bearer ${tk}`,'Content-Type':'application/json'},
+                 body:JSON.stringify({values:S.plannedDays.map(d=>[
+                    d.type, d.startDate, d.endDate||d.startDate,
+                    d.purpose, d.notes||'', d.daysUsed,
+                    d.autoHoliday?'true':'false', d.toriComing?'true':'false',
+                    JSON.stringify(d.details||{})
+                 ])})});
         }
         setStatus('Saved ✓');
-        console.log('✓ Saved');
-    } catch(e) {
-        setStatus('Save failed');
-        console.error('Save error:', e);
-    }
+    } catch(e) { setStatus('Save failed'); console.error(e); }
 }
 
-function setStatus(msg) {
-    const el = document.getElementById('headerStatus');
-    if (el) el.textContent = msg;
+function setStatus(msg) { document.getElementById('hStatus').textContent = msg; }
+
+// ── REFRESH ───────────────────────────────────────
+function refresh() {
+    // Balance strip
+    const bal=remaining(), ru=resUsed(), rl=resLeft(), used=ptoUsed();
+    const ptoCount=S.plannedDays.filter(d=>d.type==='pto').length;
+    const balEl=document.getElementById('dispBal');
+    balEl.textContent=fmtD(bal);
+    balEl.className='bal-val'+(bal<0?' neg':bal<=3?' warn':' ok');
+    document.getElementById('dispAnnual').textContent=fmtD(S.rawBalance);
+    const resEl=document.getElementById('dispRes');
+    resEl.textContent=fmtD(rl);
+    resEl.className='bal-val'+(ru>0?' warn':' accent');
+    document.getElementById('dispResSub').textContent=ru>0?`${fmtD(ru)} in use`:'untouched';
+    document.getElementById('dispUsed').textContent=fmtD(used);
+    document.getElementById('dispUsedSub').textContent=`${ptoCount} trip${ptoCount!==1?'s':''}`;
+
+    // Days list
+    renderList();
 }
 
-// ═══════════════════════════════════════
-// FULL REFRESH — called after every mutation
-// ═══════════════════════════════════════
-function fullRefresh() {
-    updateBalanceStrip();
-    renderDaysList();
-    // Restore expanded card if one was open
-    if (expandedIdx >= 0) {
-        document.getElementById(`dayrow-${expandedIdx}`)?.classList.add('expanded');
-    }
+// ── RENDER LIST ───────────────────────────────────
+function renderList() {
+    const el=document.getElementById('daysList');
+    if(!S.plannedDays.length){ el.innerHTML='<div class="empty-state">No days planned yet. Hit + Plan PTO to get started.</div>'; return; }
+    el.innerHTML = S.plannedDays.map((d,idx)=>renderRow(d,idx)).join('');
+    if(expandedIdx>=0) document.getElementById(`dr${expandedIdx}`)?.classList.add('expanded');
 }
 
-function updateBalanceStrip() {
-    const bal     = currentBalance();
-    const resRem  = reserveRemaining();
-    const resUsed = reserveUsed();
-    const used    = totalPTOUsed();
-    const ptoCount = state.plannedDays.filter(d=>d.type==='pto').length;
+function renderRow(d, idx) {
+    const isPTO=d.type==='pto', isAuto=!!d.autoHoliday;
+    const single=d.startDate===d.endDate;
+    const dateStr=single?fmtDate(d.startDate):`${fmtDate(d.startDate)} – ${fmtDate(d.endDate)}`;
+    const calDays=Math.floor((new Date(d.endDate+'T00:00:00')-new Date(d.startDate+'T00:00:00'))/86400000)+1;
+    const det=d.details||{};
+    const gear=det.gear||[];
+    const bookings=det.bookings||[];
 
-    const balEl = document.getElementById('dispBalance');
-    balEl.textContent = fmtDays(bal);
-    balEl.className = 'bal-val' + (bal < 0 ? ' neg' : bal <= 3 ? ' warn' : ' ok');
+    const rowCls=['day-row',isPTO?'':'non-pto',isAuto?'holiday-flag':''].filter(Boolean).join(' ');
+    const nameCls=isHunting(d.purpose)?'day-name hunting':'day-name';
+    const tag=isAuto?'<span class="type-tag tag-holiday">HOLIDAY</span>':isPTO?'<span class="type-tag tag-pto">PTO</span>':'<span class="type-tag tag-off">OFF</span>';
 
-    document.getElementById('dispAnnual').textContent = fmtDays(state.rawBalance);
-    document.getElementById('dispBalSub').querySelector('span').textContent = fmtDays(state.rawBalance);
+    let meta=`<span class="m-date">${dateStr}</span>`;
+    if(isPTO){ meta+=`<span class="m-pto">${fmtD(d.daysUsed)} PTO</span>`; if(isAuto) meta+=`<span class="m-auto">auto-added</span>`; }
+    else meta+=`<span class="m-off">No PTO</span>`;
 
-    const resEl = document.getElementById('dispReserve');
-    resEl.textContent = fmtDays(resRem);
-    resEl.className = 'bal-val' + (resUsed > 0 ? ' warn' : ' accent');
-    document.getElementById('dispResSub').textContent = resUsed > 0
-        ? `${fmtDays(resUsed)} in use`
-        : 'untouched';
+    // Bookings HTML
+    const bookingsHtml = bookings.map((b,bi)=>`
+        <div class="booking-card" id="bc${idx}-${bi}">
+            <div class="booking-row">
+                <div class="booking-field"><label>Hotel / Property</label><input type="text" value="${esc(b.name||'')}" placeholder="Hotel name" onchange="saveBooking(${idx},${bi},'name',this.value)" onclick="event.stopPropagation()"></div>
+                <div class="booking-field"><label>Phone</label><input type="text" value="${esc(b.phone||'')}" placeholder="(555) 555-5555" onchange="saveBooking(${idx},${bi},'phone',this.value)" onclick="event.stopPropagation()"></div>
+            </div>
+            <div class="booking-dates">
+                <div class="booking-field"><label>Check-in</label><input type="date" value="${b.checkin||''}" onchange="saveBooking(${idx},${bi},'checkin',this.value)" onclick="event.stopPropagation()"></div>
+                <div class="booking-field"><label>Check-out</label><input type="date" value="${b.checkout||''}" onchange="saveBooking(${idx},${bi},'checkout',this.value)" onclick="event.stopPropagation()"></div>
+            </div>
+            <div class="booking-row">
+                <div class="booking-field"><label>Confirmation #</label><input type="text" value="${esc(b.conf||'')}" placeholder="ABC123" onchange="saveBooking(${idx},${bi},'conf',this.value)" onclick="event.stopPropagation()"></div>
+                <div style="display:flex;align-items:flex-end;padding-bottom:2px;"><button class="btn btn-sm btn-danger" onclick="removeBooking(event,${idx},${bi})">Remove</button></div>
+            </div>
+        </div>`).join('');
 
-    document.getElementById('dispUsed').textContent = fmtDays(used);
-    document.getElementById('dispUsedSub').textContent = `${ptoCount} trip${ptoCount!==1?'s':''}`;
-}
+    // Gear HTML
+    const gearHtml = gear.map((g,gi)=>`
+        <div class="gear-item${g.done?' done':''}" id="gi${idx}-${gi}">
+            <input type="checkbox" ${g.done?'checked':''} onclick="toggleGear(event,${idx},${gi})">
+            <span>${g.text}</span>
+            <button class="btn btn-sm btn-danger" style="margin-left:auto;padding:2px 7px;" onclick="removeGear(event,${idx},${gi})">✕</button>
+        </div>`).join('');
 
-function renderDaysList() {
-    const el = document.getElementById('daysList');
-    if (!state.plannedDays.length) {
-        el.innerHTML = '<div class="empty-state">No days planned yet. Hit + Plan PTO to get started.</div>';
-        return;
-    }
+    const editBtn=isAuto?'':` <button class="btn btn-sm btn-ghost" onclick="editDay(event,${idx})">Edit</button>`;
 
-    let html = '';
-    state.plannedDays.forEach((d, idx) => {
-        const isPTO   = d.type === 'pto';
-        const isAuto  = !!d.autoHoliday;
-        const single  = d.startDate === d.endDate;
-        const dateStr = single ? fmtDate(d.startDate)
-                      : `${fmtDate(d.startDate)} – ${fmtDate(d.endDate)}`;
-
-        // Calendar days for trip length
-        const calDays = Math.floor(
-            (new Date(d.endDate+'T00:00:00') - new Date(d.startDate+'T00:00:00')) / 86400000
-        ) + 1;
-
-        const rowCls = ['day-row',
-            isPTO ? '' : 'non-pto',
-            isAuto ? 'holiday-flag' : ''
-        ].filter(Boolean).join(' ');
-
-        const nameCls = isHunting(d.purpose) ? 'day-name hunting' : 'day-name';
-
-        let meta = `<span class="m-date">${dateStr}</span>`;
-        if (isPTO) {
-            meta += `<span class="m-pto">${fmtDays(d.daysUsed)} PTO</span>`;
-            if (isAuto) meta += `<span class="m-auto">auto-added holiday</span>`;
-        } else {
-            meta += `<span class="m-ok">No PTO</span>`;
-        }
-
-        const det = d.details || {};
-        const gear = det.gear || [];
-
-        // Gear checklist items
-        let gearHtml = gear.map((item, gi) => `
-            <div class="checklist-item${item.done?' checked':''}" id="gear-${idx}-${gi}">
-                <input type="checkbox" ${item.done?'checked':''} onclick="toggleGear(event,${idx},${gi})">
-                <span>${item.text}</span>
-                <button class="btn btn-sm btn-danger" style="padding:2px 7px;font-size:10px;margin-left:auto" onclick="removeGear(event,${idx},${gi})">✕</button>
-            </div>`).join('');
-
-        const editBtn = isAuto ? '' : `<button class="btn btn-sm btn-ghost" onclick="editDayBtn(event,${idx})">Edit</button>`;
-
-        html += `
-        <div class="${rowCls}" id="dayrow-${idx}" onclick="toggleExpand(${idx})">
-            ${getTypeTag(d.type, isAuto)}
-            <div class="day-body">
-                <div class="${nameCls}">${d.purpose}</div>
-                <div class="day-meta">${meta}</div>
-                ${d.notes ? `<div class="day-note">${d.notes}</div>` : ''}
-
-                <!-- EXPANDED DETAIL PANEL -->
-                <div class="day-detail" onclick="event.stopPropagation()">
-
-                    <div class="detail-stat">
-                        <span>Trip length</span>
-                        <strong>${calDays} ${calDays===1?'day':'days'}</strong>
+    return `<div class="${rowCls}" id="dr${idx}" onclick="toggleExpand(${idx})">
+        ${tag}
+        <div class="day-body">
+            <div class="${nameCls}">${d.purpose}</div>
+            <div class="day-meta">${meta}</div>
+            ${d.notes?`<div class="day-note">${d.notes}</div>`:''}
+            <div class="day-detail" onclick="event.stopPropagation()">
+                <div class="detail-stats">
+                    <div class="detail-stat">Trip length: <strong>${calDays} ${calDays===1?'day':'days'}</strong></div>
+                    ${isPTO?`<div class="detail-stat">PTO used: <strong>${fmtD(d.daysUsed)}</strong></div>`:''}
+                </div>
+                <div class="detail-section-title">Lodging &amp; Bookings</div>
+                <div id="bookings${idx}">${bookingsHtml}</div>
+                <button class="btn btn-sm" onclick="addBooking(event,${idx})" style="margin-bottom:12px;">+ Add Booking</button>
+                <div class="detail-grid">
+                    <div class="detail-field detail-full">
+                        <label>Travel Notes</label>
+                        <input type="text" value="${esc(det.travel||'')}" placeholder="Flight info, drive time, route…" onchange="saveDet(${idx},'travel',this.value)">
                     </div>
-                    ${isPTO ? `<div class="detail-stat"><span>PTO used</span><strong>${fmtDays(d.daysUsed)}</strong></div>` : ''}
-
-                    <div class="detail-grid">
-                        <div class="detail-field full">
-                            <label>Lodging / Bookings</label>
-                            <div class="booking-list" id="bookings-${idx}">
-                                ${renderBookingsHTML(det.bookings||[], idx)}
-                            </div>
-                            <button class="btn btn-sm" onclick="addBooking(event,${idx})">+ Add Booking</button>
-                        </div>
-                        <div class="detail-field full">
-                            <label>Travel Notes</label>
-                            <input type="text" placeholder="Flight info, drive time, route…"
-                                value="${(det.travel||'').replace(/"/g,'&quot;')}"
-                                onchange="saveDetail(${idx},'travel',this.value)">
-                        </div>
-                        <div class="detail-field full">
-                            <label>Trip Notes</label>
-                            <textarea placeholder="Plans, reminders, links…"
-                                onchange="saveDetail(${idx},'tripnotes',this.value)">${det.tripnotes||''}</textarea>
-                        </div>
-                        <div class="detail-field full">
-                            <label>Gear Checklist</label>
-                            <div id="gearlist-${idx}">${gearHtml}</div>
-                            <div class="checklist-add">
-                                <input type="text" id="gearinput-${idx}" placeholder="Add gear item…"
-                                    onkeydown="if(event.key==='Enter'){addGear(${idx});event.preventDefault();}">
-                                <button class="btn btn-sm" onclick="addGear(${idx})">+ Add</button>
-                            </div>
-                        </div>
+                    <div class="detail-field detail-full">
+                        <label>Trip Notes</label>
+                        <textarea onchange="saveDet(${idx},'tripnotes',this.value)">${det.tripnotes||''}</textarea>
                     </div>
-
-                    <div class="detail-actions">
-                        ${editBtn}
-                        <button class="btn btn-sm btn-danger" onclick="deleteDayBtn(event,${idx})">Delete</button>
+                    <div class="detail-field detail-full">
+                        <label>Gear Checklist</label>
+                        <div id="gear${idx}">${gearHtml}</div>
+                        <div class="gear-add">
+                            <input type="text" id="gearIn${idx}" placeholder="Add item…" onkeydown="if(event.key==='Enter'){addGear(${idx});event.preventDefault();}">
+                            <button class="btn btn-sm" onclick="addGear(${idx})">+ Add</button>
+                        </div>
                     </div>
                 </div>
+                <div class="detail-actions">
+                    ${editBtn}
+                    <button class="btn btn-sm btn-danger" onclick="deleteDay(event,${idx})">Delete</button>
+                </div>
             </div>
-            <span class="day-chevron">›</span>
-        </div>`;
-    });
-    el.innerHTML = html;
+        </div>
+        <span class="day-chevron">›</span>
+    </div>`;
 }
 
-// Track which card is expanded
-let expandedIdx = -1;
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
+// ── EXPAND ────────────────────────────────────────
 function toggleExpand(idx) {
-    const rows = document.querySelectorAll('.day-row');
-    if (expandedIdx === idx) {
-        // Collapse
-        rows.forEach(r => r.classList.remove('expanded'));
-        expandedIdx = -1;
-    } else {
-        rows.forEach(r => r.classList.remove('expanded'));
-        document.getElementById(`dayrow-${idx}`)?.classList.add('expanded');
-        expandedIdx = idx;
+    if(expandedIdx===idx){ document.getElementById(`dr${idx}`)?.classList.remove('expanded'); expandedIdx=-1; }
+    else {
+        if(expandedIdx>=0) document.getElementById(`dr${expandedIdx}`)?.classList.remove('expanded');
+        document.getElementById(`dr${idx}`)?.classList.add('expanded');
+        expandedIdx=idx;
     }
 }
 
-function saveDetail(idx, field, value) {
-    if (!state.plannedDays[idx].details) state.plannedDays[idx].details = {};
-    state.plannedDays[idx].details[field] = value;
-    saveState();
-}
-
-function renderBookingsHTML(bookings, idx) {
-    if (!bookings.length) return '';
-    return bookings.map((b, bi) => `
-        <div class="booking-card" id="booking-${idx}-${bi}">
-            <div class="bf">
-                <label>Hotel / Property</label>
-                <input type="text" value="${(b.name||'').replace(/"/g,'&quot;')}" placeholder="Hotel name"
-                    onchange="saveBookingField(${idx},${bi},'name',this.value)">
-            </div>
-            <div class="bf">
-                <label>Phone</label>
-                <input type="text" value="${(b.phone||'').replace(/"/g,'&quot;')}" placeholder="(555) 555-5555"
-                    onchange="saveBookingField(${idx},${bi},'phone',this.value)">
-            </div>
-            <div class="bf">
-                <label>Check-in / Check-out</label>
-                <div class="bf-dates">
-                    <input type="date" value="${b.checkin||''}"
-                        onchange="saveBookingField(${idx},${bi},'checkin',this.value)">
-                    <input type="date" value="${b.checkout||''}"
-                        onchange="saveBookingField(${idx},${bi},'checkout',this.value)">
-                </div>
-            </div>
-            <div class="bf">
-                <label>Confirmation #</label>
-                <input type="text" value="${(b.conf||'').replace(/"/g,'&quot;')}" placeholder="ABC123"
-                    onchange="saveBookingField(${idx},${bi},'conf',this.value)">
-            </div>
-            <button class="booking-remove" onclick="removeBooking(event,${idx},${bi})" title="Remove booking">✕</button>
-        </div>`).join('');
-}
-
-function addBooking(event, idx) {
-    event.stopPropagation();
-    if (!state.plannedDays[idx].details) state.plannedDays[idx].details = {};
-    if (!state.plannedDays[idx].details.bookings) state.plannedDays[idx].details.bookings = [];
-    state.plannedDays[idx].details.bookings.push({ name:'', phone:'', checkin:'', checkout:'', conf:'' });
-    saveState();
-    rerenderBookings(idx);
-}
-
-function removeBooking(event, idx, bi) {
-    event.stopPropagation();
-    state.plannedDays[idx].details.bookings.splice(bi, 1);
-    saveState();
-    rerenderBookings(idx);
-}
-
-function saveBookingField(idx, bi, field, value) {
-    if (!state.plannedDays[idx].details?.bookings?.[bi]) return;
-    state.plannedDays[idx].details.bookings[bi][field] = value;
-    saveState();
-}
-
-function rerenderBookings(idx) {
-    const container = document.getElementById(`bookings-${idx}`);
-    if (!container) return;
-    const bookings = state.plannedDays[idx]?.details?.bookings || [];
-    container.innerHTML = renderBookingsHTML(bookings, idx);
-}
-
-function addGear(idx) {
-    const input = document.getElementById(`gearinput-${idx}`);
-    const text = input.value.trim();
-    if (!text) return;
-    if (!state.plannedDays[idx].details) state.plannedDays[idx].details = {};
-    if (!state.plannedDays[idx].details.gear) state.plannedDays[idx].details.gear = [];
-    state.plannedDays[idx].details.gear.push({ text, done: false });
-    input.value = '';
-    saveState();
-    // Re-render just the gear list without collapsing
-    rerenderGear(idx);
-}
-
-function removeGear(event, idx, gi) {
-    event.stopPropagation();
-    state.plannedDays[idx].details.gear.splice(gi, 1);
-    saveState();
-    rerenderGear(idx);
-}
-
-function toggleGear(event, idx, gi) {
-    event.stopPropagation();
-    state.plannedDays[idx].details.gear[gi].done = event.target.checked;
-    const item = document.getElementById(`gear-${idx}-${gi}`);
-    if (item) item.classList.toggle('checked', event.target.checked);
-    saveState();
-}
-
-function rerenderGear(idx) {
-    const gear = state.plannedDays[idx]?.details?.gear || [];
-    const container = document.getElementById(`gearlist-${idx}`);
-    if (!container) return;
-    container.innerHTML = gear.map((item, gi) => `
-        <div class="checklist-item${item.done?' checked':''}" id="gear-${idx}-${gi}">
-            <input type="checkbox" ${item.done?'checked':''} onclick="toggleGear(event,${idx},${gi})">
-            <span>${item.text}</span>
-            <button class="btn btn-sm btn-danger" style="padding:2px 7px;font-size:10px;margin-left:auto" onclick="removeGear(event,${idx},${gi})">✕</button>
-        </div>`).join('');
-}
-
-function editDayBtn(event, idx) {
-    event.stopPropagation();
-    expandedIdx = -1;
-    editDay(idx);
-}
-
-function deleteDayBtn(event, idx) {
-    event.stopPropagation();
-    expandedIdx = -1;
-    deleteDay(idx);
-}
-
-// ═══════════════════════════════════════
-// BALANCE
-// ═══════════════════════════════════════
+// ── BALANCE EDIT ──────────────────────────────────
 function editBalance() {
-    const cur = currentBalance();
-    const input = prompt(
-        `Annual planning balance: ${fmtDays(state.rawBalance)}\n` +
-        `Currently used: ${fmtDays(totalPTOUsed())}\n` +
-        `Remaining: ${fmtDays(cur)}\n\n` +
-        `Enter corrected ANNUAL balance (full year grant):`,
-        state.rawBalance
-    );
-    if (input === null) return;
-    const val = parseFloat(input);
-    if (isNaN(val)) { alert('Invalid number.'); return; }
-    state.rawBalance = +val.toFixed(2);
+    const v=prompt(`Annual PTO grant: ${fmtD(S.rawBalance)}\nUsed: ${fmtD(ptoUsed())}\nRemaining: ${fmtD(remaining())}\n\nEnter corrected ANNUAL balance:`, S.rawBalance);
+    if(v===null) return;
+    const n=parseFloat(v);
+    if(isNaN(n)){ alert('Invalid number.'); return; }
+    S.rawBalance=n;
     saveState();
-    fullRefresh();
+    refresh();
 }
 
-// ═══════════════════════════════════════
-// FORM HELPERS
-// ═══════════════════════════════════════
-function syncEnd(type) {
-    if (type==='pto') {
-        const s=document.getElementById('ptoStart').value;
-        if(s) document.getElementById('ptoEnd').value=s;
-    } else {
-        const s=document.getElementById('nonptoStart').value;
-        if(s) document.getElementById('nonptoEnd').value=s;
-    }
-}
+// ── FORMS ─────────────────────────────────────────
+function syncEnd()    { const s=document.getElementById('ptoStart').value;    if(s) document.getElementById('ptoEnd').value=s; }
+function syncEndNon() { const s=document.getElementById('nonptoStart').value; if(s) document.getElementById('nonptoEnd').value=s; }
 
 function calcWD() {
-    const start=document.getElementById('ptoStart').value;
-    const end  =document.getElementById('ptoEnd').value;
-    const half =document.getElementById('ptoHalf').checked;
-    const box  =document.getElementById('ptoCalcBox');
-
-    if (!start||!end) { box.classList.add('hidden'); calcedDays=0; return; }
-    if (new Date(end)<new Date(start)) {
-        box.innerHTML='<span style="color:var(--danger)">End date is before start date</span>';
-        box.classList.remove('hidden'); calcedDays=0; return;
-    }
-
-    const totalCal = Math.floor((new Date(end+'T00:00:00')-new Date(start+'T00:00:00'))/86400000)+1;
-    const wdCount  = countWD(start, end);
-    calcedDays     = half ? +(wdCount/2).toFixed(2) : wdCount;
-
-    const wdStr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-        .filter((_,i)=>wds().includes(i)).join(', ');
-
-    box.innerHTML =
-        `<strong>Range:</strong> ${totalCal} calendar day${totalCal!==1?'s':''} &nbsp;·&nbsp; ` +
-        `<strong>Workdays (${wdStr}):</strong> ${wdCount} &nbsp;·&nbsp; ` +
-        (half ? `<strong>Half-day:</strong> ÷2 &nbsp;·&nbsp; ` : '') +
-        `<span class="deduct">Deduct: ${fmtDays(calcedDays)}</span>`;
+    const s=document.getElementById('ptoStart').value, e=document.getElementById('ptoEnd').value;
+    const half=document.getElementById('ptoHalf').checked;
+    const box=document.getElementById('calcBox');
+    if(!s||!e){ box.classList.add('hidden'); calcedDays=0; return; }
+    if(new Date(e)<new Date(s)){ box.innerHTML='<span style="color:var(--danger)">End date before start date</span>'; box.classList.remove('hidden'); calcedDays=0; return; }
+    const total=Math.floor((new Date(e+'T00:00:00')-new Date(s+'T00:00:00'))/86400000)+1;
+    const wdc=countWD(s,e);
+    calcedDays=half?+(wdc/2).toFixed(2):wdc;
+    const wdNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].filter((_,i)=>workDays().includes(i)).join(', ');
+    box.innerHTML=`<strong>Range:</strong> ${total} calendar day${total!==1?'s':''} &nbsp;·&nbsp; <strong>Workdays (${wdNames}):</strong> ${wdc} &nbsp;·&nbsp; <span class="calc-deduct">Deduct: ${fmtD(calcedDays)}</span>`;
     box.classList.remove('hidden');
 }
 
 function openForm(type) {
-    closeForm('pto'); closeForm('nonpto');
-    editingIdx=-1; calcedDays=0;
-    if (type==='pto') {
+    document.getElementById('ptoForm').classList.add('hidden');
+    document.getElementById('nonptoForm').classList.add('hidden');
+    editBackup=null; calcedDays=0;
+    if(type==='pto'){
         document.getElementById('ptoFormTitle').textContent='Plan PTO Days';
         ['ptoStart','ptoEnd','ptoPurpose','ptoNotes'].forEach(id=>document.getElementById(id).value='');
         document.getElementById('ptoHalf').checked=false;
-        document.getElementById('ptoCalcBox').classList.add('hidden');
-        document.getElementById('ptoWarnBox').innerHTML='';
+        document.getElementById('calcBox').classList.add('hidden');
+        document.getElementById('ptoWarn').innerHTML='';
         document.getElementById('ptoForm').classList.remove('hidden');
         document.getElementById('ptoForm').scrollIntoView({behavior:'smooth',block:'nearest'});
     } else {
@@ -1565,339 +780,329 @@ function openForm(type) {
 
 function closeForm(type) {
     document.getElementById(type==='pto'?'ptoForm':'nonptoForm').classList.add('hidden');
-    // If we were editing, restore the original entry
-    if (editingBackup) {
-        state.plannedDays.splice(editingBackup.idx, 0, editingBackup.entry);
-        state.plannedDays.sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
-        editingBackup = null;
+    if(editBackup){
+        S.plannedDays.splice(editBackup.idx,0,editBackup.entry);
+        S.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
+        editBackup=null;
     }
-    editingIdx = -1;
-    calcedDays = 0;
-    fullRefresh();
+    calcedDays=0;
+    refresh();
 }
 
-// ═══════════════════════════════════════
-// SAVE PTO
-// ═══════════════════════════════════════
+// ── SAVE PTO ──────────────────────────────────────
 function savePTO() {
-    const start   = document.getElementById('ptoStart').value;
-    const end     = document.getElementById('ptoEnd').value;
-    const purpose = document.getElementById('ptoPurpose').value.trim();
-    const notes   = document.getElementById('ptoNotes').value.trim();
-
-    if (!start||!end||!purpose) { alert('Fill in start date, end date, and purpose.'); return; }
-    if (new Date(end)<new Date(start)) { alert('End date must be on or after start date.'); return; }
-    if (calcedDays===0) { alert('No workdays in that range — no PTO would be deducted. Check your dates.'); return; }
-
-    // Compute projected balance after this addition
-    const projBal = currentBalance() - calcedDays;
-
-    if (projBal < 0) {
-        const resAvail = state.settings.reserveDays;
-        const resNeeded = Math.abs(projBal);
-        if (resNeeded > resAvail) {
-            if (!confirm(
-                `⚠ This exceeds your balance AND reserve.\n\n` +
-                `Deducting ${fmtDays(calcedDays)} from a balance of ${fmtDays(currentBalance())} ` +
-                `with only ${fmtDays(resAvail)} reserve available.\n\n` +
-                `Balance would reach ${fmtDays(projBal)}. Proceed anyway?`
-            )) return;
-        } else {
-            if (!confirm(
-                `⚠ Reserve Warning\n\n` +
-                `This ${fmtDays(calcedDays)} dips ${fmtDays(resNeeded)} into your ` +
-                `${fmtDays(resAvail)} emergency reserve.\n\nProceed?`
-            )) return;
-        }
+    const s=document.getElementById('ptoStart').value, e=document.getElementById('ptoEnd').value;
+    const purpose=document.getElementById('ptoPurpose').value.trim();
+    const notes=document.getElementById('ptoNotes').value.trim();
+    if(!s||!e||!purpose){ alert('Fill in start date, end date, and purpose.'); return; }
+    if(new Date(e)<new Date(s)){ alert('End date must be on or after start date.'); return; }
+    if(calcedDays===0){ alert('No workdays in that range — check your dates.'); return; }
+    const proj=remaining()-calcedDays;
+    if(proj<0){
+        const needed=Math.abs(proj), avail=S.settings.reserveDays;
+        const msg=needed>avail
+            ? `⚠ This exceeds your balance AND reserve.\nDeducting ${fmtD(calcedDays)} with only ${fmtD(remaining())} left and ${fmtD(avail)} reserve.\nBalance would reach ${fmtD(proj)}. Proceed?`
+            : `⚠ Reserve Warning\nThis dips ${fmtD(needed)} into your ${fmtD(avail)} emergency reserve. Proceed?`;
+        if(!confirm(msg)) return;
     }
-
-    const entry = {
-        type:'pto', startDate:start, endDate:end, purpose, notes,
-        daysUsed:calcedDays, autoHoliday:false, toriComing:false
-    };
-
-    if (editingIdx >= 0) {
-        state.plannedDays[editingIdx] = entry;
-        editingIdx = -1;
-    } else {
-        state.plannedDays.push(entry);
-    }
-
-    state.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
-    editingBackup = null;
-    closeForm('pto');
-    saveState();
-    fullRefresh();
+    const entry={type:'pto',startDate:s,endDate:e,purpose,notes,daysUsed:calcedDays,autoHoliday:false,toriComing:false,details:{}};
+    editBackup=null;
+    S.plannedDays.push(entry);
+    S.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
+    document.getElementById('ptoForm').classList.add('hidden');
+    calcedDays=0;
+    saveState(); refresh();
 }
 
-// ═══════════════════════════════════════
-// SAVE NON-PTO
-// ═══════════════════════════════════════
+// ── SAVE NON-PTO ──────────────────────────────────
 function saveNonPTO() {
-    const start   = document.getElementById('nonptoStart').value;
-    const end     = document.getElementById('nonptoEnd').value;
-    const purpose = document.getElementById('nonptoPurpose').value.trim();
-    const notes   = document.getElementById('nonptoNotes').value.trim();
-
-    if (!start||!end||!purpose) { alert('Fill in all required fields.'); return; }
-    if (new Date(end)<new Date(start)) { alert('End date must be on or after start date.'); return; }
-
-    const entry = {type:'non-pto',startDate:start,endDate:end,purpose,notes,daysUsed:0,autoHoliday:false,toriComing:false};
-
-    if (editingIdx >= 0) {
-        state.plannedDays[editingIdx] = entry;
-        editingIdx = -1;
-    } else {
-        state.plannedDays.push(entry);
-    }
-
-    state.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
-    editingBackup = null;
-    closeForm('nonpto');
-    saveState();
-    fullRefresh();
+    const s=document.getElementById('nonptoStart').value, e=document.getElementById('nonptoEnd').value;
+    const purpose=document.getElementById('nonptoPurpose').value.trim();
+    const notes=document.getElementById('nonptoNotes').value.trim();
+    if(!s||!e||!purpose){ alert('Fill in all fields.'); return; }
+    if(new Date(e)<new Date(s)){ alert('End date must be on or after start date.'); return; }
+    const entry={type:'non-pto',startDate:s,endDate:e,purpose,notes,daysUsed:0,autoHoliday:false,toriComing:false,details:{}};
+    editBackup=null;
+    S.plannedDays.push(entry);
+    S.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
+    document.getElementById('nonptoForm').classList.add('hidden');
+    saveState(); refresh();
 }
 
-// ═══════════════════════════════════════
-// EDIT / DELETE
-// ═══════════════════════════════════════
-function editDay(idx) {
-    const day = state.plannedDays[idx];
-    // Store backup and index so cancel can restore it
-    editingBackup = { entry: JSON.parse(JSON.stringify(day)), idx };
-    // Remove from array so balance calc reflects reality during the edit
-    state.plannedDays.splice(idx, 1);
-
-    if (day.type==='pto') {
-        document.getElementById('ptoFormTitle').textContent = 'Edit PTO Days';
-        document.getElementById('ptoStart').value   = day.startDate;
-        document.getElementById('ptoEnd').value     = day.endDate;
-        document.getElementById('ptoPurpose').value = day.purpose;
-        document.getElementById('ptoNotes').value   = day.notes||'';
-        document.getElementById('ptoHalf').checked  = false;
-        calcedDays = day.daysUsed;
-        document.getElementById('ptoCalcBox').classList.add('hidden');
-        document.getElementById('ptoWarnBox').innerHTML = '';
+// ── EDIT / DELETE ─────────────────────────────────
+function editDay(event, idx) {
+    event.stopPropagation();
+    const day=S.plannedDays[idx];
+    editBackup={ idx, entry:JSON.parse(JSON.stringify(day)) };
+    S.plannedDays.splice(idx,1);
+    expandedIdx=-1;
+    if(day.type==='pto'){
+        document.getElementById('ptoFormTitle').textContent='Edit PTO Days';
+        document.getElementById('ptoStart').value=day.startDate;
+        document.getElementById('ptoEnd').value=day.endDate;
+        document.getElementById('ptoPurpose').value=day.purpose;
+        document.getElementById('ptoNotes').value=day.notes||'';
+        document.getElementById('ptoHalf').checked=false;
+        calcedDays=day.daysUsed;
+        document.getElementById('calcBox').classList.add('hidden');
+        document.getElementById('ptoWarn').innerHTML='';
         document.getElementById('nonptoForm').classList.add('hidden');
         document.getElementById('ptoForm').classList.remove('hidden');
         document.getElementById('ptoForm').scrollIntoView({behavior:'smooth',block:'nearest'});
     } else {
-        document.getElementById('nonptoFormTitle').textContent = 'Edit Non-PTO Days';
-        document.getElementById('nonptoStart').value   = day.startDate;
-        document.getElementById('nonptoEnd').value     = day.endDate;
-        document.getElementById('nonptoPurpose').value = day.purpose;
-        document.getElementById('nonptoNotes').value   = day.notes||'';
+        document.getElementById('nonptoFormTitle').textContent='Edit Non-PTO Days';
+        document.getElementById('nonptoStart').value=day.startDate;
+        document.getElementById('nonptoEnd').value=day.endDate;
+        document.getElementById('nonptoPurpose').value=day.purpose;
+        document.getElementById('nonptoNotes').value=day.notes||'';
         document.getElementById('ptoForm').classList.add('hidden');
         document.getElementById('nonptoForm').classList.remove('hidden');
         document.getElementById('nonptoForm').scrollIntoView({behavior:'smooth',block:'nearest'});
     }
-    fullRefresh();
+    refresh();
 }
 
-function deleteDay(idx) {
-    const day = state.plannedDays[idx];
-    if (!confirm(`Delete "${day.purpose}"?`)) return;
-    state.plannedDays.splice(idx, 1);
+function deleteDay(event, idx) {
+    event.stopPropagation();
+    if(!confirm(`Delete "${S.plannedDays[idx].purpose}"?`)) return;
+    S.plannedDays.splice(idx,1);
+    if(expandedIdx===idx) expandedIdx=-1;
+    else if(expandedIdx>idx) expandedIdx--;
+    saveState(); refresh();
+}
+
+// ── DETAIL SAVE HELPERS ───────────────────────────
+function saveDet(idx, field, value) {
+    if(!S.plannedDays[idx].details) S.plannedDays[idx].details={};
+    S.plannedDays[idx].details[field]=value;
     saveState();
-    fullRefresh();
 }
 
-// ═══════════════════════════════════════
-// SETTINGS
-// ═══════════════════════════════════════
+function addBooking(event, idx) {
+    event.stopPropagation();
+    if(!S.plannedDays[idx].details) S.plannedDays[idx].details={};
+    if(!S.plannedDays[idx].details.bookings) S.plannedDays[idx].details.bookings=[];
+    S.plannedDays[idx].details.bookings.push({name:'',phone:'',checkin:'',checkout:'',conf:''});
+    saveState();
+    rerenderBookings(idx);
+}
+
+function removeBooking(event, idx, bi) {
+    event.stopPropagation();
+    S.plannedDays[idx].details.bookings.splice(bi,1);
+    saveState();
+    rerenderBookings(idx);
+}
+
+function saveBooking(idx, bi, field, value) {
+    if(!S.plannedDays[idx]?.details?.bookings?.[bi]) return;
+    S.plannedDays[idx].details.bookings[bi][field]=value;
+    saveState();
+}
+
+function rerenderBookings(idx) {
+    const el=document.getElementById(`bookings${idx}`);
+    if(!el) return;
+    const bookings=S.plannedDays[idx]?.details?.bookings||[];
+    el.innerHTML=bookings.map((b,bi)=>`
+        <div class="booking-card" id="bc${idx}-${bi}">
+            <div class="booking-row">
+                <div class="booking-field"><label>Hotel / Property</label><input type="text" value="${esc(b.name||'')}" placeholder="Hotel name" onchange="saveBooking(${idx},${bi},'name',this.value)" onclick="event.stopPropagation()"></div>
+                <div class="booking-field"><label>Phone</label><input type="text" value="${esc(b.phone||'')}" placeholder="(555) 555-5555" onchange="saveBooking(${idx},${bi},'phone',this.value)" onclick="event.stopPropagation()"></div>
+            </div>
+            <div class="booking-dates">
+                <div class="booking-field"><label>Check-in</label><input type="date" value="${b.checkin||''}" onchange="saveBooking(${idx},${bi},'checkin',this.value)" onclick="event.stopPropagation()"></div>
+                <div class="booking-field"><label>Check-out</label><input type="date" value="${b.checkout||''}" onchange="saveBooking(${idx},${bi},'checkout',this.value)" onclick="event.stopPropagation()"></div>
+            </div>
+            <div class="booking-row">
+                <div class="booking-field"><label>Confirmation #</label><input type="text" value="${esc(b.conf||'')}" placeholder="ABC123" onchange="saveBooking(${idx},${bi},'conf',this.value)" onclick="event.stopPropagation()"></div>
+                <div style="display:flex;align-items:flex-end;padding-bottom:2px;"><button class="btn btn-sm btn-danger" onclick="removeBooking(event,${idx},${bi})">Remove</button></div>
+            </div>
+        </div>`).join('');
+}
+
+function addGear(idx) {
+    const inp=document.getElementById(`gearIn${idx}`);
+    const text=inp?.value.trim();
+    if(!text) return;
+    if(!S.plannedDays[idx].details) S.plannedDays[idx].details={};
+    if(!S.plannedDays[idx].details.gear) S.plannedDays[idx].details.gear=[];
+    S.plannedDays[idx].details.gear.push({text,done:false});
+    inp.value='';
+    saveState();
+    rerenderGear(idx);
+}
+
+function removeGear(event, idx, gi) {
+    event.stopPropagation();
+    S.plannedDays[idx].details.gear.splice(gi,1);
+    saveState();
+    rerenderGear(idx);
+}
+
+function toggleGear(event, idx, gi) {
+    event.stopPropagation();
+    S.plannedDays[idx].details.gear[gi].done=event.target.checked;
+    document.getElementById(`gi${idx}-${gi}`)?.classList.toggle('done',event.target.checked);
+    saveState();
+}
+
+function rerenderGear(idx) {
+    const el=document.getElementById(`gear${idx}`);
+    if(!el) return;
+    const gear=S.plannedDays[idx]?.details?.gear||[];
+    el.innerHTML=gear.map((g,gi)=>`
+        <div class="gear-item${g.done?' done':''}" id="gi${idx}-${gi}">
+            <input type="checkbox" ${g.done?'checked':''} onclick="toggleGear(event,${idx},${gi})">
+            <span>${g.text}</span>
+            <button class="btn btn-sm btn-danger" style="margin-left:auto;padding:2px 7px;" onclick="removeGear(event,${idx},${gi})">✕</button>
+        </div>`).join('');
+}
+
+// ── SETTINGS ──────────────────────────────────────
 function toggleSettings() {
-    const p = document.getElementById('settingsPanel');
-    if (p.classList.contains('hidden')) openSettings(); else p.classList.add('hidden');
+    const p=document.getElementById('settingsPanel');
+    if(p.classList.contains('hidden')){ openSettings(); } else { p.classList.add('hidden'); }
 }
 
 function openSettings() {
-    const s = state.settings;
-    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach((n,i)=>{
-        document.getElementById('wd'+n).checked = s.workDays.includes(i);
-    });
-    document.getElementById('setAnnual').value    = s.annualPTO;
-    document.getElementById('setReserve').value   = s.reserveDays;
-    document.getElementById('setYearMonth').value = s.yearStartMonth;
-    document.getElementById('setYearDay').value   = s.yearStartDay;
+    const s=S.settings;
+    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach((n,i)=>{ document.getElementById('wd'+n).checked=s.workDays.includes(i); });
+    document.getElementById('setAnnual').value=s.annualPTO;
+    document.getElementById('setReserve').value=s.reserveDays;
+    document.getElementById('setYearMonth').value=s.yearStartMonth;
+    document.getElementById('setYearDay').value=s.yearStartDay;
     renderHEntries(s.holidays);
     document.getElementById('settingsPanel').classList.remove('hidden');
     document.getElementById('settingsPanel').scrollIntoView({behavior:'smooth'});
 }
 
-function cancelSettings() {
-    document.getElementById('settingsPanel').classList.add('hidden');
-}
-
-const DYN_OPTS = [
-    {value:'dynamic-thanksgiving', label:'Thanksgiving (4th Thu of Nov)'},
-    {value:'dynamic-christmas',    label:'Christmas (Dec 25)'},
-    {value:'dynamic-newyears',     label:"New Year's Day (Jan 1)"},
-    {value:'dynamic-laborday',     label:'Labor Day (1st Mon of Sep)'},
-    {value:'dynamic-memorialday',  label:'Memorial Day (Last Mon of May)'},
-    {value:'dynamic-july4',        label:'July 4th'},
+const DYN_OPTS=[
+    {value:'dynamic-thanksgiving',label:'Thanksgiving (4th Thu of Nov)'},
+    {value:'dynamic-christmas',label:'Christmas (Dec 25)'},
+    {value:'dynamic-newyears',label:"New Year's Day (Jan 1)"},
+    {value:'dynamic-laborday',label:'Labor Day (1st Mon of Sep)'},
+    {value:'dynamic-memorialday',label:'Memorial Day (Last Mon of May)'},
+    {value:'dynamic-july4',label:'July 4th'},
 ];
 
 function renderHEntries(holidays) {
-    const c = document.getElementById('holidayEntries');
-    c.innerHTML = '';
-    holidays.forEach((h,i)=>c.insertAdjacentHTML('beforeend',buildHEntry(h,i)));
-}
-
-function buildHEntry(h, idx) {
-    const isDyn = h.date.startsWith('dynamic-');
-    const opts  = DYN_OPTS.map(o=>`<option value="${o.value}"${h.date===o.value?' selected':''}>${o.label}</option>`).join('');
-    const dateFld = isDyn
-        ? `<select>${opts}</select>`
-        : `<input type="date" value="${h.date}">`;
-    return `<div class="h-entry" id="he${idx}">
-        <input type="text" value="${h.name}" placeholder="Holiday name" style="flex:1">
-        ${dateFld}
-        <button class="btn btn-sm btn-danger" onclick="removeHEntry(${idx})" style="flex-shrink:0">✕</button>
-    </div>`;
-}
-
-function addHolidayEntry() {
-    const cur = collectHEntries();
-    cur.push({name:'',date:'dynamic-thanksgiving'});
-    renderHEntries(cur);
-}
-
-function removeHEntry(idx) {
-    const cur = collectHEntries();
-    cur.splice(idx,1);
-    renderHEntries(cur);
+    document.getElementById('holidayEntries').innerHTML=holidays.map((h,i)=>`
+        <div class="h-entry" id="he${i}">
+            <input type="text" value="${esc(h.name)}" placeholder="Name" style="flex:1;">
+            ${h.date.startsWith('dynamic-')
+                ? `<select style="flex:2;">${DYN_OPTS.map(o=>`<option value="${o.value}"${h.date===o.value?' selected':''}>${o.label}</option>`).join('')}</select>`
+                : `<input type="date" value="${h.date}" style="flex:2;">`}
+            <button class="btn btn-sm btn-danger" onclick="removeHEntry(${i})">✕</button>
+        </div>`).join('');
 }
 
 function collectHEntries() {
     return Array.from(document.getElementById('holidayEntries').querySelectorAll('.h-entry')).map(el=>({
-        name: el.querySelector('input[type="text"]')?.value.trim()||'',
-        date: el.querySelector('select')?.value || el.querySelector('input[type="date"]')?.value||''
-    })).filter(h=>h.name||h.date);
+        name:el.querySelector('input[type=text]')?.value.trim()||'',
+        date:el.querySelector('select')?.value||el.querySelector('input[type=date]')?.value||''
+    })).filter(h=>h.name&&h.date);
 }
+
+function addHEntry() { const cur=collectHEntries(); cur.push({name:'',date:'dynamic-thanksgiving'}); renderHEntries(cur); }
+function removeHEntry(i) { const cur=collectHEntries(); cur.splice(i,1); renderHEntries(cur); }
 
 function saveSettings() {
-    const workDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-        .map((n,i)=>document.getElementById('wd'+n).checked?i:null).filter(i=>i!==null);
-    if (!workDays.length) { alert('Select at least one work day.'); return; }
-
-    const annualPTO      = parseFloat(document.getElementById('setAnnual').value);
-    const reserveDays    = parseFloat(document.getElementById('setReserve').value);
-    const yearStartMonth = parseInt(document.getElementById('setYearMonth').value);
-    const yearStartDay   = parseInt(document.getElementById('setYearDay').value);
-    if (isNaN(annualPTO)||annualPTO<0)   { alert('Invalid annual PTO.'); return; }
-    if (isNaN(reserveDays)||reserveDays<0){ alert('Invalid reserve days.'); return; }
-
-    const holidays = collectHEntries().filter(h=>h.name&&h.date);
-    state.settings = {workDays,annualPTO,reserveDays,yearStartMonth,yearStartDay,holidays};
-
-    // Drop old auto-holidays and re-evaluate
-    state.plannedDays = state.plannedDays.filter(d=>!d.autoHoliday);
-
+    const wds=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>document.getElementById('wd'+n).checked?i:null).filter(i=>i!==null);
+    if(!wds.length){ alert('Select at least one work day.'); return; }
+    const annual=parseFloat(document.getElementById('setAnnual').value);
+    const reserve=parseFloat(document.getElementById('setReserve').value);
+    const ym=parseInt(document.getElementById('setYearMonth').value);
+    const yd=parseInt(document.getElementById('setYearDay').value);
+    if(isNaN(annual)||annual<0){ alert('Invalid annual PTO.'); return; }
+    if(isNaN(reserve)||reserve<0){ alert('Invalid reserve.'); return; }
+    S.settings={workDays:wds,annualPTO:annual,reserveDays:reserve,yearStartMonth:ym,yearStartDay:yd,holidays:collectHEntries().filter(h=>h.name&&h.date)};
+    S.plannedDays=S.plannedDays.filter(d=>!d.autoHoliday);
     document.getElementById('settingsPanel').classList.add('hidden');
     saveState();
-    checkAndPromptHolidays();
-    fullRefresh();
+    checkAndPromptHols();
+    refresh();
 }
 
-// ═══════════════════════════════════════
-// HOLIDAYS VIEW
-// ═══════════════════════════════════════
+// ── HOLIDAYS VIEW ─────────────────────────────────
 function showHolidays() {
-    const today = new Date();
-    const years = [today.getFullYear(), today.getFullYear()+1, today.getFullYear()+2];
-    const wdStr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-        .filter((_,i)=>wds().includes(i)).join(', ');
-
-    let html = `<div class="alert alert-info">Your workdays: <strong style="color:var(--text-bright)">${wdStr}</strong><br>
-        Holidays marked ⚠ fall on a workday and require PTO.</div>`;
-    html += '<div class="hol-grid">';
-
-    years.forEach(yr => {
-        state.settings.holidays.forEach(h => {
-            const ds = resolveHoliday(h, yr);
-            if (!ds) return;
-            const onWD = isWorkDay(ds);
-            html += `<div class="hol-item${onWD?' needs-pto':''}">
+    const today=new Date(), years=[today.getFullYear(),today.getFullYear()+1,today.getFullYear()+2];
+    const wdStr=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].filter((_,i)=>workDays().includes(i)).join(', ');
+    let html=`<div class="alert alert-info">Your workdays: <strong style="color:var(--text-bright)">${wdStr}</strong></div><div class="hol-grid">`;
+    years.forEach(yr=>{
+        S.settings.holidays.forEach(h=>{
+            const ds=resolveHol(h,yr);
+            if(!ds) return;
+            const onWD=isWD(ds);
+            html+=`<div class="hol-item${onWD?' needs-pto':''}">
                 <div class="hol-name">${h.name} ${yr}</div>
-                <div class="hol-date">${fmtDateFull(ds)}</div>
-                <div class="${onWD?'hol-warn':'hol-ok'}">${onWD?'⚠ Workday — PTO required':'✓ Day off — no PTO'}</div>
+                <div style="color:var(--text-dim);font-size:11px;">${fmtDateLong(ds)}</div>
+                <div class="${onWD?'hol-warn':'hol-ok'}">${onWD?'⚠ Workday — PTO required':'✓ Day off'}</div>
             </div>`;
         });
     });
-
-    html += '</div>';
-    document.getElementById('holidayContent').innerHTML = html;
+    html+='</div>';
+    document.getElementById('holidayContent').innerHTML=html;
     document.getElementById('holidaysModal').classList.remove('hidden');
     document.getElementById('holidaysModal').scrollIntoView({behavior:'smooth'});
 }
 
-// ═══════════════════════════════════════
-// PROJECTIONS
-// ═══════════════════════════════════════
+// ── PROJECTIONS ───────────────────────────────────
 function showProjections() {
-    const s      = state.settings;
-    const today  = new Date();
-    const bal    = currentBalance();
-    const resRem = reserveRemaining();
-    const resUsed= reserveUsed();
-    const used   = totalPTOUsed();
+    const s=S.settings, today=new Date();
+    const bal=remaining(), ru=resUsed(), rl=resLeft(), used=ptoUsed();
+    let nxt=new Date(today.getFullYear(),s.yearStartMonth-1,s.yearStartDay);
+    if(nxt<=today) nxt=new Date(today.getFullYear()+1,s.yearStartMonth-1,s.yearStartDay);
+    const payback=ru, nextPlan=+(s.annualPTO-payback).toFixed(2);
 
-    let nextStart = new Date(today.getFullYear(), s.yearStartMonth-1, s.yearStartDay);
-    if (nextStart <= today) nextStart = new Date(today.getFullYear()+1, s.yearStartMonth-1, s.yearStartDay);
-
-    let html = `<div class="proj-block">
+    let html=`<div class="proj-block">
         <div class="proj-block-title">Current Status</div>
-        <div class="proj-line ${bal<0?'neg':bal<=3?'warn':'ok'}"><span>Planning Balance</span><span>${fmtDays(bal)}</span></div>
-        <div class="proj-line"><span>Reserve Remaining</span><span>${fmtDays(resRem)}</span></div>
-        <div class="proj-line ${resUsed>0?'warn':''}"><span>Reserve In Use</span><span>${fmtDays(resUsed)}</span></div>
-        <div class="proj-line"><span>Total PTO Planned</span><span>${fmtDays(used)}</span></div>
+        <div class="proj-line ${bal<0?'neg':bal<=3?'warn':'ok'}"><span>Remaining Balance</span><span>${fmtD(bal)}</span></div>
+        <div class="proj-line"><span>Reserve Remaining</span><span>${fmtD(rl)}</span></div>
+        <div class="proj-line ${ru>0?'warn':''}"><span>Reserve In Use</span><span>${fmtD(ru)}</span></div>
+        <div class="proj-line"><span>Total PTO Planned</span><span>${fmtD(used)}</span></div>
     </div>`;
 
-    const ptoTrips = state.plannedDays.filter(d=>d.type==='pto');
-    if (ptoTrips.length) {
-        html += `<div class="proj-block"><div class="proj-block-title">Planned PTO</div>`;
-        ptoTrips.forEach(t => {
-            const ds = t.startDate===t.endDate ? fmtDate(t.startDate) : `${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}`;
-            html += `<div class="proj-line"><span>${t.purpose} (${ds})</span><span>${fmtDays(t.daysUsed)}${t.autoHoliday?' ★':''}</span></div>`;
+    const ptoTrips=S.plannedDays.filter(d=>d.type==='pto');
+    if(ptoTrips.length){
+        html+=`<div class="proj-block"><div class="proj-block-title">Planned PTO</div>`;
+        ptoTrips.forEach(t=>{
+            const ds=t.startDate===t.endDate?fmtDate(t.startDate):`${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}`;
+            html+=`<div class="proj-line"><span>${t.purpose} (${ds})</span><span>${fmtD(t.daysUsed)}${t.autoHoliday?' ★':''}</span></div>`;
         });
-        html += '</div>';
+        html+='</div>';
     }
 
-    const nonTrips = state.plannedDays.filter(d=>d.type==='non-pto');
-    if (nonTrips.length) {
-        html += `<div class="proj-block"><div class="proj-block-title">Non-PTO Days (no impact)</div>`;
-        nonTrips.forEach(t => {
-            const ds = t.startDate===t.endDate ? fmtDate(t.startDate) : `${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}`;
-            html += `<div class="proj-line"><span>${t.purpose} (${ds})</span><span>—</span></div>`;
+    const nonTrips=S.plannedDays.filter(d=>d.type==='non-pto');
+    if(nonTrips.length){
+        html+=`<div class="proj-block"><div class="proj-block-title">Non-PTO Days</div>`;
+        nonTrips.forEach(t=>{
+            const ds=t.startDate===t.endDate?fmtDate(t.startDate):`${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}`;
+            html+=`<div class="proj-line"><span>${t.purpose} (${ds})</span><span>—</span></div>`;
         });
-        html += '</div>';
+        html+='</div>';
     }
 
-    const payback  = resUsed;
-    const nextPlan = +(s.annualPTO - payback).toFixed(2);
-    html += `<div class="proj-block">
-        <div class="proj-block-title">Next PTO Year — ${monthName(s.yearStartMonth)} ${s.yearStartDay}, ${nextStart.getFullYear()}</div>
-        <div class="proj-line"><span>Annual Grant</span><span>${fmtDays(s.annualPTO)}</span></div>
-        ${payback>0?`<div class="proj-line warn"><span>Reserve Payback</span><span>−${fmtDays(payback)}</span></div>`:''}
-        <div class="proj-line ok"><span>Planning Allowance</span><span>${fmtDays(nextPlan)}</span></div>
-        <div class="proj-line"><span>Reserve (restored)</span><span>${fmtDays(s.reserveDays)}</span></div>
+    html+=`<div class="proj-block">
+        <div class="proj-block-title">Next Year — ${monthName(s.yearStartMonth)} ${s.yearStartDay}, ${nxt.getFullYear()}</div>
+        <div class="proj-line"><span>Annual Grant</span><span>${fmtD(s.annualPTO)}</span></div>
+        ${payback>0?`<div class="proj-line warn"><span>Reserve Payback</span><span>−${fmtD(payback)}</span></div>`:''}
+        <div class="proj-line ok"><span>Planning Allowance</span><span>${fmtD(nextPlan)}</span></div>
+        <div class="proj-line"><span>Reserve (restored)</span><span>${fmtD(s.reserveDays)}</span></div>
     </div>`;
+    if(ru>0) html+=`<div class="alert alert-warn">⚠ ${fmtD(ru)} of reserve in use this year — next year's planning allowance will be reduced by that amount as payback.</div>`;
 
-    if (resUsed>0) html += `<div class="alert alert-warn">⚠ You've used ${fmtDays(resUsed)} of reserve this year. Your planning allowance next year will be reduced by that amount as payback.</div>`;
-
-    document.getElementById('projectionsContent').innerHTML = html;
+    document.getElementById('projectionsContent').innerHTML=html;
     document.getElementById('projectionsModal').classList.remove('hidden');
     document.getElementById('projectionsModal').scrollIntoView({behavior:'smooth'});
 }
 
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
+// ── INIT ──────────────────────────────────────────
 async function init() {
-    document.getElementById('mainView').classList.remove('hidden');
+    refresh(); // show empty state immediately
     await loadState();
-    checkAndPromptHolidays();
-    fullRefresh();
+    checkAndPromptHols();
+    refresh();
 }
 
 init();
