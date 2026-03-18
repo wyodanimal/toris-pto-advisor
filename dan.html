@@ -428,9 +428,10 @@ function resLeft()   { return +Math.max(0, S.settings.reserveDays - resUsed()).t
 function workDays()  { return S.settings.workDays; }
 function isWD(ds)    { return workDays().includes(new Date(ds+'T00:00:00').getDay()); }
 
-function countWD(s, e) {
+function countWD(s, e, wds) {
+    const wd=wds||workDays();
     let n=0, cur=new Date(s+'T00:00:00'), fin=new Date(e+'T00:00:00');
-    while(cur<=fin){ if(workDays().includes(cur.getDay())) n++; cur.setDate(cur.getDate()+1); }
+    while(cur<=fin){ if(wd.includes(cur.getDay())) n++; cur.setDate(cur.getDate()+1); }
     return n;
 }
 
@@ -1018,6 +1019,17 @@ function saveSettings() {
     if(isNaN(reserve)||reserve<0){ alert('Invalid reserve.'); return; }
     S.settings={workDays:wds,annualPTO:annual,reserveDays:reserve,yearStartMonth:ym,yearStartDay:yd,holidays:collectHEntries().filter(h=>h.name&&h.date)};
     S.plannedDays=S.plannedDays.filter(d=>!d.autoHoliday);
+    // Recalculate future PTO trips with new work schedule
+    const today=new Date(); today.setHours(0,0,0,0);
+    let changed=0;
+    S.plannedDays.forEach(d=>{
+        if(d.type!=='pto'||d.autoHoliday) return;
+        if(new Date(d.startDate+'T00:00:00')<today) return;
+        const old=d.daysUsed;
+        d.daysUsed=countWD(d.startDate,d.endDate,wds);
+        if(d.daysUsed!==old) changed++;
+    });
+    if(changed>0) alert('Work schedule updated — '+changed+' upcoming trip'+(changed!==1?'s':'')+' recalculated.');
     document.getElementById('settingsPanel').classList.add('hidden');
     saveState();
     checkAndPromptHols();
