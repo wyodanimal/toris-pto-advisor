@@ -145,7 +145,6 @@
             color: #155724;
         }
         
-        /* Condensed trip cards */
         .trip-card {
             background: #e8f0ff;
             padding: 10px 12px;
@@ -248,7 +247,6 @@
             margin-bottom: 10px;
         }
         
-        /* Projection table styling */
         .projection-table {
             width: 100%;
             border-collapse: collapse;
@@ -322,7 +320,6 @@
             background: #138496;
         }
         
-        /* Inline edit form */
         .edit-form-inline {
             background: #fff9e6;
             border: 2px solid #17a2b8;
@@ -339,6 +336,14 @@
             margin-bottom: 15px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             border: 2px solid #667eea;
+        }
+
+        .status-bar {
+            font-size: 12px;
+            color: #888;
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -377,6 +382,7 @@
                     <h2 id="mainBalance">73:20</h2>
                     <p>Current PTO Balance (click to edit)</p>
                 </div>
+                <div id="saveStatus" class="status-bar"></div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                     <button onclick="showPlanPTO()">📅 Plan New PTO</button>
@@ -399,8 +405,8 @@
                     </div>
                     
                     <div class="form-group hidden" id="adminHoursGroup">
-                        <label>Admin Hours to Use</label>
-                        <input type="number" id="adminHours" step="0.01" min="0" placeholder="e.g., 12">
+                        <label>Admin Hours to Use (HH:MM or decimal)</label>
+                        <input type="text" id="adminHours" placeholder="e.g., 12:00 or 12">
                         <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">Remaining hours will be deducted from PTO</p>
                     </div>
                     
@@ -478,15 +484,9 @@
         let editingIndex = -1;
         let originalTrip = null;
 
-        // =====================================================
-        // FIX: Parse date strings as LOCAL time, not UTC.
-        // "2026-06-23" parsed with new Date() = UTC midnight,
-        // which in Mountain Time (UTC-6/7) displays as June 22.
-        // This helper adds T00:00:00 to force local interpretation.
-        // =====================================================
+        // Parse date strings as LOCAL time to avoid UTC timezone shift
         function parseLocalDate(dateStr) {
             if (!dateStr) return new Date();
-            // Append local midnight time so JS doesn't shift to UTC
             return new Date(dateStr + 'T00:00:00');
         }
 
@@ -495,7 +495,6 @@
             return parseLocalDate(dateStr).toLocaleDateString('en-US', options);
         }
         
-        // Get emoji for trip destination
         function getEmojiForDestination(destination) {
             const lower = destination.toLowerCase();
             if (lower.includes('camp')) return '⛺';
@@ -508,12 +507,19 @@
             return '✈️';
         }
         
-        // Sync end date to start date
         function syncEndDate() {
             const startDate = document.getElementById('startDate').value;
             if (startDate) {
                 document.getElementById('endDate').value = startDate;
             }
+        }
+
+        // Set status bar message
+        function setStatus(msg, isError = false) {
+            const el = document.getElementById('saveStatus');
+            if (!el) return;
+            el.textContent = msg;
+            el.style.color = isError ? '#dc3545' : '#888';
         }
         
         // Get OAuth access token
@@ -561,6 +567,10 @@
             });
             
             const data = await response.json();
+            if (!data.access_token) {
+                console.error('Token error:', data);
+                throw new Error('Failed to get access token');
+            }
             accessToken = data.access_token;
             setTimeout(() => { accessToken = null; }, 3500 * 1000);
             
@@ -570,6 +580,7 @@
         // Load state from Google Sheets
         async function loadState() {
             try {
+                setStatus('Loading...');
                 const token = await getAccessToken();
                 
                 const balanceResponse = await fetch(
@@ -607,17 +618,23 @@
                         }));
                 }
                 
+                setStatus(`Loaded • ${new Date().toLocaleTimeString()}`);
                 console.log('✓ Loaded from Google Sheets');
             } catch (error) {
                 console.error('Error loading:', error);
+                setStatus('⚠️ Could not load from Sheets — check console', true);
             }
         }
         
         // Save state to Google Sheets
+        // FIX: The original code used `/values/RANGE:clear` which is wrong.
+        // The correct endpoint is `/values:clear` with the range in the request body.
         async function saveState() {
             try {
+                setStatus('Saving...');
                 const token = await getAccessToken();
                 
+                // Save balance
                 await fetch(
                     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BALANCE}!B1?valueInputOption=RAW`,
                     {
@@ -630,11 +647,16 @@
                     }
                 );
                 
+                // FIX: Correct clear endpoint — range goes in body, not appended to URL
                 await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:K1000:clear`,
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values:clear`,
                     {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` }
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ range: `${SHEET_TRIPS}!A2:K1000` })
                     }
                 );
                 
@@ -666,25 +688,35 @@
                     );
                 }
                 
+                setStatus(`Saved ✓ • ${new Date().toLocaleTimeString()}`);
                 console.log('✓ Saved to Google Sheets');
             } catch (error) {
                 console.error('Error saving:', error);
+                setStatus('⚠️ Save failed — check console', true);
             }
         }
         
-        // Format hours to "HH:MM"
+        // Format hours to "HH:MM" — used everywhere for display
         function formatHours(hours) {
-            const wholeHours = Math.floor(hours);
-            const minutes = Math.round((hours - wholeHours) * 60);
-            return `${wholeHours}:${minutes.toString().padStart(2, '0')}`;
+            if (hours === null || hours === undefined || isNaN(hours)) return '0:00';
+            const wholeHours = Math.floor(Math.abs(hours));
+            const minutes = Math.round((Math.abs(hours) - wholeHours) * 60);
+            const sign = hours < 0 ? '-' : '';
+            return `${sign}${wholeHours}:${minutes.toString().padStart(2, '0')}`;
         }
         
-        // Parse user input
+        // Format hours as "HH:MM (X days)"
+        function formatHoursWithDays(hours) {
+            const days = (hours / 8).toFixed(1);
+            return `${formatHours(hours)} (${days} days)`;
+        }
+
+        // Parse user input — accepts HH:MM or decimal
         function parseHoursInput(input) {
             if (!input) return null;
             input = input.trim();
             
-            const colonMatch = input.match(/(\d+):(\d+)/);
+            const colonMatch = input.match(/^(\d+):(\d+)$/);
             if (colonMatch) {
                 const hours = parseInt(colonMatch[1]);
                 const minutes = parseInt(colonMatch[2]);
@@ -739,7 +771,7 @@
             return holidays;
         }
         
-        // Count weekdays - FIX: use parseLocalDate to avoid timezone shift
+        // Count weekdays between two date strings
         function countWeekdays(startDate, endDate) {
             let count = 0;
             let current = parseLocalDate(startDate);
@@ -754,7 +786,7 @@
             return count;
         }
         
-        // Get monthly accrual
+        // Get monthly accrual rate for a given date
         function getMonthlyAccrual(date) {
             const checkDate = new Date(date);
             const may2027 = new Date(2027, 4, 1);
@@ -766,7 +798,7 @@
             return 10 + (cyclesPassed + 1) * 2;
         }
         
-        // Check holiday proximity - FIX: use parseLocalDate
+        // Check holiday proximity
         function checkHolidayProximity(startDate, endDate) {
             const start = parseLocalDate(startDate);
             const end = parseLocalDate(endDate);
@@ -793,7 +825,7 @@
                     } else {
                         warnings.push({
                             type: 'warning',
-                            message: `⚠️ ${holiday.name} is on ${holidayDate.toLocaleDateString()}. Consider adjusting your dates to include this holiday!`
+                            message: `⚠️ ${holiday.name} is on ${holidayDate.toLocaleDateString()}. Consider adjusting dates to include this holiday!`
                         });
                     }
                 }
@@ -802,7 +834,7 @@
             return warnings;
         }
         
-        // Get projected balance
+        // Get projected balance at a given date (after accruals, before deductions)
         function getProjectedBalance(targetDate) {
             const today = new Date();
             const target = parseLocalDate(targetDate);
@@ -820,7 +852,7 @@
             return balance;
         }
         
-        // Get PTO between dates
+        // Get planned trips between two dates
         function getPTOBetween(startDate, endDate) {
             return state.plannedTrips.filter(trip => {
                 const tripStart = parseLocalDate(trip.startDate);
@@ -853,7 +885,7 @@
             displayPlannedTrips();
         }
         
-        // Display planned trips for validation - FIX: use formatDateForDisplay
+        // Display planned trips for validation step
         function displayPlannedTrips() {
             const section = document.getElementById('plannedTripsSection');
             
@@ -885,7 +917,7 @@
             }
         }
         
-        // Modify trip (from validation screen)
+        // Modify trip from validation screen
         function modifyTrip(idx) {
             const trip = state.plannedTrips[idx];
             
@@ -896,7 +928,7 @@
             document.getElementById('reservations').value = trip.reservations || '';
             
             if (trip.type === 'split') {
-                document.getElementById('adminHours').value = trip.adminHours || 0;
+                document.getElementById('adminHours').value = formatHours(trip.adminHours || 0);
                 toggleAdminHoursInput();
             }
             
@@ -910,7 +942,7 @@
             showPlanPTO();
         }
         
-        // Delete planned trip
+        // Delete planned trip (validation screen)
         function deletePlannedTrip(idx) {
             if (confirm('Cancel this trip?')) {
                 state.plannedTrips.splice(idx, 1);
@@ -919,7 +951,7 @@
             }
         }
         
-        // Validate planned PTO
+        // Proceed from validation to main
         function validatePlannedPTO() {
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.remove('hidden');
@@ -927,7 +959,7 @@
             displayMainTrips();
         }
         
-        // Display main trips - FIX: use formatDateForDisplay
+        // Display main trips list
         function displayMainTrips(editIdx = -1, editFormHtml = '') {
             const container = document.getElementById('mainTripsList');
             
@@ -942,7 +974,6 @@
                     html += editFormHtml;
                 }
                 
-                // FIX: Use formatDateForDisplay instead of new Date(trip.startDate)
                 const dateStr = trip.startDate === trip.endDate
                     ? formatDateForDisplay(trip.startDate, { month: 'short', day: 'numeric' })
                     : `${formatDateForDisplay(trip.startDate, { month: 'short', day: 'numeric' })}-${formatDateForDisplay(trip.endDate, { month: 'short', day: 'numeric' })}`;
@@ -991,8 +1022,8 @@
                     </div>
                     
                     <div class="form-group ${trip.type !== 'split' ? 'hidden' : ''}" id="adminHoursGroupEdit">
-                        <label>Admin Hours</label>
-                        <input type="number" id="adminHoursEdit" step="0.01" value="${trip.adminHours || 0}">
+                        <label>Admin Hours (HH:MM or decimal)</label>
+                        <input type="text" id="adminHoursEdit" value="${formatHours(trip.adminHours || 0)}">
                     </div>
                     
                     <div class="form-group">
@@ -1033,7 +1064,6 @@
             else group.classList.add('hidden');
         }
         
-        // Cancel edit - restore original trip
         function cancelEdit() {
             if (originalTrip !== null) {
                 state.plannedTrips[editingIndex] = originalTrip;
@@ -1049,7 +1079,8 @@
             const endDate = document.getElementById('endDateEdit').value;
             const destination = document.getElementById('destinationEdit').value;
             const reservations = document.getElementById('reservationsEdit').value;
-            const adminHours = type === 'split' ? parseFloat(document.getElementById('adminHoursEdit').value) || 0 : 0;
+            const adminHoursRaw = document.getElementById('adminHoursEdit').value;
+            const adminHours = type === 'split' ? (parseHoursInput(adminHoursRaw) || 0) : 0;
             
             if (!startDate || !endDate || !destination) {
                 alert('Please fill in all fields');
@@ -1098,7 +1129,7 @@
             alert('✅ Trip updated');
         }
         
-        // Delete main trip
+        // Delete trip from main screen
         function deleteMainTrip(idx) {
             if (confirm('Delete this trip?')) {
                 state.plannedTrips.splice(idx, 1);
@@ -1107,21 +1138,21 @@
             }
         }
         
-        // Update main balance
+        // Update main balance display
         function updateMainBalance() {
             document.getElementById('mainBalance').textContent = formatHours(state.currentBalance);
         }
         
-        // Edit balance
+        // Edit balance via prompt
         function editBalance() {
-            const newBalance = prompt(`Update PTO balance:\n\n(Current: ${formatHours(state.currentBalance)})\n\nEnter new balance:`, formatHours(state.currentBalance));
+            const newBalance = prompt(`Update PTO balance:\n\n(Current: ${formatHours(state.currentBalance)})\n\nEnter new balance (HH:MM or decimal):`, formatHours(state.currentBalance));
             
             if (newBalance === null) return;
             
             const parsed = parseHoursInput(newBalance);
             
             if (parsed === null || parsed < 0) {
-                alert('Please enter a valid balance');
+                alert('Please enter a valid balance (e.g. 73:20 or 73.33)');
                 return;
             }
             
@@ -1136,7 +1167,7 @@
             alert(`✅ Balance updated to ${formatHours(parsed)}`);
         }
         
-        // Show plan PTO
+        // Show plan PTO form
         function showPlanPTO() {
             document.getElementById('planPTOCard').classList.remove('hidden');
             document.getElementById('ptoWarnings').innerHTML = '';
@@ -1148,7 +1179,6 @@
             document.getElementById('planPTOCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
-        // Toggle admin hours input
         function toggleAdminHoursInput() {
             const type = document.getElementById('ptoType').value;
             const group = document.getElementById('adminHoursGroup');
@@ -1160,14 +1190,15 @@
             }
         }
         
-        // Save planned PTO
+        // Save new planned PTO
         function savePlannedPTO() {
             const type = document.getElementById('ptoType').value;
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             const destination = document.getElementById('destination').value;
             const reservations = document.getElementById('reservations').value;
-            const adminHours = type === 'split' ? parseFloat(document.getElementById('adminHours').value) || 0 : 0;
+            const adminHoursRaw = document.getElementById('adminHours').value;
+            const adminHours = type === 'split' ? (parseHoursInput(adminHoursRaw) || 0) : 0;
             
             if (!startDate || !endDate || !destination) {
                 alert('Please fill in all required fields');
@@ -1175,7 +1206,7 @@
             }
             
             if (type === 'split' && adminHours <= 0) {
-                alert('Please enter admin hours');
+                alert('Please enter admin hours (e.g. 12:00 or 12)');
                 return;
             }
             
@@ -1183,7 +1214,7 @@
             const totalHours = daysUsed * 8;
             
             if (type === 'split' && adminHours >= totalHours) {
-                alert(`Admin hours must be less than total (${formatHours(totalHours)})`);
+                alert(`Admin hours must be less than total hours for this period (${formatHours(totalHours)})`);
                 return;
             }
             
@@ -1203,7 +1234,7 @@
             const availableBalance = projectedBalance - priorPTOUsed;
             
             if ((type === 'pto' || type === 'split') && ptoHours > availableBalance) {
-                alert(`Insufficient PTO.\n\nProjected: ${formatHours(projectedBalance)}\nPlanned: ${formatHours(priorPTOUsed)}\nAvailable: ${formatHours(availableBalance)}\nNeeded: ${formatHours(ptoHours)}\n\nShortfall: ${formatHours(ptoHours - availableBalance)}`);
+                alert(`Insufficient PTO.\n\nProjected balance: ${formatHours(projectedBalance)}\nAlready planned: ${formatHours(priorPTOUsed)}\nAvailable: ${formatHours(availableBalance)}\nNeeded: ${formatHours(ptoHours)}\n\nShortfall: ${formatHours(ptoHours - availableBalance)}`);
                 return;
             }
             
@@ -1231,11 +1262,11 @@
             if (type === 'admin') {
                 alert('✅ Admin time saved (no PTO impact)');
             } else {
-                alert(`✅ PTO saved\n\nProjected: ${formatHours(projectedBalance)}\nUsed: ${formatHours(ptoHours)}\nRemaining: ${formatHours(availableBalance - ptoHours)}`);
+                alert(`✅ PTO saved\n\nProjected balance: ${formatHours(projectedBalance)}\nUsed: ${formatHours(ptoHours)}\nRemaining after: ${formatHours(availableBalance - ptoHours)}`);
             }
         }
         
-        // Cancel plan PTO
+        // Reset/clear plan PTO form
         function cancelPlanPTO() {
             document.getElementById('planPTOCard').classList.add('hidden');
             document.getElementById('startDate').value = '';
@@ -1247,7 +1278,7 @@
             document.getElementById('adminHoursGroup').classList.add('hidden');
         }
         
-        // Show holidays
+        // Show holidays list
         function showHolidays() {
             const currentYear = new Date().getFullYear();
             const holidays = [...getHolidays(currentYear), ...getHolidays(currentYear + 1), ...getHolidays(currentYear + 2)];
@@ -1271,11 +1302,12 @@
             document.getElementById('holidaysCard').classList.add('hidden');
         }
         
-        // Show projections
+        // Show 24-month projections
         function showProjections() {
             let html = '<div class="projection">';
             html += '<h4>Current Balance</h4>';
-            html += `<p><strong>${formatHours(state.currentBalance)}</strong> (${(state.currentBalance / 8).toFixed(1)} days)</p>`;
+            // FIX: use formatHoursWithDays instead of decimal division inline
+            html += `<p><strong>${formatHoursWithDays(state.currentBalance)}</strong></p>`;
             html += '</div>';
             
             const projections = [];
@@ -1317,21 +1349,24 @@
             html += '<div class="projection">';
             html += '<h4>24-Month Projection</h4>';
             html += '<table class="projection-table">';
-            html += '<tr><th>Month</th><th>Accrual</th><th>PTO Used</th><th>Balance</th><th>Days</th></tr>';
+            // FIX: removed "Days" column — balance in HH:MM is self-explanatory; days shown in tooltip via title
+            html += '<tr><th>Month</th><th>Accrual</th><th>PTO Used</th><th>Balance</th></tr>';
             
             projections.forEach(p => {
                 const rowClass = p.hasPTO ? 'has-pto' : '';
+                // FIX: all values use formatHours
+                const accrualCell = `+${formatHours(p.accrual)}`;
                 const ptoCell = p.ptoUsed > 0 
                     ? `<span class="pto-used">-${formatHours(p.ptoUsed)}</span><br><span class="trip-name">${p.tripNames.join(', ')}</span>`
                     : '-';
+                const balanceDays = (p.balance / 8).toFixed(1);
                 
                 html += `
-                    <tr class="${rowClass}">
+                    <tr class="${rowClass}" title="${balanceDays} days">
                         <td>${p.month}</td>
-                        <td>+${formatHours(p.accrual)}</td>
+                        <td>${accrualCell}</td>
                         <td>${ptoCell}</td>
                         <td><strong>${formatHours(p.balance)}</strong></td>
-                        <td>${(p.balance / 8).toFixed(1)}</td>
                     </tr>
                 `;
             });
@@ -1340,13 +1375,13 @@
             html += '</div>';
             
             html += '<div class="alert alert-info">';
-            html += '<strong>📅 Accrual Increase:</strong> Starting May 1, 2027, monthly accrual increases to 12 hrs/month. Increases every 4 years.';
+            html += '<strong>📅 Accrual Increase:</strong> Starting May 1, 2027, monthly accrual increases to 12:00/month. Increases every 4 years after that.';
             html += '</div>';
             
             const maxProjected = Math.max(...projections.map(p => p.balance));
             if (maxProjected >= 380) {
                 html += '<div class="alert alert-warning">';
-                html += '<strong>⚠️ Approaching Cap:</strong> You are approaching the 400-hour cap. Consider using PTO to avoid losing accrual.';
+                html += '<strong>⚠️ Approaching Cap:</strong> You are approaching the 400:00 hour cap. Consider using PTO to avoid losing accrual.';
                 html += '</div>';
             }
             
@@ -1358,7 +1393,7 @@
             document.getElementById('projectionsCard').classList.add('hidden');
         }
         
-        // Initialize
+        // Initialize — load from Sheets, then populate Step 1 with current balance
         async function init() {
             await loadState();
             document.getElementById('currentBalance').value = formatHours(state.currentBalance);
