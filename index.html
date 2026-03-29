@@ -464,8 +464,8 @@
     <script>
         // Google Sheets Configuration
         const SPREADSHEET_ID = '107ByQVrvKaBV-IgB9WzSKJnTx5k-9m-VXNg6j25WEec';
-        const SHEET_BALANCE = 'Balance';
-        const SHEET_TRIPS = 'Trips';
+        const SHEET_BALANCE = 'Tori_Balance';
+        const SHEET_TRIPS = 'Tori_Trips';
         
         // Service Account Credentials
         const SERVICE_ACCOUNT = {
@@ -590,7 +590,13 @@
                 const balanceData = await balanceResponse.json();
                 
                 if (balanceData.values && balanceData.values[0] && balanceData.values[0][0]) {
-                    state.currentBalance = parseFloat(balanceData.values[0][0]);
+                    const raw = String(balanceData.values[0][0]);
+                    const parts = raw.split(":");
+                    if (parts.length >= 2) {
+                        state.currentBalance = parseInt(parts[0]) + parseInt(parts[1]) / 60;
+                    } else {
+                        state.currentBalance = parseFloat(raw) || state.currentBalance;
+                    }
                 }
                 
                 const tripsResponse = await fetch(
@@ -647,16 +653,16 @@
                     }
                 );
                 
-                // FIX: Correct clear endpoint — range goes in body, not appended to URL
+                // Use the range-appended clear URL pattern (works with CORS from browser)
                 await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values:clear`,
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_TRIPS}!A2:K1000:clear`,
                     {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ range: `${SHEET_TRIPS}!A2:K1000` })
+                        body: JSON.stringify({})
                     }
                 );
                 
