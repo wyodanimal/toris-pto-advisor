@@ -41,7 +41,7 @@
         .app { max-width:900px; margin:0 auto; padding:24px 20px 60px; }
 
         /* BALANCE STRIP */
-        .bal-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:20px; }
+        .bal-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:20px; }
         .bal-cell { background:var(--surface); padding:18px 22px; }
         .bal-cell.clickable { cursor:pointer; }
         .bal-cell.clickable:hover { background:var(--surface2); }
@@ -199,6 +199,18 @@
         .prompt-item-date { color:var(--text-dim); font-size:11px; margin-top:2px; }
         .overlay-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:16px; }
 
+        /* YEAR NAV */
+        .year-nav { display:flex; align-items:center; gap:10px; margin-bottom:12px; font-family:var(--mono); flex-wrap:wrap; }
+        .yn-label { font-size:12px; font-weight:500; color:var(--text-bright); }
+        .yn-range { font-size:11px; color:var(--text-dim); }
+        .yn-badge { font-size:9px; letter-spacing:1px; padding:2px 6px; border-radius:3px; background:var(--ok-dim); color:var(--ok); border:1px solid rgba(76,175,130,0.35); }
+        .yn-badge.future { background:var(--accent-dim); color:var(--accent); border-color:var(--accent-dim); }
+        .yn-badge.past { background:var(--surface3); color:var(--text-dim); border-color:var(--border); }
+        .tag-emerg { background:var(--danger-dim); color:var(--danger); border:1px solid rgba(224,82,82,0.35); }
+        .m-emerg { color:var(--danger); }
+        .day-row.emerg { border-left:3px solid var(--danger); }
+        @media(max-width:760px) { .bal-strip { grid-template-columns:repeat(2,1fr); } }
+
         .hidden { display:none !important; }
         ::-webkit-scrollbar { width:5px; }
         ::-webkit-scrollbar-track { background:var(--bg); }
@@ -218,16 +230,29 @@
 <div class="app">
 
     <!-- BALANCE STRIP -->
+    <div class="year-nav">
+        <button class="btn btn-sm" onclick="shiftYear(-1)" title="Previous PTO year">‹</button>
+        <span class="yn-label" id="ynLabel">—</span>
+        <span class="yn-range" id="ynRange"></span>
+        <span class="yn-badge" id="ynBadge"></span>
+        <button class="btn btn-sm" onclick="shiftYear(1)" title="Next PTO year">›</button>
+        <button class="btn btn-sm btn-ghost hidden" id="ynToday" onclick="goCurrentYear()">Back to current</button>
+    </div>
     <div class="bal-strip">
-        <div class="bal-cell clickable" onclick="editBalance()" title="Click to edit">
-            <div class="bal-label">Remaining Balance ✎</div>
+        <div class="bal-cell">
+            <div class="bal-label">Remaining Balance</div>
             <div class="bal-val" id="dispBal">—</div>
-            <div class="bal-sub">of <span id="dispAnnual">—</span> annual</div>
+            <div class="bal-sub" id="dispBalSub">plannable — reserve excluded</div>
         </div>
         <div class="bal-cell">
             <div class="bal-label">Emergency Reserve</div>
             <div class="bal-val accent" id="dispRes">—</div>
             <div class="bal-sub" id="dispResSub">—</div>
+        </div>
+        <div class="bal-cell clickable" onclick="editBalance()" title="Click to edit this PTO year's grant">
+            <div class="bal-label">Total Available ✎</div>
+            <div class="bal-val" id="dispTotal">—</div>
+            <div class="bal-sub">of <span id="dispAnnual">—</span> granted</div>
         </div>
         <div class="bal-cell">
             <div class="bal-label">PTO Planned</div>
@@ -261,6 +286,10 @@
         <div class="check-row">
             <input type="checkbox" id="ptoHalf" onchange="calcWD();">
             <label for="ptoHalf">Half day — divide PTO by 2</label>
+        </div>
+        <div class="check-row">
+            <input type="checkbox" id="ptoEmerg" onchange="calcWD();">
+            <label for="ptoEmerg">Emergency — take from reserve, not remaining balance</label>
         </div>
         <div id="calcBox" class="calc-box hidden"></div>
         <div class="form-group">
@@ -307,7 +336,7 @@
     </div>
 
     <!-- DAYS LIST -->
-    <div class="list-header">Planned Days</div>
+    <div class="list-header" id="listHeader">Planned Days</div>
     <div id="daysList"></div>
 
     <!-- SETTINGS -->
@@ -328,8 +357,8 @@
         <div class="settings-block">
             <div class="settings-block-title">PTO Allocation</div>
             <div class="form-row">
-                <div class="form-group"><label>Annual PTO (days)</label><input type="number" id="setAnnual" step="0.5" value="37"></div>
-                <div class="form-group"><label>Reserve Days</label><input type="number" id="setReserve" step="0.5" value="5"></div>
+                <div class="form-group"><label>Default Annual Grant (days)</label><input type="number" id="setAnnual" step="0.5" value="37"></div>
+                <div class="form-group"><label>Emergency Reserve (set aside)</label><input type="number" id="setReserve" step="0.5" value="5"></div>
             </div>
         </div>
         <div class="settings-block">
@@ -374,7 +403,7 @@
 <div id="holidayOverlay" class="overlay hidden">
     <div class="overlay-card">
         <div class="overlay-title">⚠ Holiday Falls on a Workday</div>
-        <div class="overlay-body">These paid holidays fall on your scheduled workdays this year. Add them as PTO?</div>
+        <div class="overlay-body">These paid holidays fall on your scheduled workdays this PTO year or next. Add them as PTO?</div>
         <div id="promptItems"></div>
         <div class="overlay-actions">
             <button class="btn btn-ghost" onclick="dismissPrompt()">Skip</button>
@@ -419,10 +448,51 @@ let editBackup = null;
 let pendingHols = [];
 
 // ── COMPUTED ─────────────────────────────────────
-function ptoUsed()   { return +S.plannedDays.filter(d=>d.type==='pto').reduce((s,d)=>s+(d.daysUsed||0),0).toFixed(2); }
-function remaining() { return +(S.rawBalance - ptoUsed()).toFixed(2); }
-function resUsed()   { const r=remaining(); return r<0 ? +Math.abs(r).toFixed(2) : 0; }
-function resLeft()   { return +Math.max(0, S.settings.reserveDays - resUsed()).toFixed(2); }
+// PTO years are keyed by the calendar year they START in.
+// With a Feb 1 start: PTO year 2026 = Feb 1 2026 – Jan 31 2027.
+let viewYear = null;
+
+function yearKeyOf(ds) {
+    const d=new Date(ds+'T00:00:00'), s=S.settings;
+    const start=new Date(d.getFullYear(), s.yearStartMonth-1, s.yearStartDay);
+    return d>=start ? d.getFullYear() : d.getFullYear()-1;
+}
+function todayStr() { const t=new Date(); return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; }
+function curYearKey() { return yearKeyOf(todayStr()); }
+function yearRange(yk) {
+    const s=S.settings;
+    return { start:new Date(yk, s.yearStartMonth-1, s.yearStartDay), end:new Date(yk+1, s.yearStartMonth-1, s.yearStartDay-1) };
+}
+function yearLabel(yk) {
+    const {start,end}=yearRange(yk);
+    const f=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    return `${f(start)} – ${f(end)}`;
+}
+// Grant for a PTO year: per-year override if set, otherwise the default annual grant
+function grantFor(yk) {
+    const yb=S.settings.yearBalances||{};
+    return yb[yk]!==undefined ? +yb[yk] : +S.settings.annualPTO;
+}
+function isEmerg(d) { return !!(d.details&&d.details.emergency); }
+function yearPTO(yk) { return S.plannedDays.filter(d=>d.type==='pto'&&yearKeyOf(d.startDate)===yk); }
+
+// Reserve is carved OUT of the grant. Regular PTO only hits Remaining.
+// Emergency PTO hits Reserve first; anything past the reserve spills into Remaining.
+function yearStats(yk) {
+    const r2=n=>+(+n).toFixed(2);
+    const grant=grantFor(yk), reserve=+S.settings.reserveDays||0;
+    const trips=yearPTO(yk);
+    const regular=trips.filter(d=>!isEmerg(d)).reduce((s,d)=>s+(d.daysUsed||0),0);
+    const emerg=trips.filter(isEmerg).reduce((s,d)=>s+(d.daysUsed||0),0);
+    const resUsed=Math.min(emerg,reserve), overflow=emerg-resUsed;
+    return {
+        grant:r2(grant), reserve:r2(reserve), regular:r2(regular), emerg:r2(emerg),
+        resUsed:r2(resUsed), resLeft:r2(reserve-resUsed), overflow:r2(overflow),
+        remaining:r2(grant-reserve-regular-overflow),
+        total:r2(grant-regular-emerg),
+        used:r2(regular+emerg), count:trips.length
+    };
+}
 
 // ── DATE HELPERS ──────────────────────────────────
 function workDays()  { return S.settings.workDays; }
@@ -480,8 +550,9 @@ function getWorkYear() {
 
 // ── HOLIDAY PROMPT ────────────────────────────────
 function buildPendingHols() {
-    const today = new Date();
-    const { start, end } = getWorkYear();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const cy = curYearKey();
+    const start = yearRange(cy).start, end = yearRange(cy+1).end;
     const years = new Set();
     for(let y=start.getFullYear(); y<=end.getFullYear(); y++) years.add(y);
     const results = [];
@@ -553,6 +624,7 @@ async function getToken() {
 
 // ── LOAD / SAVE ───────────────────────────────────
 async function loadState() {
+    let loaded = false;
     setStatus('Syncing…');
     try {
         const tk = await getToken();
@@ -573,9 +645,16 @@ async function loadState() {
             }));
         }
         setStatus('Synced ✓');
+        loaded = true;
     } catch(e) {
         setStatus('Offline');
         console.error(e);
+    }
+    // One-time migration: the old single balance becomes the current PTO year's grant
+    if(!S.settings.yearBalances || typeof S.settings.yearBalances!=='object') {
+        S.settings.yearBalances = {};
+        S.settings.yearBalances[curYearKey()] = S.rawBalance;
+        if(loaded) await saveState();
     }
 }
 
@@ -583,6 +662,7 @@ async function saveState() {
     setStatus('Saving…');
     try {
         const tk = await getToken();
+        S.rawBalance = grantFor(curYearKey());
         await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_BAL}!B1:B2?valueInputOption=RAW`,
             {method:'PUT',headers:{Authorization:`Bearer ${tk}`,'Content-Type':'application/json'},
              body:JSON.stringify({values:[[S.rawBalance],[JSON.stringify(S.settings)]]})});
@@ -606,34 +686,52 @@ function setStatus(msg) { document.getElementById('hStatus').textContent = msg; 
 
 // ── REFRESH ───────────────────────────────────────
 function refresh() {
+    if(viewYear===null) viewYear=curYearKey();
+    const cy=curYearKey(), st=yearStats(viewYear);
+
+    // Year nav
+    document.getElementById('ynLabel').textContent=`PTO Year ${viewYear}`;
+    document.getElementById('ynRange').textContent=yearLabel(viewYear);
+    const badge=document.getElementById('ynBadge');
+    badge.textContent=viewYear===cy?'CURRENT':viewYear>cy?'UPCOMING':'PAST';
+    badge.className='yn-badge'+(viewYear>cy?' future':viewYear<cy?' past':'');
+    document.getElementById('ynToday').classList.toggle('hidden',viewYear===cy);
+
     // Balance strip
-    const bal=remaining(), ru=resUsed(), rl=resLeft(), used=ptoUsed();
-    const ptoCount=S.plannedDays.filter(d=>d.type==='pto').length;
     const balEl=document.getElementById('dispBal');
-    balEl.textContent=fmtD(bal);
-    balEl.className='bal-val'+(bal<0?' neg':bal<=3?' warn':' ok');
-    document.getElementById('dispAnnual').textContent=fmtD(S.rawBalance);
+    balEl.textContent=fmtD(st.remaining);
+    balEl.className='bal-val'+(st.remaining<0?' neg':st.remaining<=3?' warn':' ok');
+    document.getElementById('dispBalSub').textContent=st.overflow>0?`incl. ${fmtD(st.overflow)} emergency overflow`:'plannable — reserve excluded';
     const resEl=document.getElementById('dispRes');
-    resEl.textContent=fmtD(rl);
-    resEl.className='bal-val'+(ru>0?' warn':' accent');
-    document.getElementById('dispResSub').textContent=ru>0?`${fmtD(ru)} in use`:'untouched';
-    document.getElementById('dispUsed').textContent=fmtD(used);
-    document.getElementById('dispUsedSub').textContent=`${ptoCount} trip${ptoCount!==1?'s':''}`;
+    resEl.textContent=fmtD(st.resLeft);
+    resEl.className='bal-val'+(st.resUsed>0?' warn':' accent');
+    document.getElementById('dispResSub').textContent=st.resUsed>0?`${fmtD(st.resUsed)} used of ${fmtD(st.reserve)}`:`of ${fmtD(st.reserve)} — untouched`;
+    const totEl=document.getElementById('dispTotal');
+    totEl.textContent=fmtD(st.total);
+    totEl.className='bal-val'+(st.total<0?' neg':'');
+    document.getElementById('dispAnnual').textContent=fmtD(st.grant);
+    document.getElementById('dispUsed').textContent=fmtD(st.used);
+    document.getElementById('dispUsedSub').textContent=`${st.count} trip${st.count!==1?'s':''}`;
+    document.getElementById('listHeader').textContent=`Planned Days — PTO Year ${viewYear}`;
 
     // Days list
     renderList();
 }
 
+function shiftYear(n) { viewYear+=n; expandedIdx=-1; refresh(); }
+function goCurrentYear() { viewYear=curYearKey(); expandedIdx=-1; refresh(); }
+
 // ── RENDER LIST ───────────────────────────────────
 function renderList() {
     const el=document.getElementById('daysList');
-    if(!S.plannedDays.length){ el.innerHTML='<div class="empty-state">No days planned yet. Hit + Plan PTO to get started.</div>'; return; }
-    el.innerHTML = S.plannedDays.map((d,idx)=>renderRow(d,idx)).join('');
+    const items=S.plannedDays.map((d,idx)=>({d,idx})).filter(x=>yearKeyOf(x.d.startDate)===viewYear);
+    if(!items.length){ el.innerHTML=`<div class="empty-state">Nothing planned for PTO year ${viewYear} yet. Hit + Plan PTO to get started.</div>`; return; }
+    el.innerHTML = items.map(x=>renderRow(x.d,x.idx)).join('');
     if(expandedIdx>=0) document.getElementById(`dr${expandedIdx}`)?.classList.add('expanded');
 }
 
 function renderRow(d, idx) {
-    const isPTO=d.type==='pto', isAuto=!!d.autoHoliday;
+    const isPTO=d.type==='pto', isAuto=!!d.autoHoliday, isEm=isPTO&&isEmerg(d);
     const single=d.startDate===d.endDate;
     const dateStr=single?fmtDate(d.startDate):`${fmtDate(d.startDate)} – ${fmtDate(d.endDate)}`;
     const calDays=Math.floor((new Date(d.endDate+'T00:00:00')-new Date(d.startDate+'T00:00:00'))/86400000)+1;
@@ -641,12 +739,12 @@ function renderRow(d, idx) {
     const gear=det.gear||[];
     const bookings=det.bookings||[];
 
-    const rowCls=['day-row',isPTO?'':'non-pto',isAuto?'holiday-flag':''].filter(Boolean).join(' ');
+    const rowCls=['day-row',isPTO?'':'non-pto',isAuto?'holiday-flag':'',isEm?'emerg':''].filter(Boolean).join(' ');
     const nameCls=isHunting(d.purpose)?'day-name hunting':'day-name';
-    const tag=isAuto?'<span class="type-tag tag-holiday">HOLIDAY</span>':isPTO?'<span class="type-tag tag-pto">PTO</span>':'<span class="type-tag tag-off">OFF</span>';
+    const tag=isAuto?'<span class="type-tag tag-holiday">HOLIDAY</span>':isEm?'<span class="type-tag tag-emerg">EMERG</span>':isPTO?'<span class="type-tag tag-pto">PTO</span>':'<span class="type-tag tag-off">OFF</span>';
 
     let meta=`<span class="m-date">${dateStr}</span>`;
-    if(isPTO){ meta+=`<span class="m-pto">${fmtD(d.daysUsed)} PTO</span>`; if(isAuto) meta+=`<span class="m-auto">auto-added</span>`; }
+    if(isPTO){ meta+=isEm?`<span class="m-emerg">${fmtD(d.daysUsed)} from reserve</span>`:`<span class="m-pto">${fmtD(d.daysUsed)} PTO</span>`; if(isAuto) meta+=`<span class="m-auto">auto-added</span>`; }
     else meta+=`<span class="m-off">No PTO</span>`;
 
     // Bookings HTML
@@ -732,11 +830,13 @@ function toggleExpand(idx) {
 
 // ── BALANCE EDIT ──────────────────────────────────
 function editBalance() {
-    const v=prompt(`Annual PTO grant: ${fmtD(S.rawBalance)}\nUsed: ${fmtD(ptoUsed())}\nRemaining: ${fmtD(remaining())}\n\nEnter corrected ANNUAL balance:`, S.rawBalance);
+    const st=yearStats(viewYear);
+    const v=prompt(`PTO year ${viewYear} (${yearLabel(viewYear)})\n\nGranted: ${fmtD(st.grant)}\nEmergency reserve set aside: ${fmtD(st.reserve)}\nPlanned: ${fmtD(st.used)}\nRemaining (plannable): ${fmtD(st.remaining)}\n\nEnter TOTAL days granted for this PTO year (reserve included):`, st.grant);
     if(v===null) return;
     const n=parseFloat(v);
     if(isNaN(n)){ alert('Invalid number.'); return; }
-    S.rawBalance=n;
+    if(!S.settings.yearBalances) S.settings.yearBalances={};
+    S.settings.yearBalances[viewYear]=n;
     saveState();
     refresh();
 }
@@ -755,7 +855,8 @@ function calcWD() {
     const wdc=countWD(s,e);
     calcedDays=half?+(wdc/2).toFixed(2):wdc;
     const wdNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].filter((_,i)=>workDays().includes(i)).join(', ');
-    box.innerHTML=`<strong>Range:</strong> ${total} calendar day${total!==1?'s':''} &nbsp;·&nbsp; <strong>Workdays (${wdNames}):</strong> ${wdc} &nbsp;·&nbsp; <span class="calc-deduct">Deduct: ${fmtD(calcedDays)}</span>`;
+    const yk=yearKeyOf(s), emerg=document.getElementById('ptoEmerg').checked;
+    box.innerHTML=`<strong>Range:</strong> ${total} calendar day${total!==1?'s':''} &nbsp;·&nbsp; <strong>Workdays (${wdNames}):</strong> ${wdc} &nbsp;·&nbsp; <span class="calc-deduct">Deduct: ${fmtD(calcedDays)}${emerg?' from reserve':''}</span><br><strong>Counts against:</strong> PTO year ${yk} (${yearLabel(yk)})`;
     box.classList.remove('hidden');
 }
 
@@ -767,6 +868,7 @@ function openForm(type) {
         document.getElementById('ptoFormTitle').textContent='Plan PTO Days';
         ['ptoStart','ptoEnd','ptoPurpose','ptoNotes'].forEach(id=>document.getElementById(id).value='');
         document.getElementById('ptoHalf').checked=false;
+        document.getElementById('ptoEmerg').checked=false;
         document.getElementById('calcBox').classList.add('hidden');
         document.getElementById('ptoWarn').innerHTML='';
         document.getElementById('ptoForm').classList.remove('hidden');
@@ -798,20 +900,28 @@ function savePTO() {
     if(!s||!e||!purpose){ alert('Fill in start date, end date, and purpose.'); return; }
     if(new Date(e)<new Date(s)){ alert('End date must be on or after start date.'); return; }
     if(calcedDays===0){ alert('No workdays in that range — check your dates.'); return; }
-    const proj=remaining()-calcedDays;
-    if(proj<0){
-        const needed=Math.abs(proj), avail=S.settings.reserveDays;
-        const msg=needed>avail
-            ? `⚠ This exceeds your balance AND reserve.\nDeducting ${fmtD(calcedDays)} with only ${fmtD(remaining())} left and ${fmtD(avail)} reserve.\nBalance would reach ${fmtD(proj)}. Proceed?`
-            : `⚠ Reserve Warning\nThis dips ${fmtD(needed)} into your ${fmtD(avail)} emergency reserve. Proceed?`;
-        if(!confirm(msg)) return;
+    const emerg=document.getElementById('ptoEmerg').checked;
+    const yk=yearKeyOf(s), st=yearStats(yk);
+    if(emerg){
+        if(calcedDays>st.resLeft){
+            const over=+(calcedDays-st.resLeft).toFixed(2);
+            if(!confirm(`⚠ Emergency reserve short\nPTO year ${yk} has ${fmtD(st.resLeft)} of reserve left.\nThe extra ${fmtD(over)} will come out of your remaining balance (${fmtD(st.remaining)} → ${fmtD(+(st.remaining-over).toFixed(2))}).\n\nProceed?`)) return;
+        }
+    } else if(calcedDays>st.remaining){
+        const proj=+(st.remaining-calcedDays).toFixed(2);
+        if(!confirm(`⚠ Over your remaining balance\nPTO year ${yk}: ${fmtD(st.remaining)} remaining, this needs ${fmtD(calcedDays)}.\nRemaining would go to ${fmtD(proj)}.\n\nRegular PTO does NOT touch your ${fmtD(st.resLeft)} emergency reserve. If this really is an emergency, cancel and tick the Emergency box.\n\nSave anyway?`)) return;
     }
-    const entry={type:'pto',startDate:s,endDate:e,purpose,notes,daysUsed:calcedDays,autoHoliday:false,toriComing:false,details:{}};
+    // Keep bookings/gear/notes when editing an existing trip
+    const keep=editBackup?editBackup.entry:null;
+    const details=Object.assign({}, (keep&&keep.details)||{});
+    if(emerg) details.emergency=true; else delete details.emergency;
+    const entry={type:'pto',startDate:s,endDate:e,purpose,notes,daysUsed:calcedDays,autoHoliday:false,toriComing:keep?!!keep.toriComing:false,details};
     editBackup=null;
     S.plannedDays.push(entry);
     S.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
     document.getElementById('ptoForm').classList.add('hidden');
     calcedDays=0;
+    viewYear=yk; expandedIdx=-1;
     saveState(); refresh();
 }
 
@@ -822,11 +932,15 @@ function saveNonPTO() {
     const notes=document.getElementById('nonptoNotes').value.trim();
     if(!s||!e||!purpose){ alert('Fill in all fields.'); return; }
     if(new Date(e)<new Date(s)){ alert('End date must be on or after start date.'); return; }
-    const entry={type:'non-pto',startDate:s,endDate:e,purpose,notes,daysUsed:0,autoHoliday:false,toriComing:false,details:{}};
+    const keep=editBackup?editBackup.entry:null;
+    const details=Object.assign({}, (keep&&keep.details)||{});
+    delete details.emergency;
+    const entry={type:'non-pto',startDate:s,endDate:e,purpose,notes,daysUsed:0,autoHoliday:false,toriComing:keep?!!keep.toriComing:false,details};
     editBackup=null;
     S.plannedDays.push(entry);
     S.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
     document.getElementById('nonptoForm').classList.add('hidden');
+    viewYear=yearKeyOf(s); expandedIdx=-1;
     saveState(); refresh();
 }
 
@@ -844,6 +958,7 @@ function editDay(event, idx) {
         document.getElementById('ptoPurpose').value=day.purpose;
         document.getElementById('ptoNotes').value=day.notes||'';
         document.getElementById('ptoHalf').checked=false;
+        document.getElementById('ptoEmerg').checked=isEmerg(day);
         calcedDays=day.daysUsed;
         document.getElementById('calcBox').classList.add('hidden');
         document.getElementById('ptoWarn').innerHTML='';
@@ -1017,7 +1132,7 @@ function saveSettings() {
     const yd=parseInt(document.getElementById('setYearDay').value);
     if(isNaN(annual)||annual<0){ alert('Invalid annual PTO.'); return; }
     if(isNaN(reserve)||reserve<0){ alert('Invalid reserve.'); return; }
-    S.settings={workDays:wds,annualPTO:annual,reserveDays:reserve,yearStartMonth:ym,yearStartDay:yd,holidays:collectHEntries().filter(h=>h.name&&h.date)};
+    S.settings={workDays:wds,annualPTO:annual,reserveDays:reserve,yearStartMonth:ym,yearStartDay:yd,holidays:collectHEntries().filter(h=>h.name&&h.date),yearBalances:S.settings.yearBalances||{}};
     S.plannedDays=S.plannedDays.filter(d=>!d.autoHoliday);
     // Recalculate future PTO trips with new work schedule
     const today=new Date(); today.setHours(0,0,0,0);
@@ -1061,48 +1176,38 @@ function showHolidays() {
 
 // ── PROJECTIONS ───────────────────────────────────
 function showProjections() {
-    const s=S.settings, today=new Date();
-    const bal=remaining(), ru=resUsed(), rl=resLeft(), used=ptoUsed();
-    let nxt=new Date(today.getFullYear(),s.yearStartMonth-1,s.yearStartDay);
-    if(nxt<=today) nxt=new Date(today.getFullYear()+1,s.yearStartMonth-1,s.yearStartDay);
-    const payback=ru, nextPlan=+(s.annualPTO-payback).toFixed(2);
-
-    let html=`<div class="proj-block">
-        <div class="proj-block-title">Current Status</div>
-        <div class="proj-line ${bal<0?'neg':bal<=3?'warn':'ok'}"><span>Remaining Balance</span><span>${fmtD(bal)}</span></div>
-        <div class="proj-line"><span>Reserve Remaining</span><span>${fmtD(rl)}</span></div>
-        <div class="proj-line ${ru>0?'warn':''}"><span>Reserve In Use</span><span>${fmtD(ru)}</span></div>
-        <div class="proj-line"><span>Total PTO Planned</span><span>${fmtD(used)}</span></div>
+    const cy=curYearKey();
+    const block=yk=>{
+        const st=yearStats(yk);
+        return `<div class="proj-block">
+        <div class="proj-block-title">PTO Year ${yk} — ${yearLabel(yk)}${yk===cy?' (current)':yk>cy?' (upcoming)':''}</div>
+        <div class="proj-line"><span>Granted</span><span>${fmtD(st.grant)}</span></div>
+        <div class="proj-line"><span>Emergency reserve set aside</span><span>−${fmtD(st.reserve)}</span></div>
+        <div class="proj-line"><span>Regular PTO planned</span><span>−${fmtD(st.regular)}</span></div>
+        ${st.overflow>0?`<div class="proj-line warn"><span>Emergency overflow (past reserve)</span><span>−${fmtD(st.overflow)}</span></div>`:''}
+        <div class="proj-line ${st.remaining<0?'neg':st.remaining<=3?'warn':'ok'}"><span>Remaining (plannable)</span><span>${fmtD(st.remaining)}</span></div>
+        <div class="proj-line ${st.resUsed>0?'warn':''}"><span>Emergency reserve left</span><span>${fmtD(st.resLeft)} of ${fmtD(st.reserve)}</span></div>
+        <div class="proj-line"><span>Total available</span><span>${fmtD(st.total)}</span></div>
     </div>`;
+    };
+    let html=block(cy)+block(cy+1);
 
-    const ptoTrips=S.plannedDays.filter(d=>d.type==='pto');
+    const inView=d=>yearKeyOf(d.startDate)===viewYear;
+    const ds=t=>t.startDate===t.endDate?fmtDate(t.startDate):`${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}`;
+    const ptoTrips=S.plannedDays.filter(d=>d.type==='pto'&&inView(d));
     if(ptoTrips.length){
-        html+=`<div class="proj-block"><div class="proj-block-title">Planned PTO</div>`;
+        html+=`<div class="proj-block"><div class="proj-block-title">Planned PTO — PTO Year ${viewYear}</div>`;
         ptoTrips.forEach(t=>{
-            const ds=t.startDate===t.endDate?fmtDate(t.startDate):`${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}`;
-            html+=`<div class="proj-line"><span>${t.purpose} (${ds})</span><span>${fmtD(t.daysUsed)}${t.autoHoliday?' ★':''}</span></div>`;
+            html+=`<div class="proj-line${isEmerg(t)?' warn':''}"><span>${t.purpose} (${ds(t)})${isEmerg(t)?' — emergency':''}</span><span>${fmtD(t.daysUsed)}${t.autoHoliday?' ★':''}</span></div>`;
         });
         html+='</div>';
     }
-
-    const nonTrips=S.plannedDays.filter(d=>d.type==='non-pto');
+    const nonTrips=S.plannedDays.filter(d=>d.type==='non-pto'&&inView(d));
     if(nonTrips.length){
-        html+=`<div class="proj-block"><div class="proj-block-title">Non-PTO Days</div>`;
-        nonTrips.forEach(t=>{
-            const ds=t.startDate===t.endDate?fmtDate(t.startDate):`${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}`;
-            html+=`<div class="proj-line"><span>${t.purpose} (${ds})</span><span>—</span></div>`;
-        });
+        html+=`<div class="proj-block"><div class="proj-block-title">Non-PTO Days — PTO Year ${viewYear}</div>`;
+        nonTrips.forEach(t=>{ html+=`<div class="proj-line"><span>${t.purpose} (${ds(t)})</span><span>—</span></div>`; });
         html+='</div>';
     }
-
-    html+=`<div class="proj-block">
-        <div class="proj-block-title">Next Year — ${monthName(s.yearStartMonth)} ${s.yearStartDay}, ${nxt.getFullYear()}</div>
-        <div class="proj-line"><span>Annual Grant</span><span>${fmtD(s.annualPTO)}</span></div>
-        ${payback>0?`<div class="proj-line warn"><span>Reserve Payback</span><span>−${fmtD(payback)}</span></div>`:''}
-        <div class="proj-line ok"><span>Planning Allowance</span><span>${fmtD(nextPlan)}</span></div>
-        <div class="proj-line"><span>Reserve (restored)</span><span>${fmtD(s.reserveDays)}</span></div>
-    </div>`;
-    if(ru>0) html+=`<div class="alert alert-warn">⚠ ${fmtD(ru)} of reserve in use this year — next year's planning allowance will be reduced by that amount as payback.</div>`;
 
     document.getElementById('projectionsContent').innerHTML=html;
     document.getElementById('projectionsModal').classList.remove('hidden');
