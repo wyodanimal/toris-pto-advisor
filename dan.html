@@ -474,7 +474,33 @@ function grantFor(yk) {
     return yb[yk]!==undefined ? +yb[yk] : +S.settings.annualPTO;
 }
 function isEmerg(d) { return !!(d.details&&d.details.emergency); }
-function yearPTO(yk) { return S.plannedDays.filter(d=>d.type==='pto'&&yearKeyOf(d.startDate)===yk); }
+function isoOf(dt) { return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; }
+
+// Portion of a trip's PTO that falls inside PTO year yk, split by workdays.
+// A trip crossing the year boundary is charged to each year for its own workdays.
+function tripShare(d, yk) {
+    if(d.type!=='pto') return 0;
+    const {start,end}=yearRange(yk);
+    const ys=isoOf(start), ye=isoOf(end);
+    const cs=d.startDate>ys?d.startDate:ys, ce=d.endDate<ye?d.endDate:ye;
+    const totalWD=countWD(d.startDate,d.endDate);
+    if(totalWD===0) return yearKeyOf(d.startDate)===yk ? (d.daysUsed||0) : 0;
+    if(cs>ce) return 0;
+    return (d.daysUsed||0)*countWD(cs,ce)/totalWD;
+}
+// The PTO year a trip mostly belongs to (most workdays); used for the list and after saving
+function primaryYear(d) {
+    const a=yearKeyOf(d.startDate), b=yearKeyOf(d.endDate||d.startDate);
+    if(a===b||d.type!=='pto') return a;
+    let best=a, bestV=-1;
+    for(let y=a;y<=b;y++){ const v=tripShare(d,y); if(v>bestV){best=y;bestV=v;} }
+    return best;
+}
+function inYear(d, yk) {
+    if(d.type==='pto') return tripShare(d,yk)>0 || (countWD(d.startDate,d.endDate)===0 && yearKeyOf(d.startDate)===yk);
+    return yearKeyOf(d.startDate)<=yk && yearKeyOf(d.endDate||d.startDate)>=yk;
+}
+function yearPTO(yk) { return S.plannedDays.filter(d=>d.type==='pto'&&tripShare(d,yk)>0); }
 
 // Reserve is carved OUT of the grant. Regular PTO only hits Remaining.
 // Emergency PTO hits Reserve first; anything past the reserve spills into Remaining.
@@ -482,8 +508,8 @@ function yearStats(yk) {
     const r2=n=>+(+n).toFixed(2);
     const grant=grantFor(yk), reserve=+S.settings.reserveDays||0;
     const trips=yearPTO(yk);
-    const regular=trips.filter(d=>!isEmerg(d)).reduce((s,d)=>s+(d.daysUsed||0),0);
-    const emerg=trips.filter(isEmerg).reduce((s,d)=>s+(d.daysUsed||0),0);
+    const regular=trips.filter(d=>!isEmerg(d)).reduce((s,d)=>s+tripShare(d,yk),0);
+    const emerg=trips.filter(isEmerg).reduce((s,d)=>s+tripShare(d,yk),0);
     const resUsed=Math.min(emerg,reserve), overflow=emerg-resUsed;
     return {
         grant:r2(grant), reserve:r2(reserve), regular:r2(regular), emerg:r2(emerg),
@@ -724,7 +750,7 @@ function goCurrentYear() { viewYear=curYearKey(); expandedIdx=-1; refresh(); }
 // ── RENDER LIST ───────────────────────────────────
 function renderList() {
     const el=document.getElementById('daysList');
-    const items=S.plannedDays.map((d,idx)=>({d,idx})).filter(x=>yearKeyOf(x.d.startDate)===viewYear);
+    const items=S.plannedDays.map((d,idx)=>({d,idx})).filter(x=>inYear(x.d,viewYear));
     if(!items.length){ el.innerHTML=`<div class="empty-state">Nothing planned for PTO year ${viewYear} yet. Hit + Plan PTO to get started.</div>`; return; }
     el.innerHTML = items.map(x=>renderRow(x.d,x.idx)).join('');
     if(expandedIdx>=0) document.getElementById(`dr${expandedIdx}`)?.classList.add('expanded');
@@ -744,7 +770,8 @@ function renderRow(d, idx) {
     const tag=isAuto?'<span class="type-tag tag-holiday">HOLIDAY</span>':isEm?'<span class="type-tag tag-emerg">EMERG</span>':isPTO?'<span class="type-tag tag-pto">PTO</span>':'<span class="type-tag tag-off">OFF</span>';
 
     let meta=`<span class="m-date">${dateStr}</span>`;
-    if(isPTO){ meta+=isEm?`<span class="m-emerg">${fmtD(d.daysUsed)} from reserve</span>`:`<span class="m-pto">${fmtD(d.daysUsed)} PTO</span>`; if(isAuto) meta+=`<span class="m-auto">auto-added</span>`; }
+    const split=isPTO&&yearKeyOf(d.startDate)!==yearKeyOf(d.endDate)?(()=>{const sh=+tripShare(d,viewYear).toFixed(2);return sh!==d.daysUsed?`<span class="m-auto">${fmtD(sh)} in PTO yr ${viewYear}</span>`:'';})():'';
+    if(isPTO){ meta+=split+(isEm?`<span class="m-emerg">${fmtD(d.daysUsed)} from reserve</span>`:`<span class="m-pto">${fmtD(d.daysUsed)} PTO</span>`); if(isAuto) meta+=`<span class="m-auto">auto-added</span>`; }
     else meta+=`<span class="m-off">No PTO</span>`;
 
     // Bookings HTML
@@ -855,8 +882,11 @@ function calcWD() {
     const wdc=countWD(s,e);
     calcedDays=half?+(wdc/2).toFixed(2):wdc;
     const wdNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].filter((_,i)=>workDays().includes(i)).join(', ');
-    const yk=yearKeyOf(s), emerg=document.getElementById('ptoEmerg').checked;
-    box.innerHTML=`<strong>Range:</strong> ${total} calendar day${total!==1?'s':''} &nbsp;·&nbsp; <strong>Workdays (${wdNames}):</strong> ${wdc} &nbsp;·&nbsp; <span class="calc-deduct">Deduct: ${fmtD(calcedDays)}${emerg?' from reserve':''}</span><br><strong>Counts against:</strong> PTO year ${yk} (${yearLabel(yk)})`;
+    const emerg=document.getElementById('ptoEmerg').checked;
+    const tmp={type:'pto',startDate:s,endDate:e,daysUsed:calcedDays};
+    const ys=[]; for(let y=yearKeyOf(s);y<=yearKeyOf(e);y++){ const v=+tripShare(tmp,y).toFixed(2); if(v>0) ys.push(`PTO year ${y} (${fmtD(v)})`); }
+    const yk=ys.length?ys.join(' + '):`PTO year ${yearKeyOf(s)}`;
+    box.innerHTML=`<strong>Range:</strong> ${total} calendar day${total!==1?'s':''} &nbsp;·&nbsp; <strong>Workdays (${wdNames}):</strong> ${wdc} &nbsp;·&nbsp; <span class="calc-deduct">Deduct: ${fmtD(calcedDays)}${emerg?' from reserve':''}</span><br><strong>Counts against:</strong> ${yk}`;
     box.classList.remove('hidden');
 }
 
@@ -901,15 +931,21 @@ function savePTO() {
     if(new Date(e)<new Date(s)){ alert('End date must be on or after start date.'); return; }
     if(calcedDays===0){ alert('No workdays in that range — check your dates.'); return; }
     const emerg=document.getElementById('ptoEmerg').checked;
-    const yk=yearKeyOf(s), st=yearStats(yk);
+    const tmp={type:'pto',startDate:s,endDate:e,daysUsed:calcedDays};
+    const yk=primaryYear(tmp);
+    for(let y=yearKeyOf(s);y<=yearKeyOf(e);y++){
+    const need=+tripShare(tmp,y).toFixed(2);
+    if(need<=0) continue;
+    const st=yearStats(y);
     if(emerg){
-        if(calcedDays>st.resLeft){
-            const over=+(calcedDays-st.resLeft).toFixed(2);
-            if(!confirm(`⚠ Emergency reserve short\nPTO year ${yk} has ${fmtD(st.resLeft)} of reserve left.\nThe extra ${fmtD(over)} will come out of your remaining balance (${fmtD(st.remaining)} → ${fmtD(+(st.remaining-over).toFixed(2))}).\n\nProceed?`)) return;
+        if(need>st.resLeft){
+            const over=+(need-st.resLeft).toFixed(2);
+            if(!confirm(`⚠ Emergency reserve short\nPTO year ${y} has ${fmtD(st.resLeft)} of reserve left.\nThe extra ${fmtD(over)} will come out of your remaining balance (${fmtD(st.remaining)} → ${fmtD(+(st.remaining-over).toFixed(2))}).\n\nProceed?`)) return;
         }
-    } else if(calcedDays>st.remaining){
-        const proj=+(st.remaining-calcedDays).toFixed(2);
-        if(!confirm(`⚠ Over your remaining balance\nPTO year ${yk}: ${fmtD(st.remaining)} remaining, this needs ${fmtD(calcedDays)}.\nRemaining would go to ${fmtD(proj)}.\n\nRegular PTO does NOT touch your ${fmtD(st.resLeft)} emergency reserve. If this really is an emergency, cancel and tick the Emergency box.\n\nSave anyway?`)) return;
+    } else if(need>st.remaining){
+        const proj=+(st.remaining-need).toFixed(2);
+        if(!confirm(`⚠ Over your remaining balance\nPTO year ${y}: ${fmtD(st.remaining)} remaining, this needs ${fmtD(need)} of it.\nRemaining would go to ${fmtD(proj)}.\n\nRegular PTO does NOT touch your ${fmtD(st.resLeft)} emergency reserve. If this really is an emergency, cancel and tick the Emergency box.\n\nSave anyway?`)) return;
+    }
     }
     // Keep bookings/gear/notes when editing an existing trip
     const keep=editBackup?editBackup.entry:null;
@@ -940,7 +976,7 @@ function saveNonPTO() {
     S.plannedDays.push(entry);
     S.plannedDays.sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
     document.getElementById('nonptoForm').classList.add('hidden');
-    viewYear=yearKeyOf(s); expandedIdx=-1;
+    viewYear=yearKeyOf(s); expandedIdx=-1; // non-PTO
     saveState(); refresh();
 }
 
@@ -1192,7 +1228,7 @@ function showProjections() {
     };
     let html=block(cy)+block(cy+1);
 
-    const inView=d=>yearKeyOf(d.startDate)===viewYear;
+    const inView=d=>inYear(d,viewYear);
     const ds=t=>t.startDate===t.endDate?fmtDate(t.startDate):`${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}`;
     const ptoTrips=S.plannedDays.filter(d=>d.type==='pto'&&inView(d));
     if(ptoTrips.length){
