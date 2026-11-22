@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PTO — Dan &amp; Tori</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f4f6;--surface:#ffffff;--surface2:#f8f9fb;--surface3:#eef0f4;--border:#e2e5eb;--border2:#cbd1da;--accent:#245a9c;--accent-dim:#e7eef8;--danger:#b42318;--danger-dim:#fdecea;--warn:#a16207;--warn-dim:#fdf6e3;--ok:#167a43;--ok-dim:#e8f5ee;--text:#2b3240;--text-dim:#6b7385;--text-bright:#111827;--mono:'DM Sans',sans-serif;--sans:'DM Sans',sans-serif;--dan:#245a9c;--tori:#7b3f8f;--tori-dim:#f3eaf6;--dan-rgb:36,90,156;--tori-rgb:123,63,143}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+body{font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.view-tori{--accent:#7b3f8f;--accent-dim:#f3eaf6}
+.header{box-shadow:0 1px 2px rgba(17,24,39,.04)}
+.bal-cell,.jcard,.form-panel,.day-row{box-shadow:0 1px 2px rgba(17,24,39,.04)}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.header-logo{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--text-bright);letter-spacing:.2px}
+.header-div{width:1px;height:16px;background:var(--border2)}
+.header-sub{font-family:var(--mono);font-size:11px;color:var(--text-dim)}
+.header-sub a{color:var(--accent);cursor:pointer;text-decoration:underline}
+.header-status{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-left:auto}
+.tabs{display:flex;gap:4px;padding:10px 18px 0;max-width:900px;margin:0 auto;flex-wrap:wrap}
+.tab{font-weight:500;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-radius:5px 5px 0 0;border:1px solid var(--border);border-bottom:none;background:var(--bg);color:var(--text-dim);cursor:pointer}
+.tab.on{background:var(--surface);color:var(--text-bright);font-weight:600}
+.tab.dan.on{border-top:2px solid var(--dan)}.tab.tori.on{border-top:2px solid var(--tori)}
+.app{max-width:900px;margin:0 auto;padding:18px 16px 60px}
+.bal-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:18px}
+.bal-strip.three{grid-template-columns:repeat(3,1fr)}
+.bal-cell{background:var(--surface);padding:16px 18px}
+.bal-cell.clickable{cursor:pointer}.bal-cell.clickable:hover{background:var(--surface2)}
+.bal-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);margin-bottom:8px}
+.bal-val{font-family:var(--mono);font-size:26px;font-weight:500;color:var(--text-bright);line-height:1}
+.bal-val.sm{font-size:18px}
+.bal-val.ok{color:var(--ok)}.bal-val.warn{color:var(--warn)}.bal-val.neg{color:var(--danger)}.bal-val.accent{color:var(--accent)}
+.bal-sub{font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:5px}
+.toolbar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.5px;padding:9px 14px;border-radius:5px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;white-space:nowrap;text-transform:uppercase}
+.btn:hover{background:var(--surface2);color:var(--text-bright)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.btn-primary:hover{background:var(--accent);color:#fff;filter:brightness(1.08)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text-dim)}
+.btn-danger{background:transparent;border-color:transparent;color:var(--danger)}
+.btn-danger:hover{background:var(--danger-dim);border-color:var(--danger)}
+.btn-sm{padding:5px 10px;font-size:10px}
+.btn-big{padding:18px 26px;font-size:14px;width:100%;margin-bottom:12px}
+.form-panel{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:20px;margin-bottom:18px}
+.form-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{margin-bottom:14px}
+label{display:block;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:5px}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:9px 11px;background:#fff;border:1px solid var(--border2);border-radius:5px;color:var(--text-bright);font-family:var(--sans);font-size:14px;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+input:disabled,textarea:disabled{opacity:.7}
+
+textarea{resize:vertical;min-height:56px;line-height:1.5}
+.check-row{display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--bg);border:1px solid var(--border);border-radius:5px;margin-bottom:14px}
+.check-row input{width:15px;height:15px;accent-color:var(--accent)}
+.check-row label{margin:0;font-size:11px;color:var(--text);text-transform:none;letter-spacing:0}
+.hint{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:14px}
+.calc-box{background:var(--bg);border:1px solid var(--accent-dim);border-left:3px solid var(--accent);border-radius:5px;padding:10px 13px;font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:14px;line-height:1.9}
+.calc-box strong{color:var(--accent)}.calc-deduct{color:var(--text-bright);font-weight:500;font-size:13px}
+.alert{padding:10px 14px;border-radius:5px;font-family:var(--mono);font-size:11px;line-height:1.7;margin-bottom:14px}
+.alert-warn{background:var(--warn-dim);border:1px solid #f0dca8;color:#7a4d06}
+.alert-danger{background:var(--danger-dim);border:1px solid #f5c2bd;color:var(--danger)}
+.alert-ok{background:var(--ok-dim);border:1px solid #b9e0c9;color:var(--ok)}
+.alert-info{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim)}
+.ro-banner{background:var(--surface2);border:1px dashed var(--border2);border-radius:6px;padding:9px 13px;font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:14px}
+.list-header{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);margin:6px 0 10px;display:flex;align-items:center;gap:10px}
+.list-header::after{content:'';flex:1;height:1px;background:var(--border)}
+.day-row{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:5px;cursor:pointer}
+.day-row:hover{border-color:var(--border2);background:var(--surface2)}
+.day-row.expanded{border-color:var(--accent);background:var(--surface2);cursor:default}
+.day-row.non-pto{border-style:dashed}
+.day-row.holiday-flag{border-left:3px solid var(--warn)}
+.day-row.emerg{border-left:3px solid var(--danger)}
+.day-row.past{opacity:.55}
+.type-tag{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:1px;padding:3px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.tag-pto{background:var(--accent-dim);color:var(--accent)}
+.tag-holiday{background:var(--warn-dim);color:var(--warn)}
+.tag-off{background:var(--surface3);color:var(--text-dim)}
+.tag-emerg{background:var(--danger-dim);color:var(--danger)}
+.day-body{flex:1;min-width:0}
+.day-name{font-size:14px;font-weight:500;color:var(--text-bright);margin-bottom:3px}
+.day-name.hunting{color:#8a4b0f}
+.day-meta{display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:12px;color:var(--text-dim)}
+.m-pto{color:var(--accent)}.m-auto{color:var(--warn);font-style:italic}.m-emerg{color:var(--danger)}
+.day-note{font-size:12px;color:var(--text-dim);margin-top:4px;font-style:italic;white-space:pre-wrap}
+.day-chevron{font-family:var(--mono);color:var(--text-dim);align-self:center}
+.day-detail{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.detail-stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.detail-stat{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:6px 12px;font-family:var(--mono);font-size:11px;color:var(--text-dim)}
+.detail-stat strong{color:var(--accent);font-size:13px}
+.detail-section-title{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:10px 0 8px}
+.booking-card{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px 12px;margin-bottom:8px}
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:6px}
+.g11{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.booking-card label{font-size:9px}
+.booking-card input{background:#fff}
+.gear-item{display:flex;align-items:center;gap:8px;padding:5px 0;font-family:var(--mono);font-size:12px;border-bottom:1px solid var(--border)}
+.gear-item input{accent-color:var(--accent);width:14px;height:14px}
+.gear-item.done span{text-decoration:line-through;color:var(--text-dim)}
+.gear-add{display:flex;gap:6px;margin-top:8px}
+.detail-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:12px;border-top:1px solid var(--border);margin-top:8px}
+.empty-state{text-align:center;padding:40px 20px;font-family:var(--mono);font-size:12px;color:var(--text-dim);border:1px dashed var(--border);border-radius:6px}
+.settings-block{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px}
+.settings-block-title{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px}
+.wd-grid{display:flex;gap:10px;flex-wrap:wrap}
+.wd-toggle{display:flex;flex-direction:column;align-items:center;gap:5px}
+.wd-toggle input{width:15px;height:15px;accent-color:var(--accent)}
+.wd-toggle span{font-family:var(--mono);font-size:10px;color:var(--text-dim)}
+.h-entry{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.hol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:12px}
+.hol-item{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px;font-family:var(--mono);font-size:11px;line-height:1.8}
+.hol-item.needs-pto{border-color:#f0dca8;background:var(--warn-dim)}
+.hol-name{font-weight:500;color:var(--text-bright)}.hol-ok{color:var(--ok)}.hol-warn{color:var(--warn)}
+.proj-block{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:14px;margin-bottom:10px;font-family:var(--mono);font-size:11px}
+.proj-block-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.proj-line{display:flex;justify-content:space-between;gap:10px;line-height:2;color:var(--text-dim)}
+.proj-line span:last-child{color:var(--text-bright);font-weight:500;white-space:nowrap}
+.proj-line.warn span:last-child{color:var(--warn)}.proj-line.neg span:last-child{color:var(--danger)}.proj-line.ok span:last-child{color:var(--ok)}
+.ptable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px}
+.ptable th{text-align:left;color:var(--text-dim);font-weight:500;padding:6px;border-bottom:1px solid var(--border2);font-size:10px;text-transform:uppercase}
+.ptable td{padding:6px;border-bottom:1px solid var(--border);color:var(--text)}
+.ptable tr.has td{color:var(--warn)}
+.ptable .neg{color:var(--danger)}
+.overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.overlay-card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:24px;max-width:460px;width:100%}
+.overlay-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--warn);margin-bottom:12px}
+.prompt-item{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px 13px;margin-bottom:8px;display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px}
+.year-nav{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-family:var(--mono);flex-wrap:wrap}
+.yn-label{font-size:13px;font-weight:500;color:var(--text-bright)}
+.yn-range{font-size:11px;color:var(--text-dim)}
+.yn-badge{font-size:9px;letter-spacing:1px;padding:2px 6px;border-radius:3px;background:var(--ok-dim);color:var(--ok)}
+.yn-badge.future{background:var(--accent-dim);color:var(--accent)}.yn-badge.past{background:var(--surface3);color:var(--text-dim)}
+/* JOINT MONTH */
+.jbal{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.jcard{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:var(--mono)}
+.jcard.dan{border-top:3px solid var(--dan)}.jcard.tori{border-top:3px solid var(--tori)}
+.jname{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+.jcard.dan .jname{color:var(--dan)}.jcard.tori .jname{color:var(--tori)}
+.jline{display:flex;justify-content:space-between;font-size:12px;line-height:1.9;color:var(--text-dim)}
+.jline b{color:var(--text-bright);font-weight:500}
+.jsub{font-size:10px;color:var(--text-dim);margin-top:4px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.cal-h{background:var(--surface2);font-family:var(--mono);font-size:10px;text-align:center;padding:6px 0;color:var(--text-dim)}
+.cal-d{background:var(--surface);min-height:66px;padding:4px 0 2px;cursor:pointer;min-width:0}
+.cal-d.blank{background:var(--bg);cursor:default}
+.cal-d.wkend{background:#fafbfc}
+.cal-d.sel{box-shadow:inset 0 0 0 2px var(--text-dim)}
+.cd-num{font-family:var(--mono);font-size:11px;color:var(--text-dim);padding:0 5px 3px}
+.cal-d.today .cd-num{color:#fff;font-weight:600}
+.cal-d.today .cd-num span{background:var(--text-bright);border-radius:3px;padding:0 4px}
+.bar{height:17px;margin-bottom:3px;font-family:var(--mono);font-size:9.5px;line-height:17px;white-space:nowrap;color:#fff}
+.bar.none{background:transparent}
+.bar.s{margin-left:3px;border-top-left-radius:4px;border-bottom-left-radius:4px}
+.bar.e{margin-right:3px;border-top-right-radius:4px;border-bottom-right-radius:4px}
+.bar .lbl{position:relative;z-index:2;display:inline-block;overflow:hidden;text-overflow:ellipsis;padding-left:4px;vertical-align:top}
+.bar.dan{background:var(--dan)}.bar.dan.emerg{background:var(--danger)}.bar.dan.hol{background:#174175}
+.bar.dan.off{background:repeating-linear-gradient(45deg,rgba(var(--dan-rgb),.30) 0 4px,rgba(var(--dan-rgb),.14) 4px 8px);color:var(--dan)}
+.bar.tori{background:var(--tori)}
+.bar.tori.admin{background:repeating-linear-gradient(45deg,rgba(var(--tori-rgb),.30) 0 4px,rgba(var(--tori-rgb),.14) 4px 8px);color:var(--tori)}
+.bar.tori.shol{background:rgba(var(--tori-rgb),.12);color:var(--tori)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-bottom:12px}
+.legend i{display:inline-block;width:18px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.dayinfo{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-family:var(--mono);font-size:12px;line-height:1.8}
+.dayinfo .who-d{color:var(--dan)}.dayinfo .who-t{color:var(--tori)}
+.qwrap{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mcal-title{font-family:var(--mono);font-size:11px;color:var(--text-bright);margin-bottom:6px;text-align:center}
+.mcal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.mc-h{background:var(--surface2);font-family:var(--mono);font-size:9px;text-align:center;padding:3px 0;color:var(--text-dim)}
+.mc-d{background:var(--surface);min-height:34px;padding:2px 0}
+.mc-d.blank{background:var(--bg)}.mc-d.wkend{background:#fafbfc}
+.mc-n{font-family:var(--mono);font-size:9px;color:var(--text-dim);padding:0 3px;height:12px}
+.mc-d.today .mc-n{color:var(--text-bright);font-weight:700;text-decoration:underline}
+.mb{height:7px;margin-bottom:2px}
+.mb.dan{background:var(--dan)}.mb.dan.off{background:rgba(var(--dan-rgb),.3)}.mb.dan.emerg{background:var(--danger)}.mb.dan.hol{background:#174175}
+.mb.tori{background:var(--tori)}.mb.tori.admin{background:rgba(var(--tori-rgb),.3)}.mb.tori.shol{background:rgba(var(--tori-rgb),.14)}
+.profile{max-width:420px;margin:40px auto;text-align:center}
+.profile h2{font-family:var(--mono);font-size:14px;color:var(--text-bright);margin-bottom:8px}
+.profile p{font-size:13px;color:var(--text-dim);margin-bottom:22px;line-height:1.6}
+.hidden{display:none!important}
+@media(max-width:760px){.bal-strip{grid-template-columns:repeat(2,1fr)}.qwrap{grid-template-columns:1fr}}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}.jbal{grid-template-columns:1fr}.cal-d{min-height:58px}.bar{font-size:8.5px}.app{padding:14px 8px 60px}.header{padding:10px 12px}.tabs{padding:8px 8px 0}.tab{padding:7px 9px;font-size:10px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <span class="header-logo">Time Off · Dan &amp; Tori</span>
+  <div class="header-div"></div>
+  <span class="header-sub" id="hWho"></span>
+  <span class="header-status" id="hStatus">Loading…</span>
+  <button class="btn btn-sm btn-ghost" onclick="manualSync()" title="Reload from Google Sheets">Sync</button>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="app" id="view"></div>
+<div id="overlay"></div>
+
+<script>
+// ═══════════════ CONFIG ═══════════════
+// TEST COPY of the sheet. Switch to the real sheet ID only after testing.
+const SPREADSHEET_ID = '1NZAW64zCI3Yn9NXDPCSZaoPxnlraLqvVKW_zKr9fbdo';
+const SA = { client_email: "tori-pto-service@tori-pto-advisor.iam.gserviceaccount.com", private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCzCb9Z3IONbhi2\nMlP5OLTFyGmqpt0UZhggB3rZdn+myXle4qzJbDvqe4NcZMq0n+EMbY+UOQHzj4WE\nf1w0cYg0b6gLBTLbZXrJ446ab1pgCVbq9DuHEfIpfG3G07SkISj8rrbb0uFwiaA0\n5tcbBZ2nLdZYipAM0ujRyOsrFaiv4JUMk6vE9SuyyI3PVK6LCoPqb9iQyBlNYhPk\nB+1SL/KGjRVjkPEk68+x1w48BKcRMy0YN015V/eo45Oh2KRd3dV1ubJ4D7IcSzsg\nFGeVV+C//MrRLeOYEy1BaCaGKTT+VHtJeUt06robTyJaWJnZt7YSARRuJb3kxoRH\nJMy2bk0PAgMBAAECggEAAvwMHQ7ggIiPz+W54aMw3EUxgb9DWzYye8I0KZDgouKj\n69GCiN8NhqSldXJWsLkjksX2yUVEA4/mbWWEH3mvCBS+a+Sbyu1/pQLumyN1EbnG\nIaeNoHxLmaZx3Akmb0AAQ2oUMUjsKiiZK5iXiGNJFALfGl3A9f3EFM8xIGg9hiUE\nm1ePBPPXY2VItEG9Z8ry+AFHDreT7x/fekMXTfnpqFRLddE2ioucSshRzW7U+UAN\nOvt1V166PrUuIHtAveKaStTULzEPZS6By6viRpUIIDftvfgAptEFMLnpOC/QrZVo\n7tif6V36o03om42zQtrc6ygYwgD0Tj/sPa6kJHxQtQKBgQDrrmLZKbLKeK1A6ngC\niEWqKAd9NrUfbcbUIXEJVlAYbqEWQhJs10UJgWkqvnbgOmimX24YvKQrr4EV2Yan\nDTCtqeanRbMXpuSWCFjftp1RtmhKdrUQ4zIIgjD0ESbviRKWHJwdJiGxUZrkPvMV\n3nPeXRAWnAWmLeeNHYa15muEswKBgQDCeTdqkEdWgnkByIWVChEt5I+1c3d3TprB\nqWIm3i5vxTdho2METSWy/+XX1Qrtmb5YjUZCfD8xc7hLA2X41KNFsCVJwbYYWgIB\n9fKcB6nfeCsuexpcpjGh75R4nU39bUUOAUQbNlLu8h09pbF68nLguUXWUEJ3RWd2\nQl3O2FbcNQKBgBWjWB36Dxk5xSZdoJES89pwfGeJm018ZbHaNCeYThhAJ/gELu7h\nQMxjnkU3YXCqzCriPhh1UVlVbrOT2iICOwLmw29+HbhBMWF4+Lfpaz4yUhbsGSmo\nwlI3qcjuvjVlz1gK3mZqttMx29ey09yhJOA4iR6aSoZ8VnMFT/XpZtuzAoGBAI7O\n8PDiLmDKww2aMO43TFJFK3r15d7I7EAWoKsmMTeGvZqHnujDtlFyNVh/a9z7L5pb\ndCLSlp07+zOqtTE7BQLhzSASjiPnxN2nvJbz0bz2w88IO12Z9YyTIJZJ/cGCglk8\neMT66X/qb6qbiG9epxl7NFui6IwpfUaMidKhb3eZAoGAEmcmFmtljyUU1NOvbtgM\nIrFA0QlDalsJD/HSZsslCrrwsHpgX6oxhyg425wgmFcC8MiBRkqyMJMPouxqKToo\njIfXjTWVU3pF89QW+MRN0gCHsLppH/rXMFgU7liCuCIw94NqJ3xKS7bnsuGbYKey\nSVB5YETSRSvhZb6+LKJFgH4=\n-----END PRIVATE KEY-----\n" };
+const TABS = { dan:{pto:'Dan_PTO',cfg:'Dan_Config'}, tori:{pto:'Tori_PTO',cfg:'Tori_Config'}, log:'Change_Log' };
+const NAME = { dan:'Dan', tori:'Tori' };
+const other = p => p==='dan'?'tori':'dan';
+const ME_KEY='ptoJoint.me', CACHE_KEY='ptoJoint.cache';
+
+// ═══════════════ HELPERS ═══════════════
+const pad=n=>String(n).padStart(2,'0');
+const isoOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const P=ds=>new Date(ds+'T00:00:00');
+const todayStr=()=>isoOf(new Date());
+const addDays=(ds,n)=>{const d=P(ds);d.setDate(d.getDate()+n);return isoOf(d);};
+const dow=ds=>P(ds).getDay();
+function eachDay(a,b,fn){const d=P(a),e=P(b);while(d<=e){fn(isoOf(d));d.setDate(d.getDate()+1);}}
+const fmtDate=ds=>P(ds).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+const fmtDateY=ds=>P(ds).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+const fmtDateLong=ds=>P(ds).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+const rangeStr=(a,b)=>a===b?fmtDate(a):`${fmtDate(a)} – ${fmtDate(b)}`;
+const monthFirst=(y,m)=>isoOf(new Date(y,m,1));
+const monthLast=(y,m)=>isoOf(new Date(y,m+1,0));
+const monthLabel=(y,m)=>new Date(y,m,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const r2=n=>Math.round((+n)*100)/100;
+function safeJSON(s,def){try{const v=JSON.parse(s);return v&&typeof v==='object'?v:def;}catch(e){return def;}}
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+const fmtD=n=>{n=r2(n);return `${n} ${Math.abs(n)===1?'day':'days'}`;};
+function fmtH(h){if(h===null||h===undefined||isNaN(h))return '—';const sign=h<0?'-':'';const m=Math.round(Math.abs(h)*60);return `${sign}${Math.floor(m/60)}:${pad(m%60)}`;}
+const hpd=()=>+(DB.tori?.settings?.hoursPerDay)||8;
+const fmtHD=h=>(h===null||h===undefined||isNaN(h))?'—':`${fmtH(h)} · ${(h/hpd()).toFixed(1)} d`;
+function parseHours(s){if(s===null||s===undefined)return null;s=String(s).trim();const m=s.match(/^(-?\d+):(\d{1,2})$/);if(m){const h=parseInt(m[1]);return h+(h<0?-1:1)*parseInt(m[2])/60;}const d=parseFloat(s);return isNaN(d)?null:d;}
+const isHunting=p=>{const l=String(p).toLowerCase();return l.includes('hunt')||l.includes('elk')||l.includes('deer')||l.includes('whitetail')||l.includes('antelope')||(l.includes('turkey')&&!l.includes('thanksgiving'));};
+
+// ═══════════════ STATE ═══════════════
+let me=null, tab=null, online=false, setupNeeded=null, booted=false;
+const DB={dan:null,tori:null}; // {settings, trips:[], rev}
+const DAN_DEF={workDays:[1,2,3,4,5],annualPTO:36,reserveDays:5,yearStartMonth:2,yearStartDay:1,holidays:[{name:'Thanksgiving',date:'dynamic-thanksgiving'},{name:'Christmas',date:'dynamic-christmas'}],yearBalances:{}};
+const TORI_DEF={balance:0,asOf:null,hoursPerDay:8,workDays:[1,2,3,4,5],cap:400,accrualBase:10,accrualStepStart:'2027-05-01',accrualStepHours:2,accrualStepYears:4,needsConfirm:false};
+
+// ═══════════════ GOOGLE SHEETS ═══════════════
+let token=null;
+async function getToken(){
+  if(token)return token;
+  const hdr={alg:'RS256',typ:'JWT'},now=Math.floor(Date.now()/1000);
+  const clm={iss:SA.client_email,scope:'https://www.googleapis.com/auth/spreadsheets',aud:'https://oauth2.googleapis.com/token',exp:now+3600,iat:now};
+  const b64=o=>btoa(JSON.stringify(o)).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+  const h=b64(hdr),c=b64(clm);
+  const pem=SA.private_key.replace('-----BEGIN PRIVATE KEY-----','').replace('-----END PRIVATE KEY-----','').replace(/\s/g,'');
+  const bin=Uint8Array.from(atob(pem),x=>x.charCodeAt(0));
+  const key=await crypto.subtle.importKey('pkcs8',bin,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);
+  const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,new TextEncoder().encode(`${h}.${c}`));
+  const s=btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+  const r=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${h}.${c}.${s}`});
+  const d=await r.json();
+  if(!d.access_token)throw new Error('Google sign-in failed: '+JSON.stringify(d));
+  token=d.access_token; setTimeout(()=>{token=null;},3500000);
+  return token;
+}
+const BASE=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}`;
+async function api(path,opts={}){
+  const tk=await getToken();
+  const r=await fetch(BASE+path,{...opts,headers:{Authorization:`Bearer ${tk}`,'Content-Type':'application/json',...(opts.headers||{})}});
+  if(!r.ok){const t=await r.text();throw new Error(`Sheets ${r.status}: ${t.slice(0,300)}`);}
+  return r.json();
+}
+const enc=encodeURIComponent;
+async function listTabs(){const d=await api('?fields=sheets.properties.title');return (d.sheets||[]).map(s=>s.properties.title);}
+async function batchGet(ranges){const d=await api('/values:batchGet?'+ranges.map(r=>'ranges='+enc(r)).join('&'));return d.valueRanges||[];}
+async function getRange(range){try{const d=await api('/values/'+enc(range));return d.values||[];}catch(e){return [];}}
+async function put(range,values){return api(`/values/${enc(range)}?valueInputOption=RAW`,{method:'PUT',body:JSON.stringify({values})});}
+async function clearRange(range){return api(`/values/${enc(range)}:clear`,{method:'POST',body:'{}'});}
+async function appendRows(range,values){return api(`/values/${enc(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,{method:'POST',body:JSON.stringify({values})});}
+async function addSheets(titles){if(!titles.length)return;return api(':batchUpdate',{method:'POST',body:JSON.stringify({requests:titles.map(t=>({addSheet:{properties:{title:t}}}))})});}
+
+const PTO_HEADER=['id','type','start','end','title','notes','cost (Dan=days, Tori=PTO hours)','adminHours','details','autoHoliday','updated'];
+const rowToTrip=r=>({id:r[0],type:r[1],start:r[2],end:r[3]||r[2],title:r[4]||'',notes:r[5]||'',cost:parseFloat(r[6])||0,admin:parseFloat(r[7])||0,details:safeJSON(r[8],{}),autoHoliday:r[9]==='true',updated:r[10]||''});
+const tripToRow=t=>[t.id,t.type,t.start,t.end,t.title,t.notes||'',r2(t.cost||0),r2(t.admin||0),JSON.stringify(t.details||{}),t.autoHoliday?'true':'false',t.updated||''];
+const sortTrips=a=>a.sort((x,y)=>x.start<y.start?-1:x.start>y.start?1:0);
+
+function parsePerson(p,cfgVals,ptoVals){
+  const def=p==='dan'?DAN_DEF:TORI_DEF;
+  const settings=Object.assign(JSON.parse(JSON.stringify(def)),safeJSON(cfgVals?.[0]?.[1],{}));
+  if(p==='tori'&&!settings.asOf)settings.asOf=todayStr();
+  return {settings,rev:parseInt(cfgVals?.[1]?.[1])||0,trips:sortTrips((ptoVals||[]).filter(r=>r[0]&&r[1]).map(rowToTrip))};
+}
+
+async function loadAll(){
+  setStatus('Syncing…');
+  try{
+    const tabs=await listTabs();
+    const need=[TABS.dan.cfg,TABS.dan.pto,TABS.tori.cfg,TABS.tori.pto,TABS.log].filter(t=>!tabs.includes(t));
+    if(need.length){setupNeeded={need,tabs};online=true;setStatus('Setup needed');return false;}
+    setupNeeded=null;
+    const vr=await batchGet([`${TABS.dan.cfg}!A1:B4`,`${TABS.dan.pto}!A2:K1000`,`${TABS.tori.cfg}!A1:B4`,`${TABS.tori.pto}!A2:K1000`]);
+    DB.dan=parsePerson('dan',vr[0].values,vr[1].values);
+    DB.tori=parsePerson('tori',vr[2].values,vr[3].values);
+    online=true; lsSet(CACHE_KEY,JSON.stringify({dan:DB.dan,tori:DB.tori,at:new Date().toISOString()}));
+    setStatus('Synced '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));
+    return true;
+  }catch(e){
+    console.error(e); online=false;
+    const c=safeJSON(lsGet(CACHE_KEY),null);
+    if(c&&c.dan&&c.tori){DB.dan=c.dan;DB.tori=c.tori;setStatus('Offline — view only (last sync '+new Date(c.at).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+')');return true;}
+    setStatus('Offline — no saved copy');return false;
+  }
+}
+
+// SAVE — only the signed-in person's own tabs, with a "did someone else change it?" check first.
+let saveChain=Promise.resolve();
+function save(p,action,detail){
+  if(p!==me){alert(`Blocked: this device is set to ${NAME[me]}. Only ${NAME[p]} can change ${NAME[p]}'s PTO.`);return Promise.resolve(false);}
+  if(!online){alert('Offline — changes can\'t be saved right now. Reconnect and tap Sync.');return Promise.resolve(false);}
+  const job=saveChain.then(()=>doSave(p,action,detail));
+  saveChain=job.catch(()=>{});
+  return job;
+}
+async function doSave(p,action,detail){
+  const T=TABS[p],D=DB[p];
+  setStatus('Saving…');
+  try{
+    const cur=await batchGet([`${T.cfg}!B2`]);
+    const curRev=parseInt(cur[0].values?.[0]?.[0])||0;
+    if(curRev!==D.rev){
+      setStatus('Not saved — changed elsewhere');
+      alert(`Not saved.\n\n${NAME[p]}'s PTO was changed on another device after this screen loaded. To avoid overwriting that change, nothing was saved.\n\nReloading the latest version now — please redo your change.`);
+      await loadAll(); render(); return false;
+    }
+    const newRev=curRev+1;
+    // Bump the revision first so any other open device will refuse to overwrite.
+    await put(`${T.cfg}!A1:B4`,[['settings',JSON.stringify(D.settings)],['rev',newRev],['updatedAt',new Date().toISOString()],['updatedBy',NAME[me]]]);
+    D.rev=newRev;
+    const rows=D.trips.map(tripToRow);
+    // Write rows first, then clear leftovers below — never leaves the tab empty mid-save.
+    if(rows.length)await put(`${T.pto}!A2:K${rows.length+1}`,rows);
+    await clearRange(`${T.pto}!A${rows.length+2}:K1000`);
+    try{await appendRows(`${TABS.log}!A:D`,[[new Date().toLocaleString(),NAME[me],action||'save',detail||'']]);}catch(e){console.warn('log failed',e);}
+    lsSet(CACHE_KEY,JSON.stringify({dan:DB.dan,tori:DB.tori,at:new Date().toISOString()}));
+    setStatus('Saved '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));
+    return true;
+  }catch(e){
+    console.error(e); setStatus('Save failed — tap Sync');
+    alert('Save failed (network or Google error). Tap Sync to reload before making more changes.\n\n'+e.message);
+    return false;
+  }
+}
+
+// ═══════════════ FIRST-TIME SETUP (copies old tabs into new joint tabs) ═══════════════
+async function runSetup(){
+  const btn=document.getElementById('setupBtn'); if(btn){btn.disabled=true;btn.textContent='Working…';}
+  try{
+    const need=setupNeeded.need;
+    await addSheets(need);
+    if(need.includes(TABS.log))await put(`${TABS.log}!A1:D1`,[['Time','Who','Action','Details']]);
+    for(const p of ['dan','tori']){
+      const T=TABS[p];
+      if(need.includes(T.pto))await put(`${T.pto}!A1:K1`,[PTO_HEADER]);
+      if(!need.includes(T.cfg))continue; // never overwrite an existing config
+      const m=p==='dan'?await migrateDan():await migrateTori();
+      if(m.trips.length)await put(`${T.pto}!A2:K${m.trips.length+1}`,m.trips.map(tripToRow));
+      await put(`${T.cfg}!A1:B4`,[['settings',JSON.stringify(m.settings)],['rev',1],['updatedAt',new Date().toISOString()],['updatedBy','setup']]);
+      await appendRows(`${TABS.log}!A:D`,[[new Date().toLocaleString(),NAME[me],'setup',`Copied ${m.trips.length} ${NAME[p]} entries from old tabs`]]);
+    }
+    await loadAll(); render(); afterLoad();
+  }catch(e){console.error(e);alert('Setup failed: '+e.message);if(btn){btn.disabled=false;btn.textContent='Run setup';}}
+}
+async function migrateDan(){
+  const bal=await getRange('Dan_Balance!B1:B2'), rows=await getRange('Dan_Trips!A2:I1000');
+  const settings=Object.assign(JSON.parse(JSON.stringify(DAN_DEF)),safeJSON(bal[1]?.[0],{}));
+  if(!settings.yearBalances||typeof settings.yearBalances!=='object')settings.yearBalances={};
+  const trips=rows.filter(r=>r[0]&&r[1]).map(r=>{const det=safeJSON(r[8],{});if(r[7]==='true')det.toriComing=true;
+    return {id:uid(),type:r[0]==='pto'?'pto':'non-pto',start:r[1],end:r[2]||r[1],title:r[3]||'',notes:r[4]||'',cost:parseFloat(r[5])||0,admin:0,details:det,autoHoliday:r[6]==='true',updated:new Date().toISOString()};});
+  return {settings,trips:sortTrips(trips)};
+}
+async function migrateTori(){
+  const bal=await getRange('Tori_Balance!B1'), rows=await getRange('Tori_Trips!A2:K1000');
+  const b=parseHours(bal[0]?.[0]);
+  const settings=Object.assign(JSON.parse(JSON.stringify(TORI_DEF)),{balance:b===null?0:b,asOf:todayStr(),needsConfirm:true});
+  const trips=rows.filter(r=>r[0]&&r[1]&&['pto','admin','split'].includes(r[0])).map(r=>{
+    const type=r[0], hours=parseFloat(r[6])||0, admin=parseFloat(r[9])||0, ptoH=(r[10]!==undefined&&r[10]!=='')?parseFloat(r[10])||0:hours;
+    return {id:uid(),type,start:r[1],end:r[2]||r[1],title:r[3]||'',notes:r[4]||'',cost:type==='admin'?0:ptoH,admin:type==='admin'?hours:(type==='split'?admin:0),details:{},autoHoliday:false,updated:new Date().toISOString()};});
+  return {settings,trips:sortTrips(trips)};
+}
+
+// ═══════════════ DAN ENGINE (days, fixed grant per PTO year) ═══════════════
+const dS=()=>DB.dan.settings;
+const dWD=()=>dS().workDays;
+const dIsWD=ds=>dWD().includes(dow(ds));
+function dCountWD(a,b,wds){const wd=wds||dWD();let n=0;eachDay(a,b,d=>{if(wd.includes(dow(d)))n++;});return n;}
+function dYearKey(ds){const s=dS(),d=P(ds),st=new Date(d.getFullYear(),s.yearStartMonth-1,s.yearStartDay);return d>=st?d.getFullYear():d.getFullYear()-1;}
+function dYearRange(yk){const s=dS(),st=new Date(yk,s.yearStartMonth-1,s.yearStartDay),en=new Date(yk+1,s.yearStartMonth-1,s.yearStartDay);en.setDate(en.getDate()-1);return {start:isoOf(st),end:isoOf(en)};}
+const dYearLabel=yk=>{const r=dYearRange(yk);return `${fmtDateY(r.start)} – ${fmtDateY(r.end)}`;};
+function dGrant(yk){const yb=dS().yearBalances||{};return yb[yk]!==undefined?+yb[yk]:+dS().annualPTO;}
+const dIsEmerg=t=>!!(t.details&&t.details.emergency);
+// PTO charged by trip t on workdays inside [a,b]
+function dCostIn(t,a,b){
+  if(t.type!=='pto')return 0;
+  const wd=dCountWD(t.start,t.end);
+  if(wd===0)return (t.start>=a&&t.start<=b)?t.cost:0;
+  const cs=t.start>a?t.start:a, ce=t.end<b?t.end:b;
+  if(cs>ce)return 0;
+  return t.cost*dCountWD(cs,ce)/wd;
+}
+const dShare=(t,yk)=>{const r=dYearRange(yk);return dCostIn(t,r.start,r.end);};
+function dPrimaryYear(t){const a=dYearKey(t.start),b=dYearKey(t.end);if(a===b||t.type!=='pto')return a;let best=a,bv=-1;for(let y=a;y<=b;y++){const v=dShare(t,y);if(v>bv){best=y;bv=v;}}return best;}
+function dInYear(t,yk){if(t.type==='pto')return dShare(t,yk)>0||(dCountWD(t.start,t.end)===0&&dYearKey(t.start)===yk);return dYearKey(t.start)<=yk&&dYearKey(t.end)>=yk;}
+// Stats for PTO year yk, counting only usage on/before upTo (if given)
+function dStats(yk,upTo,trips){
+  trips=trips||DB.dan.trips;
+  const r=dYearRange(yk), b=(upTo&&upTo<r.end)?upTo:r.end;
+  const grant=dGrant(yk),reserve=+dS().reserveDays||0;
+  let regular=0,emerg=0,count=0;
+  if(b>=r.start)trips.forEach(t=>{const v=dCostIn(t,r.start,b);if(v>0){count++;if(dIsEmerg(t))emerg+=v;else regular+=v;}});
+  const resUsed=Math.min(emerg,reserve),overflow=emerg-resUsed;
+  return {grant:r2(grant),reserve:r2(reserve),regular:r2(regular),emerg:r2(emerg),resUsed:r2(resUsed),resLeft:r2(reserve-resUsed),overflow:r2(overflow),remaining:r2(grant-reserve-regular-overflow),total:r2(grant-regular-emerg),used:r2(regular+emerg),count};
+}
+const dEndOfDay=ds=>dStats(dYearKey(ds),ds);
+const dStartOfDay=ds=>dStats(dYearKey(ds),addDays(ds,-1));
+function dNth(yr,mo,nth,wd){let c=0;const d=new Date(yr,mo,1);while(true){if(d.getDay()===wd){c++;if(c===nth)break;}d.setDate(d.getDate()+1);}return isoOf(d);}
+function dLastWD(yr,mo,wd){const d=new Date(yr,mo+1,0);while(d.getDay()!==wd)d.setDate(d.getDate()-1);return isoOf(d);}
+function dResolveHol(h,yr){
+  if(!h.date.startsWith('dynamic-'))return h.date;
+  switch(h.date){case 'dynamic-thanksgiving':return dNth(yr,10,4,4);case 'dynamic-christmas':return `${yr}-12-25`;case 'dynamic-newyears':return `${yr}-01-01`;
+    case 'dynamic-laborday':return dNth(yr,8,1,1);case 'dynamic-memorialday':return dLastWD(yr,4,1);case 'dynamic-july4':return `${yr}-07-04`;default:return null;}
+}
+
+// ═══════════════ TORI ENGINE (hours, monthly accrual, 400 cap) ═══════════════
+const tS=()=>DB.tori.settings;
+function tHolidaysYear(y){
+  const obs=d=>{const w=d.getDay();if(w===6)d.setDate(d.getDate()-1);else if(w===0)d.setDate(d.getDate()+1);return d;};
+  const nthMon=(m,n)=>{const d=new Date(y,m,1);d.setDate(1+(8-d.getDay())%7+7*(n-1));return d;};
+  const mem=new Date(y,4,31);mem.setDate(31-(mem.getDay()+6)%7);
+  const tg=new Date(y,10,1);tg.setDate(1+(11-tg.getDay())%7+21);
+  return [["New Year's Day",obs(new Date(y,0,1))],['MLK / Wyoming Equality Day',nthMon(0,3)],["Presidents' Day",nthMon(1,3)],['Memorial Day',mem],
+    ['Independence Day',obs(new Date(y,6,4))],['Labor Day',nthMon(8,1)],['Veterans Day',obs(new Date(y,10,11))],['Thanksgiving',tg],['Christmas',obs(new Date(y,11,25))]]
+    .map(([name,d])=>({name,ds:isoOf(d)}));
+}
+let _tHol=null;
+function tHolMap(){if(_tHol)return _tHol;_tHol={};const y0=new Date().getFullYear();for(let y=y0-3;y<=y0+8;y++)tHolidaysYear(y).forEach(h=>{_tHol[h.ds]=h.name;});return _tHol;}
+const tHol=ds=>tHolMap()[ds]||null;
+const tIsWD=ds=>tS().workDays.includes(dow(ds))&&!tHol(ds);
+function tWDList(a,b){const o=[];eachDay(a,b,d=>{if(tIsWD(d))o.push(d);});return o;}
+function tAccrual(ds){
+  const s=tS(),base=+s.accrualBase||0,st=s.accrualStepStart;
+  if(!st||ds<st)return base;
+  const a=P(st),d=P(ds);let yrs=d.getFullYear()-a.getFullYear();
+  if(d.getMonth()<a.getMonth()||(d.getMonth()===a.getMonth()&&d.getDate()<a.getDate()))yrs--;
+  return base+(+s.accrualStepHours||0)*(1+Math.floor(yrs/(+s.accrualStepYears||4)));
+}
+function tPtoMap(trips){
+  const m={};
+  trips.forEach(t=>{if(t.type==='admin'||!(t.cost>0))return;const wd=tWDList(t.start,t.end);
+    if(!wd.length){m[t.start]=(m[t.start]||0)+t.cost;return;}const per=t.cost/wd.length;wd.forEach(d=>{m[d]=(m[d]||0)+per;});});
+  return m;
+}
+// Day-by-day balance from the paystub date forward. bal[d] = end of day d.
+function tSeries(trips){
+  const s=tS();trips=trips||DB.tori.trips;
+  const pto=tPtoMap(trips);
+  let end=addDays(todayStr(),365*3+62);trips.forEach(t=>{if(t.end>end)end=t.end;});
+  const lim=addDays(s.asOf,365*8);if(end>lim)end=lim;
+  const bal={},acc={},lost={};let b=+s.balance,d=addDays(s.asOf,1);const cap=+s.cap||Infinity;
+  while(d<=end){
+    if(d.endsWith('-01')){const a=tAccrual(d);const nb=b>=cap?b:Math.min(cap,b+a);acc[d]=nb-b;if(a-(nb-b)>0.001)lost[d]=a-(nb-b);b=nb;}
+    b-=pto[d]||0;bal[d]=b;d=addDays(d,1);
+  }
+  return {bal,acc,lost,pto,end};
+}
+let _tSer=null;
+const tSer=()=>_tSer||(_tSer=tSeries());
+function tBalEnd(ds,ser){ser=ser||tSer();const s=tS();if(ds<s.asOf)return null;if(ds===s.asOf)return +s.balance;return ser.bal[ds]??null;}
+function tBalStart(ds,ser){ser=ser||tSer();const s=tS();if(ds<=s.asOf)return null;const e=ser.bal[ds];return e===undefined?null:e+(ser.pto[ds]||0);}
+const tToday=()=>tBalEnd(todayStr())??+tS().balance;
+
+// ═══════════════ RENDER ROOT ═══════════════
+function setStatus(m){const el=document.getElementById('hStatus');if(el)el.textContent=m;}
+function render(){
+  _tSer=null;
+  
+  const who=document.getElementById('hWho');
+  who.innerHTML=me?`This phone: <b style="color:var(--${me})">${NAME[me]}</b> · <a onclick="switchMe()">switch</a>`:'';
+  const tabsEl=document.getElementById('tabs');
+  if(!me||setupNeeded||!DB.dan||!DB.tori){tabsEl.innerHTML='';}
+  else{tabsEl.innerHTML=[['dan',"Dan's PTO",'dan'],['tori',"Tori's PTO",'tori'],['month','Month',''],['quarter','3-Month','']]
+    .map(([k,l,c])=>`<div class="tab ${c} ${tab===k?'on':''}" onclick="setTab('${k}')">${l}</div>`).join('');}
+  const v=document.getElementById('view');
+  if(!me){v.innerHTML=profileHTML();return;}
+  if(setupNeeded){v.innerHTML=setupHTML();return;}
+  if(!DB.dan||!DB.tori){v.innerHTML=`<div class="empty-state">${online?'Loading…':'Can\'t reach Google Sheets and there\'s no saved copy on this phone yet. Check your connection and tap Sync.'}</div>`;return;}
+  v.className='app '+(tab==='tori'?'view-tori':'view-dan');
+  if(tab==='dan')v.innerHTML=danHTML(me!=='dan'||!online);
+  else if(tab==='tori')v.innerHTML=toriHTML(me!=='tori'||!online);
+  else if(tab==='month')v.innerHTML=monthHTML();
+  else v.innerHTML=quarterHTML();
+  if(tab==='dan'&&me==='dan'&&dv.f&&dv.f.kind==='pto')danCalc();
+  if(tab==='tori'&&me==='tori'&&tv.f)toriCalc();
+}
+function setTab(k){tab=k;render();window.scrollTo(0,0);}
+function profileHTML(){return `<div class="profile"><h2>Whose phone is this?</h2><p>Pick once — this phone remembers it. You can edit only your own PTO; the other person's is view-only.</p>
+  <button class="btn btn-big" style="border-color:var(--dan);color:var(--dan)" onclick="pickMe('dan')">I'm Dan</button>
+  <button class="btn btn-big" style="border-color:var(--tori);color:var(--tori)" onclick="pickMe('tori')">I'm Tori</button></div>`;}
+function pickMe(p){me=p;lsSet(ME_KEY,p);tab=p;render();if(!booted)boot();else{render();afterLoad();}}
+function switchMe(){const o=other(me);if(!confirm(`Switch this phone to ${NAME[o]}?\n\nAfter switching, this phone can edit ${NAME[o]}'s PTO and can only VIEW ${NAME[me]}'s.`))return;me=o;lsSet(ME_KEY,o);dv.f=null;tv.f=null;tv.paystub=false;tab=o;render();}
+function setupHTML(){return `<div class="form-panel"><div class="form-title">One-time setup</div>
+  <p class="hint" style="line-height:1.8">The joint app keeps its data in new tabs in your Google Sheet:<br>${setupNeeded.need.map(esc).join(', ')}<br><br>
+  Setup copies Dan's and Tori's existing trips and balances from the old tabs into the new ones. The old tabs are <b>left alone</b> as a backup.
+  After this, changes made in the old apps will NOT show up here — stop using them.</p>
+  <button class="btn btn-primary" id="setupBtn" onclick="runSetup()">Run setup</button></div>`;}
+const roBanner=p=>`<div class="ro-banner">View only — this is ${NAME[p]}'s PTO. Only ${NAME[p]}'s phone can change it.</div>`;
+
+// ═══════════════ DAN VIEW ═══════════════
+const dv={year:null,expanded:null,f:null,editId:null,panel:null};
+function danHTML(ro){
+  const cy=dYearKey(todayStr());if(dv.year===null)dv.year=cy;
+  const yk=dv.year,st=dStats(yk);
+  let h=ro?roBanner('dan'):'';
+  if(!online&&!ro)h+=`<div class="alert alert-warn">Offline — view only.</div>`;
+  h+=`<div class="year-nav"><button class="btn btn-sm" onclick="dv.year--;dv.expanded=null;render()">‹</button>
+    <span class="yn-label">PTO Year ${yk}</span><span class="yn-range">${dYearLabel(yk)}</span>
+    <span class="yn-badge ${yk>cy?'future':yk<cy?'past':''}">${yk===cy?'CURRENT':yk>cy?'UPCOMING':'PAST'}</span>
+    <button class="btn btn-sm" onclick="dv.year++;dv.expanded=null;render()">›</button>
+    ${yk!==cy?`<button class="btn btn-sm btn-ghost" onclick="dv.year=${cy};render()">Back to current</button>`:''}</div>`;
+  const today=todayStr(),nowSt=yk===cy?dEndOfDay(today):null;
+  h+=`<div class="bal-strip">
+    <div class="bal-cell"><div class="bal-label">Remaining Balance</div><div class="bal-val ${st.remaining<0?'neg':st.remaining<=3?'warn':'ok'}">${fmtD(st.remaining)}</div><div class="bal-sub">${st.overflow>0?`incl. ${fmtD(st.overflow)} emergency overflow`:'plannable — reserve excluded'}</div></div>
+    <div class="bal-cell"><div class="bal-label">Emergency Reserve</div><div class="bal-val ${st.resUsed>0?'warn':'accent'}">${fmtD(st.resLeft)}</div><div class="bal-sub">${st.resUsed>0?`${fmtD(st.resUsed)} used of ${fmtD(st.reserve)}`:`of ${fmtD(st.reserve)} — untouched`}</div></div>
+    <div class="bal-cell ${ro?'':'clickable'}" ${ro?'':'onclick="danEditGrant()"'}><div class="bal-label">Total Available${ro?'':' · edit'}</div><div class="bal-val ${st.total<0?'neg':''}">${fmtD(st.total)}</div><div class="bal-sub">of ${fmtD(st.grant)} granted</div></div>
+    <div class="bal-cell"><div class="bal-label">PTO Planned</div><div class="bal-val">${fmtD(st.used)}</div><div class="bal-sub">${st.count} trip${st.count!==1?'s':''}${nowSt?` · ${fmtD(nowSt.used)} taken so far`:''}</div></div></div>`;
+  h+=`<div class="toolbar">${ro?'':`<button class="btn btn-primary" onclick="danOpen('pto')">+ Plan PTO</button><button class="btn" onclick="danOpen('non-pto')">+ Non-PTO Day</button>`}
+    <button class="btn btn-ghost" onclick="dv.panel=dv.panel==='hol'?null:'hol';render()">Holidays</button>
+    <button class="btn btn-ghost" onclick="dv.panel=dv.panel==='proj'?null:'proj';render()">Projections</button>
+    ${ro?'':`<button class="btn btn-ghost" onclick="dv.panel=dv.panel==='set'?null:'set';render()">Settings</button>`}</div>`;
+  if(!ro&&dv.f)h+=danFormHTML();
+  if(dv.panel==='set'&&!ro)h+=danSettingsHTML();
+  if(dv.panel==='hol')h+=danHolidaysHTML();
+  if(dv.panel==='proj')h+=danProjHTML();
+  const items=DB.dan.trips.filter(t=>dInYear(t,yk));
+  h+=`<div class="list-header">Planned Days — PTO Year ${yk}</div>`;
+  h+=items.length?items.map(t=>danRow(t,ro,yk)).join(''):`<div class="empty-state">Nothing planned for PTO year ${yk}.</div>`;
+  return h;
+}
+function danRow(t,ro,yk){
+  const isPTO=t.type==='pto',isAuto=t.autoHoliday,isEm=isPTO&&dIsEmerg(t),open=dv.expanded===t.id,det=t.details||{};
+  const cls=['day-row',isPTO?'':'non-pto',isAuto?'holiday-flag':'',isEm?'emerg':'',open?'expanded':'',t.end<todayStr()?'past':''].filter(Boolean).join(' ');
+  const tag=isAuto?'<span class="type-tag tag-holiday">HOLIDAY</span>':isEm?'<span class="type-tag tag-emerg">EMERG</span>':isPTO?'<span class="type-tag tag-pto">PTO</span>':'<span class="type-tag tag-off">OFF</span>';
+  let meta=`<span>${rangeStr(t.start,t.end)}</span>`;
+  if(isPTO){const sh=r2(dShare(t,yk));if(dYearKey(t.start)!==dYearKey(t.end)&&sh!==r2(t.cost))meta+=`<span class="m-auto">${fmtD(sh)} in PTO yr ${yk}</span>`;
+    meta+=isEm?`<span class="m-emerg">${fmtD(t.cost)} from reserve</span>`:`<span class="m-pto">${fmtD(t.cost)} PTO</span>`;if(isAuto)meta+=`<span class="m-auto">auto-added</span>`;}
+  else meta+=`<span>No PTO</span>`;
+  let h=`<div class="${cls}" ${open?'':`onclick="dv.expanded='${t.id}';render()"`}>${tag}<div class="day-body">
+    <div class="day-name ${isHunting(t.title)?'hunting':''}">${esc(t.title)}</div><div class="day-meta">${meta}</div>
+    ${t.notes?`<div class="day-note">${esc(t.notes)}</div>`:''}`;
+  if(open){
+    const dis=ro?'disabled':'';
+    const calDays=Math.round((P(t.end)-P(t.start))/86400000)+1;
+    h+=`<div class="day-detail"><div class="detail-stats"><div class="detail-stat">Trip length: <strong>${calDays} day${calDays!==1?'s':''}</strong></div>${isPTO?`<div class="detail-stat">PTO used: <strong>${fmtD(t.cost)}</strong></div>`:''}</div>
+      <div class="detail-section-title">Lodging &amp; Bookings</div>`;
+    (det.bookings||[]).forEach((b,bi)=>{const f=(k,lab,type,ph)=>`<div><label>${lab}</label><input type="${type}" ${dis} value="${esc(b[k]||'')}" placeholder="${ph}" onchange="danBooking('${t.id}',${bi},'${k}',this.value)"></div>`;
+      h+=`<div class="booking-card"><div class="g2">${f('name','Hotel / Property','text','Hotel name')}${f('phone','Phone','text','(555) 555-5555')}</div>
+        <div class="g11">${f('checkin','Check-in','date','')}${f('checkout','Check-out','date','')}</div>
+        <div class="g2">${f('conf','Confirmation #','text','ABC123')}<div style="display:flex;align-items:flex-end">${ro?'':`<button class="btn btn-sm btn-danger" onclick="danBookingRemove('${t.id}',${bi})">Remove</button>`}</div></div></div>`;});
+    if(!ro)h+=`<button class="btn btn-sm" onclick="danBookingAdd('${t.id}')" style="margin-bottom:12px">+ Add Booking</button>`;
+    h+=`<div class="form-group"><label>Travel Notes</label><input type="text" ${dis} value="${esc(det.travel||'')}" placeholder="Flight info, drive time, route…" onchange="danDet('${t.id}','travel',this.value)"></div>
+      <div class="form-group"><label>Trip Notes</label><textarea ${dis} onchange="danDet('${t.id}','tripnotes',this.value)">${esc(det.tripnotes||'')}</textarea></div>
+      <label>Gear Checklist</label>`;
+    (det.gear||[]).forEach((g,gi)=>{h+=`<div class="gear-item ${g.done?'done':''}"><input type="checkbox" ${dis} ${g.done?'checked':''} onchange="danGearToggle('${t.id}',${gi},this.checked)"><span>${esc(g.text)}</span>${ro?'':`<button class="btn btn-sm btn-danger" style="margin-left:auto;padding:2px 7px" onclick="danGearRemove('${t.id}',${gi})">Remove</button>`}</div>`;});
+    if(!ro)h+=`<div class="gear-add"><input type="text" id="gearIn" placeholder="Add item…" onkeydown="if(event.key==='Enter'){danGearAdd('${t.id}');event.preventDefault();}"><button class="btn btn-sm" onclick="danGearAdd('${t.id}')">+ Add</button></div>`;
+    h+=`<div class="detail-actions"><button class="btn btn-sm btn-ghost" onclick="dv.expanded=null;render()">Close</button>
+      ${ro?'':`${isAuto?'':`<button class="btn btn-sm" onclick="danEdit('${t.id}')">Edit</button>`}<button class="btn btn-sm btn-danger" onclick="danDelete('${t.id}')">Delete</button>`}</div></div>`;
+  }
+  return h+`</div>${open?'':'<span class="day-chevron">›</span>'}</div>`;
+}
+const dTrip=id=>DB.dan.trips.find(t=>t.id===id);
+function danDetailSave(t,what){t.updated=new Date().toISOString();save('dan','detail',`${t.title}: ${what}`);}
+function danDet(id,k,v){const t=dTrip(id);if(!t||me!=='dan')return;t.details=t.details||{};t.details[k]=v;danDetailSave(t,k);}
+function danBooking(id,bi,k,v){const t=dTrip(id);if(!t?.details?.bookings?.[bi]||me!=='dan')return;t.details.bookings[bi][k]=v;danDetailSave(t,'booking');}
+function danBookingAdd(id){const t=dTrip(id);if(!t||me!=='dan')return;t.details=t.details||{};(t.details.bookings=t.details.bookings||[]).push({name:'',phone:'',checkin:'',checkout:'',conf:''});danDetailSave(t,'booking added');render();}
+function danBookingRemove(id,bi){const t=dTrip(id);if(!t||me!=='dan')return;if(!confirm('Remove this booking?'))return;t.details.bookings.splice(bi,1);danDetailSave(t,'booking removed');render();}
+function danGearAdd(id){const t=dTrip(id),inp=document.getElementById('gearIn'),txt=inp?.value.trim();if(!t||!txt||me!=='dan')return;t.details=t.details||{};(t.details.gear=t.details.gear||[]).push({text:txt,done:false});danDetailSave(t,'gear');render();setTimeout(()=>document.getElementById('gearIn')?.focus(),0);}
+function danGearRemove(id,gi){const t=dTrip(id);if(!t||me!=='dan')return;t.details.gear.splice(gi,1);danDetailSave(t,'gear removed');render();}
+function danGearToggle(id,gi,v){const t=dTrip(id);if(!t?.details?.gear?.[gi]||me!=='dan')return;t.details.gear[gi].done=v;danDetailSave(t,'gear');render();}
+
+function danOpen(kind){dv.editId=null;dv.f={kind,start:'',end:'',title:'',notes:'',half:false,emerg:false,cost:0};dv.panel=null;render();scrollToForm();}
+function scrollToForm(){setTimeout(()=>document.querySelector('.form-panel')?.scrollIntoView({behavior:'smooth',block:'nearest'}),0);}
+function danEdit(id){const t=dTrip(id);if(!t)return;const wd=dCountWD(t.start,t.end);
+  dv.editId=id;dv.f={kind:t.type,start:t.start,end:t.end,title:t.title,notes:t.notes||'',half:t.type==='pto'&&wd>0&&r2(t.cost)===r2(wd/2)&&t.cost!==wd,emerg:dIsEmerg(t),cost:t.cost};dv.expanded=null;render();scrollToForm();}
+function danFormHTML(){
+  const f=dv.f,isPTO=f.kind==='pto';
+  return `<div class="form-panel"><div class="form-title">${dv.editId?'Edit':'Plan'} ${isPTO?'PTO Days':'Non-PTO Days'}</div>
+    ${isPTO?'':'<p class="hint">Track activities on days off — zero PTO impact</p>'}
+    <div class="form-row"><div class="form-group"><label>Start Date</label><input type="date" value="${f.start}" onchange="dv.f.start=this.value;if(!dv.f.end||dv.f.end<this.value){dv.f.end=this.value;document.getElementById('fEnd').value=this.value;}danCalc()"></div>
+    <div class="form-group"><label>End Date</label><input type="date" id="fEnd" value="${f.end}" onchange="dv.f.end=this.value;danCalc()"></div></div>
+    ${isPTO?`<div class="check-row"><input type="checkbox" id="fHalf" ${f.half?'checked':''} onchange="dv.f.half=this.checked;danCalc()"><label for="fHalf">Half day — divide PTO by 2</label></div>
+    <div class="check-row"><input type="checkbox" id="fEm" ${f.emerg?'checked':''} onchange="dv.f.emerg=this.checked;danCalc()"><label for="fEm">Emergency — take from reserve, not remaining balance</label></div>
+    <div id="calcBox" class="calc-box hidden"></div>`:''}
+    <div class="form-group"><label>${isPTO?'Purpose':'Activity'}</label><input type="text" value="${esc(f.title)}" oninput="dv.f.title=this.value" placeholder="Elk hunt, Family trip, Doctor appt…"></div>
+    <div class="form-group"><label>Notes (optional)</label><textarea oninput="dv.f.notes=this.value">${esc(f.notes)}</textarea></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="danSaveForm()">Save</button><button class="btn btn-ghost" onclick="dv.f=null;dv.editId=null;render()">Cancel</button></div></div>`;
+}
+function danCalc(){
+  const f=dv.f,box=document.getElementById('calcBox');if(!f||!box)return;
+  if(!f.start||!f.end){box.classList.add('hidden');f.cost=0;return;}
+  if(f.end<f.start){box.innerHTML='<span style="color:var(--danger)">End date before start date</span>';box.classList.remove('hidden');f.cost=0;return;}
+  const total=Math.round((P(f.end)-P(f.start))/86400000)+1,wdc=dCountWD(f.start,f.end);
+  f.cost=f.half?r2(wdc/2):wdc;
+  const tmp={type:'pto',start:f.start,end:f.end,cost:f.cost},ys=[];
+  for(let y=dYearKey(f.start);y<=dYearKey(f.end);y++){const v=r2(dShare(tmp,y));if(v>0)ys.push(`PTO year ${y} (${fmtD(v)})`);}
+  const wdNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].filter((_,i)=>dWD().includes(i)).join(', ');
+  box.innerHTML=`<strong>Range:</strong> ${total} calendar day${total!==1?'s':''} · <strong>Workdays (${wdNames}):</strong> ${wdc} · <span class="calc-deduct">Deduct: ${fmtD(f.cost)}${f.emerg?' from reserve':''}</span><br><strong>Counts against:</strong> ${ys.join(' + ')||`PTO year ${dYearKey(f.start)}`}`;
+  box.classList.remove('hidden');
+}
+function danSaveForm(){
+  if(me!=='dan')return;
+  const f=dv.f,title=f.title.trim();
+  if(!f.start||!f.end||!title){alert('Fill in start date, end date, and purpose.');return;}
+  if(f.end<f.start){alert('End date must be on or after start date.');return;}
+  const isPTO=f.kind==='pto';
+  if(isPTO){danCalc();if(f.cost===0){alert('No workdays in that range — check your dates.');return;}}
+  const others=DB.dan.trips.filter(t=>t.id!==dv.editId);
+  if(isPTO){
+    const tmp={type:'pto',start:f.start,end:f.end,cost:f.cost};
+    for(let y=dYearKey(f.start);y<=dYearKey(f.end);y++){
+      const need=r2(dShare(tmp,y));if(need<=0)continue;const st=dStats(y,null,others);
+      if(f.emerg){if(need>st.resLeft){const over=r2(need-st.resLeft);if(!confirm(`Emergency reserve short\nPTO year ${y} has ${fmtD(st.resLeft)} of reserve left.\nThe extra ${fmtD(over)} will come out of your remaining balance (${fmtD(st.remaining)} → ${fmtD(r2(st.remaining-over))}).\n\nProceed?`))return;}}
+      else if(need>st.remaining){if(!confirm(`Over your remaining balance\nPTO year ${y}: ${fmtD(st.remaining)} remaining, this needs ${fmtD(need)}.\nRemaining would go to ${fmtD(r2(st.remaining-need))}.\n\nRegular PTO does NOT touch your ${fmtD(st.resLeft)} emergency reserve. If this really is an emergency, cancel and tick the Emergency box.\n\nSave anyway?`))return;}
+    }
+  }
+  let t;
+  if(dv.editId){t=dTrip(dv.editId);if(!t){alert('That entry no longer exists (removed on another device).');dv.f=null;dv.editId=null;render();return;}}
+  else{t={id:uid(),details:{},autoHoliday:false};DB.dan.trips.push(t);}
+  Object.assign(t,{type:isPTO?'pto':'non-pto',start:f.start,end:f.end,title,notes:f.notes.trim(),cost:isPTO?f.cost:0,admin:0,updated:new Date().toISOString()});
+  t.details=t.details||{};if(isPTO&&f.emerg)t.details.emergency=true;else delete t.details.emergency;
+  sortTrips(DB.dan.trips);
+  const act=dv.editId?'edit':'add';dv.f=null;dv.editId=null;dv.year=dPrimaryYear(t);dv.expanded=null;
+  save('dan',act,`${title} ${t.start}→${t.end} ${isPTO?fmtD(t.cost):'no PTO'}`);render();
+}
+function danDelete(id){
+  const t=dTrip(id);if(!t||me!=='dan')return;
+  if(!confirm(`Delete "${t.title}" (${rangeStr(t.start,t.end)})?\n\nThis can't be undone.`))return;
+  DB.dan.trips=DB.dan.trips.filter(x=>x.id!==id);dv.expanded=null;
+  save('dan','delete',`${t.title} ${t.start}→${t.end} ${fmtD(t.cost)}`);render();
+}
+function danEditGrant(){
+  if(me!=='dan')return;const yk=dv.year,st=dStats(yk);
+  const v=prompt(`PTO year ${yk} (${dYearLabel(yk)})\n\nGranted: ${fmtD(st.grant)}\nEmergency reserve set aside: ${fmtD(st.reserve)}\nPlanned: ${fmtD(st.used)}\nRemaining (plannable): ${fmtD(st.remaining)}\n\nEnter TOTAL days granted for this PTO year (reserve included):`,st.grant);
+  if(v===null)return;const n=parseFloat(v);if(isNaN(n)||n<0){alert('Invalid number.');return;}
+  dS().yearBalances=dS().yearBalances||{};const old=dGrant(yk);dS().yearBalances[yk]=n;
+  save('dan','grant',`PTO year ${yk}: ${old} → ${n} days`);render();
+}
+const DYN_OPTS=[['dynamic-thanksgiving','Thanksgiving (4th Thu of Nov)'],['dynamic-christmas','Christmas (Dec 25)'],['dynamic-newyears',"New Year's Day (Jan 1)"],['dynamic-laborday','Labor Day (1st Mon of Sep)'],['dynamic-memorialday','Memorial Day (Last Mon of May)'],['dynamic-july4','July 4th']];
+function danSettingsHTML(){
+  const s=dS();
+  const wd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<div class="wd-toggle"><input type="checkbox" id="wd${i}" ${s.workDays.includes(i)?'checked':''}><span>${n}</span></div>`).join('');
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'].map((m,i)=>`<option value="${i+1}" ${s.yearStartMonth===i+1?'selected':''}>${m}</option>`).join('');
+  return `<div class="form-panel"><div class="form-title">Dan — Settings</div>
+    <div class="settings-block"><div class="settings-block-title">Work Days</div><div class="wd-grid">${wd}</div></div>
+    <div class="settings-block"><div class="settings-block-title">PTO Allocation</div><div class="form-row">
+      <div class="form-group"><label>Default Annual Grant (days)</label><input type="number" id="setAnnual" step="0.5" value="${s.annualPTO}"></div>
+      <div class="form-group"><label>Emergency Reserve</label><input type="number" id="setReserve" step="0.5" value="${s.reserveDays}"></div></div></div>
+    <div class="settings-block"><div class="settings-block-title">PTO Year Start</div><div class="form-row">
+      <div class="form-group"><label>Month</label><select id="setYM">${months}</select></div>
+      <div class="form-group"><label>Day</label><input type="number" id="setYD" value="${s.yearStartDay}" min="1" max="31"></div></div></div>
+    <div class="settings-block"><div class="settings-block-title">Paid Holidays (charged as PTO when on a workday)</div><div id="holEntries">${danHEntries(s.holidays)}</div>
+      <button class="btn btn-sm" style="margin-top:8px" onclick="danHAdd()">+ Add Holiday</button></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="danSaveSettings()">Save Settings</button><button class="btn btn-ghost" onclick="dv.panel=null;render()">Cancel</button></div></div>`;
+}
+function danHEntries(hs){return hs.map((h,i)=>`<div class="h-entry"><input type="text" value="${esc(h.name)}" placeholder="Name" style="flex:1">
+  ${h.date.startsWith('dynamic-')?`<select style="flex:2">${DYN_OPTS.map(([v,l])=>`<option value="${v}" ${h.date===v?'selected':''}>${l}</option>`).join('')}</select>`:`<input type="date" value="${h.date}" style="flex:2">`}
+  <button class="btn btn-sm btn-danger" onclick="danHRemove(${i})">Remove</button></div>`).join('');}
+function danHCollect(){return [...document.querySelectorAll('#holEntries .h-entry')].map(el=>({name:el.querySelector('input[type=text]').value.trim(),date:el.querySelector('select')?.value||el.querySelector('input[type=date]')?.value||''}));}
+function danHAdd(){const c=danHCollect();c.push({name:'',date:'dynamic-thanksgiving'});document.getElementById('holEntries').innerHTML=danHEntries(c);}
+function danHRemove(i){const c=danHCollect();c.splice(i,1);document.getElementById('holEntries').innerHTML=danHEntries(c);}
+function danSaveSettings(){
+  if(me!=='dan')return;
+  const wds=[0,1,2,3,4,5,6].filter(i=>document.getElementById('wd'+i).checked);
+  if(!wds.length){alert('Select at least one work day.');return;}
+  const annual=parseFloat(document.getElementById('setAnnual').value),reserve=parseFloat(document.getElementById('setReserve').value);
+  if(isNaN(annual)||annual<0||isNaN(reserve)||reserve<0){alert('Invalid PTO numbers.');return;}
+  const old=dS(),oldWD=old.workDays.slice(),today=todayStr();
+  DB.dan.settings={...old,workDays:wds,annualPTO:annual,reserveDays:reserve,yearStartMonth:parseInt(document.getElementById('setYM').value),yearStartDay:parseInt(document.getElementById('setYD').value)||1,holidays:danHCollect().filter(h=>h.name&&h.date)};
+  // Only FUTURE auto-holidays are rebuilt; past ones stay charged.
+  DB.dan.trips=DB.dan.trips.filter(t=>!(t.autoHoliday&&t.start>=today));
+  let changed=0;
+  DB.dan.trips.forEach(t=>{if(t.type!=='pto'||t.autoHoliday||t.start<today)return;const ow=dCountWD(t.start,t.end,oldWD),nw=dCountWD(t.start,t.end,wds);
+    const nc=ow>0?r2(t.cost/ow*nw):nw;if(nc!==t.cost){t.cost=nc;changed++;}});
+  dv.panel=null;save('dan','settings',`grant ${annual}, reserve ${reserve}${changed?`, ${changed} trips recalculated`:''}`);
+  if(changed)alert(`Work schedule updated — ${changed} upcoming trip${changed!==1?'s':''} recalculated.`);
+  render();dCheckHols();
+}
+function danHolidaysHTML(){
+  const y=new Date().getFullYear(),wdStr=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].filter((_,i)=>dWD().includes(i)).join(', ');
+  let h=`<div class="form-panel"><div class="form-title">Dan — Paid Holidays</div><div class="alert alert-info">Workdays: ${wdStr}</div><div class="hol-grid">`;
+  [y,y+1,y+2].forEach(yr=>dS().holidays.forEach(hd=>{const ds=dResolveHol(hd,yr);if(!ds)return;const w=dIsWD(ds);
+    h+=`<div class="hol-item ${w?'needs-pto':''}"><div class="hol-name">${esc(hd.name)} ${yr}</div><div>${fmtDateLong(ds)}</div><div class="${w?'hol-warn':'hol-ok'}">${w?'Workday — PTO required':'Day off'}</div></div>`;}));
+  return h+`</div><button class="btn btn-ghost" style="margin-top:12px" onclick="dv.panel=null;render()">Close</button></div>`;
+}
+function danProjHTML(){
+  const cy=dYearKey(todayStr());
+  const block=yk=>{const st=dStats(yk);return `<div class="proj-block"><div class="proj-block-title">PTO Year ${yk} — ${dYearLabel(yk)}${yk===cy?' (current)':' (upcoming)'}</div>
+    <div class="proj-line"><span>Granted</span><span>${fmtD(st.grant)}</span></div>
+    <div class="proj-line"><span>Emergency reserve set aside</span><span>−${fmtD(st.reserve)}</span></div>
+    <div class="proj-line"><span>Regular PTO planned</span><span>−${fmtD(st.regular)}</span></div>
+    ${st.overflow>0?`<div class="proj-line warn"><span>Emergency overflow</span><span>−${fmtD(st.overflow)}</span></div>`:''}
+    <div class="proj-line ${st.remaining<0?'neg':st.remaining<=3?'warn':'ok'}"><span>Remaining (plannable)</span><span>${fmtD(st.remaining)}</span></div>
+    <div class="proj-line"><span>Emergency reserve left</span><span>${fmtD(st.resLeft)} of ${fmtD(st.reserve)}</span></div></div>`;};
+  let h=`<div class="form-panel"><div class="form-title">Dan — Projections</div>${block(cy)}${block(cy+1)}${block(cy+2)}`;
+  return h+`<button class="btn btn-ghost" onclick="dv.panel=null;render()">Close</button></div>`;
+}
+// Holiday-on-workday prompt (Dan's phone only)
+let pendingHols=[];
+function dCheckHols(){
+  if(me!=='dan'||!online||!DB.dan)return;
+  const today=todayStr(),cy=dYearKey(today),start=dYearRange(cy).start,end=dYearRange(cy+1).end;
+  pendingHols=[];
+  for(let yr=P(start).getFullYear();yr<=P(end).getFullYear();yr++)dS().holidays.forEach(h=>{const ds=dResolveHol(h,yr);
+    if(!ds||ds<today||ds<start||ds>end||!dIsWD(ds))return;if(DB.dan.trips.some(t=>t.autoHoliday&&t.start===ds))return;if(holSkipped().includes(ds))return;pendingHols.push({name:h.name,ds,yr});});
+  if(!pendingHols.length)return;
+  document.getElementById('overlay').innerHTML=`<div class="overlay"><div class="overlay-card"><div class="overlay-title">Holiday falls on a workday</div>
+    <p style="margin-bottom:14px;line-height:1.6">These paid holidays fall on your workdays this PTO year or next. Add them as PTO?</p>
+    ${pendingHols.map((h,i)=>`<div class="prompt-item"><input type="checkbox" id="hc${i}" checked><div><div style="color:var(--text-bright)">${esc(h.name)} ${h.yr}</div><div style="font-size:11px;color:var(--text-dim)">${fmtDateLong(h.ds)} — 1 day PTO</div></div></div>`).join('')}
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px"><button class="btn btn-ghost" onclick="dSkipHols()">Skip</button><button class="btn btn-primary" onclick="dConfirmHols()">Add selected</button></div></div></div>`;
+}
+const holSkipped=()=>safeJSON(lsGet('ptoJoint.holSkip'),[])||[];
+function dSkipHols(){lsSet('ptoJoint.holSkip',JSON.stringify([...new Set(holSkipped().concat(pendingHols.map(h=>h.ds)))]));document.getElementById('overlay').innerHTML='';}
+function dConfirmHols(){
+  const skip=pendingHols.filter((h,i)=>!document.getElementById('hc'+i)?.checked).map(h=>h.ds);if(skip.length)lsSet('ptoJoint.holSkip',JSON.stringify([...new Set(holSkipped().concat(skip))]));
+  const add=pendingHols.filter((h,i)=>document.getElementById('hc'+i)?.checked);
+  add.forEach(h=>DB.dan.trips.push({id:uid(),type:'pto',start:h.ds,end:h.ds,title:`${h.name} (Company Holiday)`,notes:'Paid holiday on a workday',cost:1,admin:0,autoHoliday:true,details:{},updated:new Date().toISOString()}));
+  sortTrips(DB.dan.trips);document.getElementById('overlay').innerHTML='';
+  if(add.length){save('dan','holidays',add.map(h=>h.name+' '+h.ds).join(', '));render();}
+}
+
+// ═══════════════ TORI VIEW ═══════════════
+const tv={f:null,editId:null,panel:null,expanded:null,showPast:false,paystub:false};
+const tTrip=id=>DB.tori.trips.find(t=>t.id===id);
+function toriHTML(ro){
+  const s=tS(),today=todayStr(),ser=tSer(),now=tToday();
+  let h=ro?roBanner('tori'):'';
+  if(!online&&!ro)h+=`<div class="alert alert-warn">Offline — view only.</div>`;
+  if(!ro&&s.needsConfirm)h+=`<div class="alert alert-warn">Your balance (${fmtH(+s.balance)}) was carried over from the old app. Check it against your latest paystub and tap <b>Update from paystub</b> so the projections start from the right number.</div>`;
+  // next accrual, lowest ahead, planned ahead
+  let nextAcc=null;for(const d in ser.acc){if(d>today){nextAcc=d;break;}}
+  let low=Infinity,lowD=null,planned=0;
+  Object.keys(ser.bal).forEach(d=>{if(d>today){if(ser.bal[d]<low){low=ser.bal[d];lowD=d;}planned+=ser.pto[d]||0;}});
+  const horizon=addDays(today,730),lostDays=Object.keys(ser.lost).filter(d=>d>today&&d<=horizon).sort();
+  const lost=lostDays.reduce((a,d)=>a+ser.lost[d],0);
+  h+=`<div class="bal-strip">
+    <div class="bal-cell ${ro?'':'clickable'}" ${ro?'':'onclick="tv.paystub=true;render()"'}><div class="bal-label">Balance Today${ro?'':' · edit'}</div><div class="bal-val ${now<0?'neg':now<16?'warn':'ok'}">${fmtH(now)}</div><div class="bal-sub">${(now/hpd()).toFixed(1)} days · paystub ${fmtH(+s.balance)} on ${fmtDateY(s.asOf)}</div></div>
+    <div class="bal-cell"><div class="bal-label">Next Accrual</div><div class="bal-val accent sm">${nextAcc?'+'+fmtH(ser.acc[nextAcc]):'—'}</div><div class="bal-sub">${nextAcc?fmtDateY(nextAcc):''}</div></div>
+    <div class="bal-cell"><div class="bal-label">Lowest Ahead</div><div class="bal-val sm ${low<0?'neg':low<16?'warn':''}">${lowD?fmtH(low):'—'}</div><div class="bal-sub">${lowD?`${(low/hpd()).toFixed(1)} d · ${fmtDateY(lowD)}`:''}</div></div>
+    <div class="bal-cell"><div class="bal-label">PTO Planned Ahead</div><div class="bal-val sm">${fmtH(planned)}</div><div class="bal-sub">${(planned/hpd()).toFixed(1)} days</div></div></div>`;
+  if(lost>0)h+=`<div class="alert alert-warn">With what's planned now, you'll hit the ${fmtH(+s.cap)} cap in ${lostDays.length?monthLabel(P(lostDays[0]).getFullYear(),P(lostDays[0]).getMonth()):''} and lose ${fmtH(lost)} of accrual over the next 2 years unless you plan more PTO. See Projections.</div>`;
+  if(!ro&&tv.paystub)h+=`<div class="form-panel"><div class="form-title">Update from paystub</div>
+    <p class="hint">Enter the leave balance printed on your paystub and the date it's as of. Any PTO before that date is assumed to already be taken out.</p>
+    <div class="form-row"><div class="form-group"><label>Balance (HH:MM or decimal)</label><input type="text" id="psBal" value="${fmtH(+s.balance)}"></div>
+    <div class="form-group"><label>As of date</label><input type="date" id="psDate" value="${today}" max="${today}"></div></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="toriSavePaystub()">Save balance</button><button class="btn btn-ghost" onclick="tv.paystub=false;render()">Cancel</button></div></div>`;
+  h+=`<div class="toolbar">${ro?'':`<button class="btn btn-primary" onclick="toriOpen()">+ Plan PTO</button><button class="btn" onclick="tv.paystub=true;render()">Update from paystub</button>`}
+    <button class="btn btn-ghost" onclick="tv.panel=tv.panel==='hol'?null:'hol';render()">Holidays</button>
+    <button class="btn btn-ghost" onclick="tv.panel=tv.panel==='proj'?null:'proj';render()">Projections</button>
+    ${ro?'':`<button class="btn btn-ghost" onclick="tv.panel=tv.panel==='set'?null:'set';render()">Settings</button>`}</div>`;
+  if(!ro&&tv.f)h+=toriFormHTML();
+  if(tv.panel==='set'&&!ro)h+=toriSettingsHTML();
+  if(tv.panel==='hol')h+=toriHolidaysHTML();
+  if(tv.panel==='proj')h+=toriProjHTML();
+  const all=DB.tori.trips,shown=tv.showPast?all:all.filter(t=>t.end>=today),past=all.length-all.filter(t=>t.end>=today).length;
+  h+=`<div class="list-header">${tv.showPast?'All trips':'Upcoming trips'}</div>`;
+  h+=shown.length?shown.map(t=>toriRow(t,ro,ser)).join(''):`<div class="empty-state">No upcoming trips.</div>`;
+  if(past)h+=`<button class="btn btn-sm btn-ghost" style="margin-top:8px" onclick="tv.showPast=!tv.showPast;render()">${tv.showPast?'Hide':'Show'} ${past} past trip${past!==1?'s':''}</button>`;
+  return h;
+}
+function toriRow(t,ro,ser){
+  const open=tv.expanded===t.id,isAdmin=t.type==='admin',s=tS();
+  const tag=isAdmin?'<span class="type-tag tag-off">ADMIN</span>':t.type==='split'?'<span class="type-tag tag-pto">SPLIT</span>':'<span class="type-tag tag-pto">PTO</span>';
+  let meta=`<span>${rangeStr(t.start,t.end)}</span>`;
+  if(isAdmin)meta+=`<span>${fmtH(t.admin)} admin · no PTO</span>`;
+  else meta+=`<span class="m-pto">${fmtH(t.cost)} PTO (${(t.cost/hpd()).toFixed(1)} d)</span>${t.type==='split'?`<span>+ ${fmtH(t.admin)} admin</span>`:''}`;
+  if(!isAdmin){const after=tBalEnd(t.end,ser);meta+=after===null?`<span class="m-auto">before balance date</span>`:`<span style="color:${after<0?'var(--danger)':'var(--ok)'}">after: ${fmtH(after)}</span>`;}
+  let h=`<div class="day-row ${isAdmin?'non-pto':''} ${open?'expanded':''} ${t.end<todayStr()?'past':''}" ${open?'':`onclick="tv.expanded='${t.id}';render()"`}>${tag}<div class="day-body">
+    <div class="day-name">${esc(t.title)}</div><div class="day-meta">${meta}</div>`;
+  if(open){
+    const wd=tWDList(t.start,t.end),hols=[];eachDay(t.start,t.end,d=>{if(tHol(d)&&tS().workDays.includes(dow(d)))hols.push(tHol(d));});
+    h+=`<div class="day-detail"><div class="detail-stats"><div class="detail-stat">Workdays: <strong>${wd.length}</strong></div>${hols.length?`<div class="detail-stat">Holidays inside (free): <strong>${esc(hols.join(', '))}</strong></div>`:''}</div>
+      ${t.notes?`<div class="day-note" style="margin-bottom:8px">${esc(t.notes)}</div>`:'<div class="hint">No notes.</div>'}
+      <div class="detail-actions"><button class="btn btn-sm btn-ghost" onclick="tv.expanded=null;render()">Close</button>
+      ${ro?'':`<button class="btn btn-sm" onclick="toriEdit('${t.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="toriDelete('${t.id}')">Delete</button>`}</div></div>`;
+  }else if(t.notes)h+=`<div class="day-note">${esc(t.notes.length>90?t.notes.slice(0,90)+'…':t.notes)}</div>`;
+  return h+`</div>${open?'':'<span class="day-chevron">›</span>'}</div>`;
+}
+function toriOpen(){tv.editId=null;tv.f={type:'pto',admin:'',start:'',end:'',title:'',notes:''};tv.panel=null;tv.paystub=false;render();scrollToForm();}
+function toriEdit(id){const t=tTrip(id);if(!t)return;tv.editId=id;tv.f={type:t.type,admin:t.type==='split'?fmtH(t.admin):'',start:t.start,end:t.end,title:t.title,notes:t.notes||''};tv.expanded=null;render();scrollToForm();}
+function toriFormHTML(){
+  const f=tv.f;
+  return `<div class="form-panel"><div class="form-title">${tv.editId?'Edit':'Plan'} PTO</div>
+    <div class="form-group"><label>Type</label><select onchange="tv.f.type=this.value;render()">
+      <option value="pto" ${f.type==='pto'?'selected':''}>PTO (vacation)</option><option value="admin" ${f.type==='admin'?'selected':''}>Admin time (no balance impact)</option><option value="split" ${f.type==='split'?'selected':''}>Split (admin + PTO)</option></select></div>
+    ${f.type==='split'?`<div class="form-group"><label>Admin hours to use (HH:MM or decimal)</label><input type="text" value="${esc(f.admin)}" oninput="tv.f.admin=this.value;toriCalc()" placeholder="12:00"><p class="hint" style="margin:5px 0 0">The rest comes out of PTO.</p></div>`:''}
+    <div class="form-row"><div class="form-group"><label>Start Date</label><input type="date" value="${f.start}" onchange="tv.f.start=this.value;if(!tv.f.end||tv.f.end<this.value){tv.f.end=this.value;document.getElementById('tEnd').value=this.value;}toriCalc()"></div>
+    <div class="form-group"><label>End Date</label><input type="date" id="tEnd" value="${f.end}" onchange="tv.f.end=this.value;toriCalc()"></div></div>
+    <div id="calcBox" class="calc-box hidden"></div>
+    <div class="form-group"><label>Destination / Purpose</label><input type="text" value="${esc(f.title)}" oninput="tv.f.title=this.value" placeholder="Hawaii, Family visit…"></div>
+    <div class="form-group"><label>Reservations / Notes (optional)</label><textarea oninput="tv.f.notes=this.value">${esc(f.notes)}</textarea></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="toriSaveForm()">Save</button><button class="btn btn-ghost" onclick="tv.f=null;tv.editId=null;render()">Cancel</button></div></div>`;
+}
+function toriCompute(f){
+  const wd=tWDList(f.start,f.end),total=wd.length*hpd(),adminIn=f.type==='split'?(parseHours(f.admin)||0):0;
+  const hols=[];eachDay(f.start,f.end,d=>{if(tHol(d)&&tS().workDays.includes(dow(d)))hols.push(`${tHol(d)} (${fmtDate(d)})`);});
+  if(f.type==='admin')return {wd,total,hols,cost:0,admin:total};
+  if(f.type==='split')return {wd,total,hols,cost:r2(total-adminIn),admin:adminIn};
+  return {wd,total,hols,cost:total,admin:0};
+}
+function toriCalc(){
+  const f=tv.f,box=document.getElementById('calcBox');if(!f||!box)return;
+  if(!f.start||!f.end){box.classList.add('hidden');return;}
+  if(f.end<f.start){box.innerHTML='<span style="color:var(--danger)">End date before start date</span>';box.classList.remove('hidden');return;}
+  const c=toriCompute(f),before=tBalEnd(addDays(f.start,-1))??(f.start<=tS().asOf?null:+tS().balance);
+  box.innerHTML=`<strong>Workdays:</strong> ${c.wd.length} (${fmtH(c.total)})${c.hols.length?` · <strong>Holidays skipped:</strong> ${esc(c.hols.join(', '))}`:''}<br>
+    ${f.type==='admin'?'<span class="calc-deduct">Admin time — no PTO used</span>':`<span class="calc-deduct">PTO used: ${fmtH(c.cost)} (${(c.cost/hpd()).toFixed(1)} d)</span>${c.admin?` + ${fmtH(c.admin)} admin`:''}`}
+    ${before!==null&&f.type!=='admin'?`<br><strong>Projected balance before trip:</strong> ${fmtH(before)} → after ${fmtH(before-c.cost)}`:''}`;
+  box.classList.remove('hidden');
+}
+function toriSaveForm(){
+  if(me!=='tori')return;
+  const f=tv.f,title=f.title.trim();
+  if(!f.start||!f.end||!title){alert('Fill in start date, end date, and destination.');return;}
+  if(f.end<f.start){alert('End date must be on or after start date.');return;}
+  const c=toriCompute(f);
+  if(!c.wd.length){alert('No workdays in that range (weekends/holidays only) — no time off needed.');return;}
+  if(f.type==='split'){const a=parseHours(f.admin);if(!a||a<=0){alert('Enter admin hours (e.g. 12:00).');return;}if(a>=c.total){alert(`Admin hours must be less than the trip total (${fmtH(c.total)}).`);return;}}
+  const entry={type:f.type,start:f.start,end:f.end,title,notes:f.notes.trim(),cost:c.cost,admin:c.admin,updated:new Date().toISOString()};
+  if(f.type!=='admin'){
+    const cand=DB.tori.trips.filter(t=>t.id!==tv.editId).concat([{...entry,id:'_new'}]);
+    const ser=tSeries(cand);let low=Infinity,lowD=null;
+    Object.keys(ser.bal).forEach(d=>{if(d>=f.start&&ser.bal[d]<low){low=ser.bal[d];lowD=d;}});
+    if(lowD&&low<0&&!confirm(`Not enough PTO\n\nWith this trip your balance would drop to ${fmtH(low)} on ${fmtDateY(lowD)}.\n\nSave anyway?`))return;
+  }
+  let t;
+  if(tv.editId){t=tTrip(tv.editId);if(!t){alert('That trip no longer exists (removed on another device).');tv.f=null;tv.editId=null;render();return;}}
+  else{t={id:uid(),details:{},autoHoliday:false};DB.tori.trips.push(t);}
+  Object.assign(t,entry);sortTrips(DB.tori.trips);
+  const act=tv.editId?'edit':'add';tv.f=null;tv.editId=null;
+  save('tori',act,`${title} ${t.start}→${t.end} ${t.type} PTO ${fmtH(t.cost)} admin ${fmtH(t.admin)}`);render();
+}
+function toriDelete(id){
+  const t=tTrip(id);if(!t||me!=='tori')return;
+  if(!confirm(`Delete "${t.title}" (${rangeStr(t.start,t.end)})?\n\nThis can't be undone.`))return;
+  DB.tori.trips=DB.tori.trips.filter(x=>x.id!==id);tv.expanded=null;
+  save('tori','delete',`${t.title} ${t.start}→${t.end} ${fmtH(t.cost)}`);render();
+}
+function toriSavePaystub(){
+  if(me!=='tori')return;
+  const b=parseHours(document.getElementById('psBal').value),d=document.getElementById('psDate').value,s=tS();
+  if(b===null||b<0){alert('Enter a valid balance, e.g. 73:20 or 73.33');return;}
+  if(!d||d>todayStr()){alert('As-of date must be today or earlier.');return;}
+  if(b>+s.cap&&!confirm(`That's over the ${fmtH(+s.cap)} cap. Save anyway?`))return;
+  const old=`${fmtH(+s.balance)} @ ${s.asOf}`;
+  Object.assign(s,{balance:r2(b),asOf:d,needsConfirm:false});tv.paystub=false;
+  save('tori','paystub',`${old} → ${fmtH(b)} @ ${d}`);render();
+}
+function toriSettingsHTML(){
+  const s=tS(),wd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<div class="wd-toggle"><input type="checkbox" id="twd${i}" ${s.workDays.includes(i)?'checked':''}><span>${n}</span></div>`).join('');
+  const num=(id,lab,v,step)=>`<div class="form-group"><label>${lab}</label><input type="number" id="${id}" step="${step}" value="${v}"></div>`;
+  return `<div class="form-panel"><div class="form-title">Tori — Settings</div>
+    <div class="settings-block"><div class="settings-block-title">Work Days</div><div class="wd-grid">${wd}</div></div>
+    <div class="settings-block"><div class="settings-block-title">Hours</div><div class="form-row">${num('tsHpd','Hours per workday',s.hoursPerDay,'0.25')}${num('tsCap','Balance cap (hours)',s.cap,'1')}</div></div>
+    <div class="settings-block"><div class="settings-block-title">Accrual (credited on the 1st of each month)</div><div class="form-row">
+      ${num('tsBase','Hours per month now',s.accrualBase,'0.25')}<div class="form-group"><label>First increase date</label><input type="date" id="tsStep" value="${s.accrualStepStart||''}"></div>
+      ${num('tsStepH','Increase by (hours)',s.accrualStepHours,'0.25')}${num('tsStepY','Then every (years)',s.accrualStepYears,'1')}</div>
+      <p class="hint" style="margin:0">Current rule: ${fmtH(+s.accrualBase)}/mo, ${fmtH(+s.accrualBase+ +s.accrualStepHours)}/mo from ${s.accrualStepStart?fmtDateY(s.accrualStepStart):'—'}, +${fmtH(+s.accrualStepHours)} every ${s.accrualStepYears} years after.</p></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="toriSaveSettings()">Save Settings</button><button class="btn btn-ghost" onclick="tv.panel=null;render()">Cancel</button></div></div>`;
+}
+function toriSaveSettings(){
+  if(me!=='tori')return;
+  const g=id=>parseFloat(document.getElementById(id).value);
+  const wds=[0,1,2,3,4,5,6].filter(i=>document.getElementById('twd'+i).checked);
+  const v={hoursPerDay:g('tsHpd'),cap:g('tsCap'),accrualBase:g('tsBase'),accrualStepHours:g('tsStepH'),accrualStepYears:g('tsStepY')};
+  if(!wds.length||Object.values(v).some(x=>isNaN(x)||x<0)||v.hoursPerDay<=0||v.accrualStepYears<=0){alert('Check the numbers — something is blank or invalid.');return;}
+  const s=tS(),oldHpd=+s.hoursPerDay,oldWD=s.workDays.slice(),today=todayStr();
+  Object.assign(s,v,{workDays:wds,accrualStepStart:document.getElementById('tsStep').value||''});
+  // Recalculate upcoming trips for new schedule
+  DB.tori.trips.forEach(t=>{if(t.start<today)return;const c=toriCompute({type:t.type,start:t.start,end:t.end,admin:fmtH(t.admin)});if(t.type!=='split'){t.cost=c.cost;t.admin=c.admin;}else{t.cost=r2(Math.max(0,c.total-t.admin));}});
+  tv.panel=null;save('tori','settings',JSON.stringify(v));render();
+}
+function toriHolidaysHTML(){
+  const y=new Date().getFullYear();let h=`<div class="form-panel"><div class="form-title">Wyoming State Holidays (paid — not charged to PTO)</div><div class="hol-grid">`;
+  [y,y+1,y+2].forEach(yr=>tHolidaysYear(yr).forEach(hd=>{const inTrip=DB.tori.trips.find(t=>t.start<=hd.ds&&t.end>=hd.ds);
+    h+=`<div class="hol-item"><div class="hol-name">${esc(hd.name)}</div><div>${fmtDateLong(hd.ds)}</div>${inTrip?`<div class="hol-ok">Inside "${esc(inTrip.title)}" — free day</div>`:''}</div>`;}));
+  return h+`</div><button class="btn btn-ghost" style="margin-top:12px" onclick="tv.panel=null;render()">Close</button></div>`;
+}
+function toriProjHTML(){
+  const ser=tSer(),now=new Date();let rows='';
+  for(let i=0;i<25;i++){
+    const y=now.getFullYear(),m=now.getMonth()+i,first=monthFirst(y,m),last=monthLast(y,m),yy=P(first).getFullYear(),mm=P(first).getMonth();
+    let used=0;eachDay(first,last,d=>{if(d>tS().asOf)used+=ser.pto[d]||0;});
+    const names=DB.tori.trips.filter(t=>t.type!=='admin'&&t.start<=last&&t.end>=first).map(t=>t.title);
+    const end=tBalEnd(last,ser),acc=ser.acc[first],lost=ser.lost[first];
+    rows+=`<tr class="${used>0?'has':''}"><td>${monthLabel(yy,mm)}</td><td>${acc!==undefined?'+'+fmtH(acc):'—'}${lost?` <span class="neg">(${fmtH(lost)} lost to cap)</span>`:''}</td>
+      <td>${used>0?'−'+fmtH(used)+`<br><span style="font-size:10px">${esc(names.join(', '))}</span>`:'—'}</td><td class="${end<0?'neg':''}"><b>${fmtH(end)}</b><br><span style="font-size:10px;color:var(--text-dim)">${end===null?'':(end/hpd()).toFixed(1)+' d'}</span></td></tr>`;
+  }
+  return `<div class="form-panel"><div class="form-title">Tori — 24-Month Projection</div>
+    <div style="overflow-x:auto"><table class="ptable"><tr><th>Month</th><th>Accrual</th><th>PTO used</th><th>End balance</th></tr>${rows}</table></div>
+    <p class="hint" style="margin-top:10px">Accrual is credited on the 1st. Balance is capped at ${fmtH(+tS().cap)}; anything over is lost.</p>
+    <button class="btn btn-ghost" onclick="tv.panel=null;render()">Close</button></div>`;
+}
+
+// ═══════════════ JOINT: MONTH VIEW ═══════════════
+const mv={y:new Date().getFullYear(),m:new Date().getMonth(),sel:null};
+function mvShift(n){const d=new Date(mv.y,mv.m+n,1);mv.y=d.getFullYear();mv.m=d.getMonth();mv.sel=null;render();}
+function mvToday(){const d=new Date();mv.y=d.getFullYear();mv.m=d.getMonth();mv.sel=null;render();}
+// What is person p doing on day ds? → {kind,t,half,label} or null
+function dayInfo(p,ds){
+  const trips=DB[p].trips.filter(t=>t.start<=ds&&t.end>=ds);
+  if(p==='dan'){
+    if(!trips.length)return null;
+    const t=trips.find(x=>x.type==='pto')||trips[0];
+    const kind=t.type!=='pto'?'off':t.autoHoliday?'hol':dIsEmerg(t)?'emerg':'pto';
+    const c=t.type==='pto'?dCostIn(t,ds,ds):0;
+    return {kind,t,half:c>0&&c<1,cost:c};
+  }
+  if(trips.length){const t=trips.find(x=>x.type!=='admin')||trips[0];
+    let c=0;if(t.type!=='admin'&&tIsWD(ds)){const wd=tWDList(t.start,t.end);c=wd.length?t.cost/wd.length:0;}
+    return {kind:t.type==='admin'?'admin':'pto',t,cost:c,hol:tHol(ds)};}
+  const h=tHol(ds);if(h&&tS().workDays.includes(dow(ds)))return {kind:'shol',label:h};
+  return null;
+}
+function barHTML(p,ds,info,wkEndDs){
+  if(!info)return `<div class="bar none"></div>`;
+  const t=info.t,start=t?t.start:ds,end=t?t.end:ds;
+  const s=ds===start,e=ds===end;
+  const showLbl=s||dow(ds)===0||ds.endsWith('-01');
+  let lbl='';
+  if(showLbl){const segEnd=end<wkEndDs?end:wkEndDs;const n=Math.round((P(segEnd)-P(ds))/86400000)+1;
+    const txt=(p==='dan'&&info.half?'½ ':'')+(t?t.title:info.label);lbl=`<span class="lbl" style="width:calc(${n*100}% + ${n-1}px - 6px)">${esc(txt)}</span>`;}
+  const half=p==='dan'&&info.half?' ½':'';
+  return `<div class="bar ${p} ${info.kind} ${s?'s':''} ${e?'e':''}" title="${esc((t?t.title:info.label)+half)}">${lbl}${half&&!lbl?`<span class="lbl">½</span>`:''}</div>`;
+}
+function monthGrid(y,m,cellFn,headCls){
+  const first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),lead=first.getDay();
+  let h=['S','M','T','W','T','F','S'].map(d=>`<div class="${headCls}">${d}</div>`).join('');
+  for(let i=0;i<lead;i++)h+=cellFn(null);
+  for(let d=1;d<=days;d++)h+=cellFn(isoOf(new Date(y,m,d)));
+  const trail=(7-((lead+days)%7))%7;for(let i=0;i<trail;i++)h+=cellFn(null);
+  return h;
+}
+function monthHTML(){
+  const y=mv.y,m=mv.m,first=monthFirst(y,m),last=monthLast(y,m),today=todayStr();
+  // Balances
+  const dS0=dStartOfDay(first),dS1=dEndOfDay(last);
+  const tS0=tBalStart(first),tS1=tBalEnd(last),asOf=tS().asOf;
+  const febNote=dYearKey(first)!==dYearKey(addDays(first,-1))?`<div class="jsub">New PTO year starts ${fmtDateY(first)} — fresh grant</div>`:'';
+  let h=`<div class="year-nav"><button class="btn btn-sm" onclick="mvShift(-1)">‹</button><span class="yn-label">${monthLabel(y,m)}</span><button class="btn btn-sm" onclick="mvShift(1)">›</button>
+    ${(y!==new Date().getFullYear()||m!==new Date().getMonth())?`<button class="btn btn-sm btn-ghost" onclick="mvToday()">Today</button>`:''}</div>
+  <div class="jbal">
+    <div class="jcard dan"><div class="jname">Dan — available</div>
+      <div class="jline"><span>Start of month</span><b>${fmtD(dS0.remaining)}</b></div>
+      <div class="jline"><span>End of month</span><b>${fmtD(dS1.remaining)}</b></div>
+      <div class="jsub">+ emergency reserve: ${fmtD(dS0.resLeft)} → ${fmtD(dS1.resLeft)}</div>${febNote}</div>
+    <div class="jcard tori"><div class="jname">Tori — available</div>
+      <div class="jline"><span>Start of month</span><b>${tS0===null?'—':fmtHD(tS0)}</b></div>
+      <div class="jline"><span>End of month</span><b>${tS1===null?'—':fmtHD(tS1)}</b></div>
+      <div class="jsub">${tS0===null&&tS1!==null?`Start unknown — balance is from paystub on ${fmtDateY(asOf)}`:tS1===null?`Before her paystub date (${fmtDateY(asOf)})`:'Start = after the 1st-of-month accrual'}</div></div>
+  </div>`;
+  h+=`<div class="legend"><span><i style="background:var(--dan)"></i>Dan PTO</span><span><i style="background:repeating-linear-gradient(45deg,rgba(36,90,156,.30) 0 3px,rgba(36,90,156,.14) 3px 6px)"></i>Dan off (no PTO)</span><span><i style="background:var(--danger)"></i>Dan emergency</span>
+    <span><i style="background:var(--tori)"></i>Tori PTO</span><span><i style="background:repeating-linear-gradient(45deg,rgba(123,63,143,.30) 0 3px,rgba(123,63,143,.14) 3px 6px)"></i>Tori admin</span><span><i style="background:rgba(123,63,143,.14)"></i>Tori state holiday</span><span>½ = half day</span></div>`;
+  h+=`<div class="cal">`+monthGrid(y,m,ds=>{
+    if(!ds)return `<div class="cal-d blank"></div>`;
+    const wkEnd=addDays(ds,6-dow(ds)),we=[0,6].includes(dow(ds));
+    return `<div class="cal-d ${we?'wkend':''} ${ds===today?'today':''} ${mv.sel===ds?'sel':''}" onclick="mv.sel='${ds}';render()"><div class="cd-num"><span>${P(ds).getDate()}</span></div>
+      ${barHTML('dan',ds,dayInfo('dan',ds),wkEnd)}${barHTML('tori',ds,dayInfo('tori',ds),wkEnd)}</div>`;
+  },'cal-h')+`</div>`;
+  // Selected day
+  if(mv.sel){
+    const di=dayInfo('dan',mv.sel),ti=dayInfo('tori',mv.sel);
+    const dLine=di?`${esc(di.t.title)} — ${rangeStr(di.t.start,di.t.end)}${di.t.type==='pto'?` · ${fmtD(r2(di.cost))} PTO this day`:' · no PTO'}`:'Working / not off';
+    const tLine=ti?(ti.t?`${esc(ti.t.title)} — ${rangeStr(ti.t.start,ti.t.end)} · ${ti.t.type==='admin'?'admin time':fmtH(ti.cost)+' PTO this day'}${ti.hol?` (${esc(ti.hol)} — free)`:''}`:`${esc(ti.label)} — state holiday`):'Working / not off';
+    const db=dEndOfDay(mv.sel),tb=tBalEnd(mv.sel);
+    h+=`<div class="dayinfo"><b style="color:var(--text-bright)">${fmtDateLong(mv.sel)}</b><br>
+      <span class="who-d">Dan:</span> ${dLine}<br><span class="who-t">Tori:</span> ${tLine}<br>
+      <span style="color:var(--text-dim);font-size:11px">End of day available — Dan ${fmtD(db.remaining)} · Tori ${tb===null?'—':fmtHD(tb)}</span></div>`;
+  }else h+=`<p class="hint">Tap a day for details.</p>`;
+  // This month's entries
+  const list=[];['dan','tori'].forEach(p=>DB[p].trips.filter(t=>t.start<=last&&t.end>=first).forEach(t=>list.push({p,t})));
+  list.sort((a,b)=>a.t.start<b.t.start?-1:1);
+  h+=`<div class="list-header">This month</div>`;
+  h+=list.length?list.map(({p,t})=>{
+    const cost=p==='dan'?(t.type==='pto'?fmtD(r2(dCostIn(t,first,last)))+' this month':'no PTO'):(t.type==='admin'?'admin':fmtH(tCostIn(t,first,last))+' this month');
+    return `<div class="day-row" style="border-left:3px solid var(--${p});cursor:default"><span class="type-tag" style="background:transparent;color:var(--${p})">${NAME[p].toUpperCase()}</span><div class="day-body"><div class="day-name">${esc(t.title)}</div><div class="day-meta"><span>${rangeStr(t.start,t.end)}</span><span>${cost}</span></div></div></div>`;
+  }).join(''):`<div class="empty-state">Nobody's off this month.</div>`;
+  return h;
+}
+function tCostIn(t,a,b){if(t.type==='admin')return 0;const wd=tWDList(t.start,t.end);if(!wd.length)return (t.start>=a&&t.start<=b)?t.cost:0;return t.cost*wd.filter(d=>d>=a&&d<=b).length/wd.length;}
+
+// ═══════════════ JOINT: 3-MONTH VIEW ═══════════════
+function quarterHTML(){
+  const today=todayStr();
+  let h=`<div class="year-nav"><button class="btn btn-sm" onclick="mvShift(-1)">‹</button><span class="yn-label">${monthLabel(mv.y,mv.m)} – ${monthLabel(new Date(mv.y,mv.m+2,1).getFullYear(),new Date(mv.y,mv.m+2,1).getMonth())}</span><button class="btn btn-sm" onclick="mvShift(1)">›</button>
+    ${(mv.y!==new Date().getFullYear()||mv.m!==new Date().getMonth())?`<button class="btn btn-sm btn-ghost" onclick="mvToday()">Today</button>`:''}</div>
+    <div class="legend"><span><i style="background:var(--dan)"></i>Dan off</span><span><i style="background:var(--tori)"></i>Tori off</span><span><i style="background:rgba(36,90,156,.3)"></i><i style="background:rgba(123,63,143,.3);margin-left:-3px"></i>off, no PTO</span></div><div class="qwrap">`;
+  for(let i=0;i<3;i++){
+    const d=new Date(mv.y,mv.m+i,1),y=d.getFullYear(),m=d.getMonth();
+    h+=`<div><div class="mcal-title">${monthLabel(y,m)}</div><div class="mcal">`+monthGrid(y,m,ds=>{
+      if(!ds)return `<div class="mc-d blank"></div>`;
+      const di=dayInfo('dan',ds),ti=dayInfo('tori',ds),we=[0,6].includes(dow(ds));
+      return `<div class="mc-d ${we?'wkend':''} ${ds===today?'today':''}" onclick="mv.y=${y};mv.m=${m};mv.sel='${ds}';setTab('month')"><div class="mc-n">${P(ds).getDate()}</div>
+        <div class="mb ${di?'dan '+di.kind:''}"></div><div class="mb ${ti?'tori '+ti.kind:''}"></div></div>`;
+    },'mc-h')+`</div></div>`;
+  }
+  return h+`</div><p class="hint" style="margin-top:12px">Top bar = Dan, bottom bar = Tori. Tap a day to open it in the Month view.</p>`;
+}
+
+// ═══════════════ SYNC / BOOT ═══════════════
+async function manualSync(){if(!me)return;await loadAll();render();}
+async function refreshIfChanged(){
+  if(!online||!me||setupNeeded||!DB.dan||!DB.tori)return;
+  try{const r=await batchGet([`${TABS.dan.cfg}!B2`,`${TABS.tori.cfg}!B2`]);
+    const rd=parseInt(r[0].values?.[0]?.[0])||0,rt=parseInt(r[1].values?.[0]?.[0])||0;
+    if(rd!==DB.dan.rev||rt!==DB.tori.rev){await loadAll();render();}}catch(e){console.warn(e);}
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshIfChanged();});
+function afterLoad(){if(me==='dan')dCheckHols();}
+async function boot(){booted=true;render();const ok=await loadAll();render();if(ok&&online)afterLoad();}
+me=lsGet(ME_KEY);if(me!=='dan'&&me!=='tori')me=null;tab=me;
+if(me)boot();else render();
+</script>
+</body>
+</html>
