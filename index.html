@@ -212,6 +212,8 @@ body{font-size:15px}
 .dayinfo{font-size:14px;color:var(--text-bright)}
 .btn{font-weight:600;color:var(--text-bright)}
 .btn-ghost{color:#4a433b}
+.btn-primary,.btn-primary:hover{color:#fff!important}
+.btn-danger{color:var(--danger)}
 .yn-range{color:#4a433b!important;font-size:13px!important}
 .type-tag{font-size:10px}
 .header-sub,.header-status{color:#d8d0c3!important}
@@ -232,8 +234,8 @@ body{font-size:15px}
 
 <script>
 // ═══════════════ CONFIG ═══════════════
-// TEST COPY of the sheet. Switch to the real sheet ID only after testing.
-const SPREADSHEET_ID = '1NZAW64zCI3Yn9NXDPCSZaoPxnlraLqvVKW_zKr9fbdo';
+// LIVE sheet: Tori's_PTO_Advisor_Data. Test copy: 1NZAW64zCI3Yn9NXDPCSZaoPxnlraLqvVKW_zKr9fbdo
+const SPREADSHEET_ID = '107ByQVrvKaBV-IgB9WzSKJnTx5k-9m-VXNg6j25WEec';
 const SA = { client_email: "tori-pto-service@tori-pto-advisor.iam.gserviceaccount.com", private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCzCb9Z3IONbhi2\nMlP5OLTFyGmqpt0UZhggB3rZdn+myXle4qzJbDvqe4NcZMq0n+EMbY+UOQHzj4WE\nf1w0cYg0b6gLBTLbZXrJ446ab1pgCVbq9DuHEfIpfG3G07SkISj8rrbb0uFwiaA0\n5tcbBZ2nLdZYipAM0ujRyOsrFaiv4JUMk6vE9SuyyI3PVK6LCoPqb9iQyBlNYhPk\nB+1SL/KGjRVjkPEk68+x1w48BKcRMy0YN015V/eo45Oh2KRd3dV1ubJ4D7IcSzsg\nFGeVV+C//MrRLeOYEy1BaCaGKTT+VHtJeUt06robTyJaWJnZt7YSARRuJb3kxoRH\nJMy2bk0PAgMBAAECggEAAvwMHQ7ggIiPz+W54aMw3EUxgb9DWzYye8I0KZDgouKj\n69GCiN8NhqSldXJWsLkjksX2yUVEA4/mbWWEH3mvCBS+a+Sbyu1/pQLumyN1EbnG\nIaeNoHxLmaZx3Akmb0AAQ2oUMUjsKiiZK5iXiGNJFALfGl3A9f3EFM8xIGg9hiUE\nm1ePBPPXY2VItEG9Z8ry+AFHDreT7x/fekMXTfnpqFRLddE2ioucSshRzW7U+UAN\nOvt1V166PrUuIHtAveKaStTULzEPZS6By6viRpUIIDftvfgAptEFMLnpOC/QrZVo\n7tif6V36o03om42zQtrc6ygYwgD0Tj/sPa6kJHxQtQKBgQDrrmLZKbLKeK1A6ngC\niEWqKAd9NrUfbcbUIXEJVlAYbqEWQhJs10UJgWkqvnbgOmimX24YvKQrr4EV2Yan\nDTCtqeanRbMXpuSWCFjftp1RtmhKdrUQ4zIIgjD0ESbviRKWHJwdJiGxUZrkPvMV\n3nPeXRAWnAWmLeeNHYa15muEswKBgQDCeTdqkEdWgnkByIWVChEt5I+1c3d3TprB\nqWIm3i5vxTdho2METSWy/+XX1Qrtmb5YjUZCfD8xc7hLA2X41KNFsCVJwbYYWgIB\n9fKcB6nfeCsuexpcpjGh75R4nU39bUUOAUQbNlLu8h09pbF68nLguUXWUEJ3RWd2\nQl3O2FbcNQKBgBWjWB36Dxk5xSZdoJES89pwfGeJm018ZbHaNCeYThhAJ/gELu7h\nQMxjnkU3YXCqzCriPhh1UVlVbrOT2iICOwLmw29+HbhBMWF4+Lfpaz4yUhbsGSmo\nwlI3qcjuvjVlz1gK3mZqttMx29ey09yhJOA4iR6aSoZ8VnMFT/XpZtuzAoGBAI7O\n8PDiLmDKww2aMO43TFJFK3r15d7I7EAWoKsmMTeGvZqHnujDtlFyNVh/a9z7L5pb\ndCLSlp07+zOqtTE7BQLhzSASjiPnxN2nvJbz0bz2w88IO12Z9YyTIJZJ/cGCglk8\neMT66X/qb6qbiG9epxl7NFui6IwpfUaMidKhb3eZAoGAEmcmFmtljyUU1NOvbtgM\nIrFA0QlDalsJD/HSZsslCrrwsHpgX6oxhyg425wgmFcC8MiBRkqyMJMPouxqKToo\njIfXjTWVU3pF89QW+MRN0gCHsLppH/rXMFgU7liCuCIw94NqJ3xKS7bnsuGbYKey\nSVB5YETSRSvhZb6+LKJFgH4=\n-----END PRIVATE KEY-----\n" };
 const TABS = { dan:{pto:'Dan_PTO',cfg:'Dan_Config'}, tori:{pto:'Tori_PTO',cfg:'Tori_Config'}, log:'Change_Log' };
 const NAME = { dan:'Dan', tori:'Tori' };
@@ -272,7 +274,7 @@ const isHunting=p=>{const l=String(p).toLowerCase();return l.includes('hunt')||l
 let me=null, tab=null, online=false, setupNeeded=null, booted=false;
 const DB={dan:null,tori:null}; // {settings, trips:[], rev}
 const DAN_DEF={workDays:[1,2,3,4,5],annualPTO:36,reserveDays:5,yearStartMonth:2,yearStartDay:1,holidays:[{name:'Thanksgiving',date:'dynamic-thanksgiving'},{name:'Christmas',date:'dynamic-christmas'}],yearBalances:{}};
-const TORI_DEF={balance:0,asOf:null,hoursPerDay:8,workDays:[1,2,3,4,5],cap:400,accrualBase:10,accrualStepStart:'2027-05-01',accrualStepHours:2,accrualStepYears:4,needsConfirm:false};
+const TORI_DEF={balance:0,asOf:null,hoursPerDay:8,workDays:[1,2,3,4,5],cap:400,accrualBase:10,accrualStepStart:'2027-05-01',accrualStepHours:2,accrualStepYears:4,needsConfirm:false,adminBalance:0,lastConfirm:null};
 
 // ═══════════════ GOOGLE SHEETS ═══════════════
 let token=null;
@@ -460,7 +462,7 @@ function dResolveHol(h,yr){
     case 'dynamic-laborday':return dNth(yr,8,1,1);case 'dynamic-memorialday':return dLastWD(yr,4,1);case 'dynamic-july4':return `${yr}-07-04`;default:return null;}
 }
 
-// ═══════════════ TORI ENGINE (hours, monthly accrual, 400 cap) ═══════════════
+// ═══════════════ TORI ENGINE (Annual: monthly accrual + cap · Admin/Personal: entered by hand, expires June 30) ═══════════════
 const tS=()=>DB.tori.settings;
 function tHolidaysYear(y){
   const obs=d=>{const w=d.getDay();if(w===6)d.setDate(d.getDate()-1);else if(w===0)d.setDate(d.getDate()+1);return d;};
@@ -483,30 +485,43 @@ function tAccrual(ds){
   if(d.getMonth()<a.getMonth()||(d.getMonth()===a.getMonth()&&d.getDate()<a.getDate()))yrs--;
   return base+(+s.accrualStepHours||0)*(1+Math.floor(yrs/(+s.accrualStepYears||4)));
 }
-function tPtoMap(trips){
+// Spread a trip's hours (field 'cost' = Annual, 'admin' = Admin/Personal) evenly over its workdays
+function tSpread(trips,field){
   const m={};
-  trips.forEach(t=>{if(t.type==='admin'||!(t.cost>0))return;const wd=tWDList(t.start,t.end);
-    if(!wd.length){m[t.start]=(m[t.start]||0)+t.cost;return;}const per=t.cost/wd.length;wd.forEach(d=>{m[d]=(m[d]||0)+per;});});
+  trips.forEach(t=>{const h=+t[field]||0;if(!(h>0))return;const wd=tWDList(t.start,t.end);
+    if(!wd.length){m[t.start]=(m[t.start]||0)+h;return;}const per=h/wd.length;wd.forEach(d=>{m[d]=(m[d]||0)+per;});});
   return m;
 }
-// Day-by-day balance from the paystub date forward. bal[d] = end of day d.
+// Day-by-day balances from the last confirmed date forward. bal = Annual, abal = Admin/Personal (end of day).
 function tSeries(trips){
   const s=tS();trips=trips||DB.tori.trips;
-  const pto=tPtoMap(trips);
+  const pto=tSpread(trips,'cost'),adm=tSpread(trips,'admin');
   let end=addDays(todayStr(),365*3+62);trips.forEach(t=>{if(t.end>end)end=t.end;});
   const lim=addDays(s.asOf,365*8);if(end>lim)end=lim;
-  const bal={},acc={},lost={};let b=+s.balance,d=addDays(s.asOf,1);const cap=+s.cap||Infinity;
+  const bal={},acc={},lost={},abal={},aexp={};
+  let b=+s.balance,a=+s.adminBalance||0,d=addDays(s.asOf,1);const cap=+s.cap||Infinity;
   while(d<=end){
-    if(d.endsWith('-01')){const a=tAccrual(d);const nb=b>=cap?b:Math.min(cap,b+a);acc[d]=nb-b;if(a-(nb-b)>0.001)lost[d]=a-(nb-b);b=nb;}
-    b-=pto[d]||0;bal[d]=b;d=addDays(d,1);
+    if(d.endsWith('-01')){const x=tAccrual(d);const nb=b>=cap?b:Math.min(cap,b+x);acc[d]=nb-b;if(x-(nb-b)>0.001)lost[d]=x-(nb-b);b=nb;}
+    if(d.endsWith('-07-01')&&a>0.001){aexp[d]=a;a=0;} // unused Admin/Personal is gone after June 30
+    b-=pto[d]||0;a-=adm[d]||0;bal[d]=b;abal[d]=a;d=addDays(d,1);
   }
-  return {bal,acc,lost,pto,end};
+  return {bal,acc,lost,pto,adm,abal,aexp,end};
 }
 let _tSer=null;
 const tSer=()=>_tSer||(_tSer=tSeries());
 function tBalEnd(ds,ser){ser=ser||tSer();const s=tS();if(ds<s.asOf)return null;if(ds===s.asOf)return +s.balance;return ser.bal[ds]??null;}
 function tBalStart(ds,ser){ser=ser||tSer();const s=tS();if(ds<=s.asOf)return null;const e=ser.bal[ds];return e===undefined?null:e+(ser.pto[ds]||0);}
+function tAdmEnd(ds,ser){ser=ser||tSer();const s=tS();if(ds<s.asOf)return null;if(ds===s.asOf)return +s.adminBalance||0;return ser.abal[ds]??null;}
+function tAdmStart(ds,ser){ser=ser||tSer();const s=tS();if(ds<=s.asOf)return null;const e=ser.abal[ds];return e===undefined?null:e+(ser.adm[ds]||0);}
+const tTotEnd=(ds,ser)=>{const a=tBalEnd(ds,ser),b=tAdmEnd(ds,ser);return a===null||b===null?null:a+b;};
+const tTotStart=(ds,ser)=>{const a=tBalStart(ds,ser),b=tAdmStart(ds,ser);return a===null||b===null?null:a+b;};
 const tToday=()=>tBalEnd(todayStr())??+tS().balance;
+const tAdmToday=()=>tAdmEnd(todayStr())??(+tS().adminBalance||0);
+function tNextExpiry(ds){const y=P(ds).getFullYear(),j=`${y}-06-30`;return ds<=j?j:`${y+1}-06-30`;}
+// Balance check-in: due once after the 5th and once after the 20th of each month
+function tLastCheckpoint(today){const d=P(today),y=d.getFullYear(),m=d.getMonth(),day=d.getDate();
+  if(day>=20)return isoOf(new Date(y,m,20));if(day>=5)return isoOf(new Date(y,m,5));return isoOf(new Date(y,m-1,20));}
+function tCheckinDue(){const s=tS();return !!s.needsConfirm||!s.lastConfirm||s.lastConfirm<tLastCheckpoint(todayStr());}
 
 // ═══════════════ RENDER ROOT ═══════════════
 function setStatus(m){const el=document.getElementById('hStatus');if(el)el.textContent=m;}
@@ -530,13 +545,14 @@ function render(){
   else v.innerHTML=quarterHTML();
   if(tab==='dan'&&me==='dan'&&dv.f&&dv.f.kind==='pto')danCalc();
   if(tab==='tori'&&me==='tori'&&tv.f)toriCalc();
+  maybeCheckin();
 }
 function setTab(k){tab=k;render();window.scrollTo(0,0);}
 function profileHTML(){return `<div class="profile"><h2>Whose phone is this?</h2><p>Pick once — this phone remembers it. You can edit only your own PTO; the other person's is view-only.</p>
   <button class="btn btn-big" style="border-color:var(--dan);color:var(--dan)" onclick="pickMe('dan')">I'm Dan</button>
   <button class="btn btn-big" style="border-color:var(--tori);color:var(--tori)" onclick="pickMe('tori')">I'm Tori</button></div>`;}
 function pickMe(p){me=p;lsSet(ME_KEY,p);tab=p;render();if(!booted)boot();else{render();afterLoad();}}
-function switchMe(){const o=other(me);if(!confirm(`Switch this phone to ${NAME[o]}?\n\nAfter switching, this phone can edit ${NAME[o]}'s PTO and can only VIEW ${NAME[me]}'s.`))return;me=o;lsSet(ME_KEY,o);dv.f=null;tv.f=null;tv.paystub=false;tab=o;render();}
+function switchMe(){const o=other(me);if(!confirm(`Switch this phone to ${NAME[o]}?\n\nAfter switching, this phone can edit ${NAME[o]}'s PTO and can only VIEW ${NAME[me]}'s.`))return;me=o;lsSet(ME_KEY,o);dv.f=null;tv.f=null;tab=o;render();}
 function setupHTML(){return `<div class="form-panel"><div class="form-title">One-time setup</div>
   <p class="hint" style="line-height:1.8">The joint app keeps its data in new tabs in your Google Sheet:<br>${setupNeeded.need.map(esc).join(', ')}<br><br>
   Setup copies Dan's and Tori's existing trips and balances from the old tabs into the new ones. The old tabs are <b>left alone</b> as a backup.
@@ -767,31 +783,38 @@ function dConfirmHols(){
 }
 
 // ═══════════════ TORI VIEW ═══════════════
-const tv={f:null,editId:null,panel:null,expanded:null,showPast:false,paystub:false};
+const tv={f:null,editId:null,panel:null,expanded:null,showPast:false};
+let tCheckinLater=false;
 const tTrip=id=>DB.tori.trips.find(t=>t.id===id);
+const TYPE_LABEL={pto:'ANNUAL',admin:'ADMIN',split:'SPLIT'};
+const hd=h=>`${fmtH(h)} (${(h/hpd()).toFixed(1)} d)`;
 function toriHTML(ro){
-  const s=tS(),today=todayStr(),ser=tSer(),now=tToday();
+  const s=tS(),today=todayStr(),ser=tSer(),ann=tToday(),adm=tAdmToday(),tot=ann+adm;
   let h=ro?roBanner('tori'):'';
   if(!online&&!ro)h+=`<div class="alert alert-warn">Offline — view only.</div>`;
-  if(!ro&&s.needsConfirm)h+=`<div class="alert alert-warn">Your balance (${fmtH(+s.balance)}) was carried over from the old app. Check it against your latest paystub and tap <b>Update from paystub</b> so the projections start from the right number.</div>`;
-  // next accrual, lowest ahead, planned ahead
+  // Admin/Personal use-it-or-lose-it banner
+  const exp=tNextExpiry(today),daysLeft=Math.round((P(exp)-P(today))/86400000);
+  let admPlanned=0;Object.keys(ser.adm).forEach(d=>{if(d>today&&d<=exp)admPlanned+=ser.adm[d];});
+  const admUnplanned=Math.max(0,adm-admPlanned);
+  if(adm>0.001){
+    const warn=daysLeft<=61&&admUnplanned>0.001;
+    h+=`<div class="alert ${warn?'alert-warn':'alert-info'}" id="admBanner"><b>Admin / Personal: ${hd(adm)} left — use by ${fmtDateY(exp)} (${daysLeft} day${daysLeft!==1?'s':''}).</b>
+      ${admPlanned>0.001?` ${fmtH(Math.min(admPlanned,adm))} is already planned on trips.`:''}
+      ${admUnplanned>0.001?` ${fmtH(admUnplanned)} isn't planned yet and is lost if not used by June 30.`:' All of it is planned.'}</div>`;
+  }
   let nextAcc=null;for(const d in ser.acc){if(d>today){nextAcc=d;break;}}
-  let low=Infinity,lowD=null,planned=0;
-  Object.keys(ser.bal).forEach(d=>{if(d>today){if(ser.bal[d]<low){low=ser.bal[d];lowD=d;}planned+=ser.pto[d]||0;}});
+  let low=Infinity,lowD=null;Object.keys(ser.bal).forEach(d=>{if(d>today&&ser.bal[d]<low){low=ser.bal[d];lowD=d;}});
   const horizon=addDays(today,730),lostDays=Object.keys(ser.lost).filter(d=>d>today&&d<=horizon).sort();
   const lost=lostDays.reduce((a,d)=>a+ser.lost[d],0);
+  const click=ro?'':'class="bal-cell clickable" onclick="toriCheckin(true)"';
   h+=`<div class="bal-strip">
-    <div class="bal-cell ${ro?'':'clickable'}" ${ro?'':'onclick="tv.paystub=true;render()"'}><div class="bal-label">Balance Today${ro?'':' · edit'}</div><div class="bal-val ${now<0?'neg':now<16?'warn':'ok'}">${fmtH(now)}</div><div class="bal-sub">${(now/hpd()).toFixed(1)} days · paystub ${fmtH(+s.balance)} on ${fmtDateY(s.asOf)}</div></div>
-    <div class="bal-cell"><div class="bal-label">Next Accrual</div><div class="bal-val accent sm">${nextAcc?'+'+fmtH(ser.acc[nextAcc]):'—'}</div><div class="bal-sub">${nextAcc?fmtDateY(nextAcc):''}</div></div>
-    <div class="bal-cell"><div class="bal-label">Lowest Ahead</div><div class="bal-val sm ${low<0?'neg':low<16?'warn':''}">${lowD?fmtH(low):'—'}</div><div class="bal-sub">${lowD?`${(low/hpd()).toFixed(1)} d · ${fmtDateY(lowD)}`:''}</div></div>
-    <div class="bal-cell"><div class="bal-label">PTO Planned Ahead</div><div class="bal-val sm">${fmtH(planned)}</div><div class="bal-sub">${(planned/hpd()).toFixed(1)} days</div></div></div>`;
-  if(lost>0)h+=`<div class="alert alert-warn">With what's planned now, you'll hit the ${fmtH(+s.cap)} cap in ${lostDays.length?monthLabel(P(lostDays[0]).getFullYear(),P(lostDays[0]).getMonth()):''} and lose ${fmtH(lost)} of accrual over the next 2 years unless you plan more PTO. See Projections.</div>`;
-  if(!ro&&tv.paystub)h+=`<div class="form-panel"><div class="form-title">Update from paystub</div>
-    <p class="hint">Enter the leave balance printed on your paystub and the date it's as of. Any PTO before that date is assumed to already be taken out.</p>
-    <div class="form-row"><div class="form-group"><label>Balance (HH:MM or decimal)</label><input type="text" id="psBal" value="${fmtH(+s.balance)}"></div>
-    <div class="form-group"><label>As of date</label><input type="date" id="psDate" value="${today}" max="${today}"></div></div>
-    <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="toriSavePaystub()">Save balance</button><button class="btn btn-ghost" onclick="tv.paystub=false;render()">Cancel</button></div></div>`;
-  h+=`<div class="toolbar">${ro?'':`<button class="btn btn-primary" onclick="toriOpen()">+ Plan PTO</button><button class="btn" onclick="tv.paystub=true;render()">Update from paystub</button>`}
+    <div ${click||'class="bal-cell"'}><div class="bal-label">Total Today${ro?'':' · edit'}</div><div class="bal-val ${tot<0?'neg':tot<16?'warn':'ok'}">${fmtH(tot)}</div><div class="bal-sub">${(tot/hpd()).toFixed(1)} days · Annual + Admin/Personal</div></div>
+    <div class="bal-cell"><div class="bal-label">Annual Leave</div><div class="bal-val sm">${fmtH(ann)}</div><div class="bal-sub">${(ann/hpd()).toFixed(1)} days${nextAcc?` · +${fmtH(ser.acc[nextAcc])} on ${fmtDate(nextAcc)}`:''}</div></div>
+    <div class="bal-cell"><div class="bal-label">Admin / Personal</div><div class="bal-val sm accent">${fmtH(adm)}</div><div class="bal-sub">${(adm/hpd()).toFixed(1)} days · expires ${fmtDateY(exp)}</div></div>
+    <div class="bal-cell"><div class="bal-label">Lowest Annual Ahead</div><div class="bal-val sm ${low<0?'neg':low<16?'warn':''}">${lowD?fmtH(low):'—'}</div><div class="bal-sub">${lowD?`${(low/hpd()).toFixed(1)} d · ${fmtDateY(lowD)}`:''}</div></div></div>
+    <p class="hint" style="margin-top:-8px">Balances last confirmed ${fmtDateY(s.asOf)}${s.lastConfirm?'':' (carried over from the old app)'}.</p>`;
+  if(lost>0)h+=`<div class="alert alert-warn">With what's planned now, Annual leave hits the ${fmtH(+s.cap)} cap in ${monthLabel(P(lostDays[0]).getFullYear(),P(lostDays[0]).getMonth())} and loses ${fmtH(lost)} of accrual over the next 2 years unless more is planned. See Projections.</div>`;
+  h+=`<div class="toolbar">${ro?'':`<button class="btn btn-primary" onclick="toriOpen()">+ Plan Time Off</button><button class="btn" onclick="toriCheckin(true)">Update balances</button>`}
     <button class="btn btn-ghost" onclick="tv.panel=tv.panel==='hol'?null:'hol';render()">Holidays</button>
     <button class="btn btn-ghost" onclick="tv.panel=tv.panel==='proj'?null:'proj';render()">Projections</button>
     ${ro?'':`<button class="btn btn-ghost" onclick="tv.panel=tv.panel==='set'?null:'set';render()">Settings</button>`}</div>`;
@@ -799,60 +822,113 @@ function toriHTML(ro){
   if(tv.panel==='set'&&!ro)h+=toriSettingsHTML();
   if(tv.panel==='hol')h+=toriHolidaysHTML();
   if(tv.panel==='proj')h+=toriProjHTML();
-  const all=DB.tori.trips,shown=tv.showPast?all:all.filter(t=>t.end>=today),past=all.length-all.filter(t=>t.end>=today).length;
+  const all=DB.tori.trips,upcoming=all.filter(t=>t.end>=today),shown=tv.showPast?all:upcoming,past=all.length-upcoming.length;
   h+=`<div class="list-header">${tv.showPast?'All trips':'Upcoming trips'}</div>`;
   h+=shown.length?shown.map(t=>toriRow(t,ro,ser)).join(''):`<div class="empty-state">No upcoming trips.</div>`;
   if(past)h+=`<button class="btn btn-sm btn-ghost" style="margin-top:8px" onclick="tv.showPast=!tv.showPast;render()">${tv.showPast?'Hide':'Show'} ${past} past trip${past!==1?'s':''}</button>`;
   return h;
 }
 function toriRow(t,ro,ser){
-  const open=tv.expanded===t.id,isAdmin=t.type==='admin',s=tS();
-  const tag=isAdmin?'<span class="type-tag tag-off">ADMIN</span>':t.type==='split'?'<span class="type-tag tag-pto">SPLIT</span>':'<span class="type-tag tag-pto">PTO</span>';
-  let meta=`<span>${rangeStr(t.start,t.end)}</span>`;
-  if(isAdmin)meta+=`<span>${fmtH(t.admin)} admin · no PTO</span>`;
-  else meta+=`<span class="m-pto">${fmtH(t.cost)} PTO (${(t.cost/hpd()).toFixed(1)} d)</span>${t.type==='split'?`<span>+ ${fmtH(t.admin)} admin</span>`:''}`;
-  if(!isAdmin){const after=tBalEnd(t.end,ser);meta+=after===null?`<span class="m-auto">before balance date</span>`:`<span style="color:${after<0?'var(--danger)':'var(--ok)'}">after: ${fmtH(after)}</span>`;}
-  let h=`<div class="day-row ${isAdmin?'non-pto':''} ${open?'expanded':''} ${t.end<todayStr()?'past':''}" ${open?'':`onclick="tv.expanded='${t.id}';render()"`}>${tag}<div class="day-body">
+  const open=tv.expanded===t.id,tag=`<span class="type-tag ${t.type==='admin'?'tag-off':'tag-pto'}">${TYPE_LABEL[t.type]||t.type.toUpperCase()}</span>`;
+  const tot=(+t.cost||0)+(+t.admin||0);
+  let meta=`<span>${rangeStr(t.start,t.end)}</span><span class="m-pto">${hd(tot)}</span>`;
+  if(t.type==='split')meta+=`<span>Admin ${fmtH(t.admin)} + Annual ${fmtH(t.cost)}</span>`;
+  const aA=tBalEnd(t.end,ser),aD=tAdmEnd(t.end,ser);
+  meta+=aA===null?`<span class="m-auto">before balance date</span>`:`<span style="color:${(aA<0||aD<-0.001)?'var(--danger)':'var(--ok)'}">after: Annual ${fmtH(aA)} · Admin ${fmtH(aD)}</span>`;
+  let h=`<div class="day-row ${t.type==='admin'?'non-pto':''} ${open?'expanded':''} ${t.end<todayStr()?'past':''}" ${open?'':`onclick="tv.expanded='${t.id}';render()"`}>${tag}<div class="day-body">
     <div class="day-name">${esc(t.title)}</div><div class="day-meta">${meta}</div>`;
   if(open){
     const wd=tWDList(t.start,t.end),hols=[];eachDay(t.start,t.end,d=>{if(tHol(d)&&tS().workDays.includes(dow(d)))hols.push(tHol(d));});
-    h+=`<div class="day-detail"><div class="detail-stats"><div class="detail-stat">Workdays: <strong>${wd.length}</strong></div>${hols.length?`<div class="detail-stat">Holidays inside (free): <strong>${esc(hols.join(', '))}</strong></div>`:''}</div>
+    h+=`<div class="day-detail"><div class="detail-stats"><div class="detail-stat">Workdays: <strong>${wd.length}</strong></div>
+      <div class="detail-stat">Annual: <strong>${fmtH(t.cost)}</strong></div><div class="detail-stat">Admin/Personal: <strong>${fmtH(t.admin)}</strong></div>
+      ${hols.length?`<div class="detail-stat">Holidays inside (free): <strong>${esc(hols.join(', '))}</strong></div>`:''}</div>
       ${t.notes?`<div class="day-note" style="margin-bottom:8px">${esc(t.notes)}</div>`:'<div class="hint">No notes.</div>'}
       <div class="detail-actions"><button class="btn btn-sm btn-ghost" onclick="tv.expanded=null;render()">Close</button>
       ${ro?'':`<button class="btn btn-sm" onclick="toriEdit('${t.id}')">Edit</button><button class="btn btn-sm btn-danger" onclick="toriDelete('${t.id}')">Delete</button>`}</div></div>`;
   }else if(t.notes)h+=`<div class="day-note">${esc(t.notes.length>90?t.notes.slice(0,90)+'…':t.notes)}</div>`;
   return h+`</div>${open?'':'<span class="day-chevron">›</span>'}</div>`;
 }
-function toriOpen(){tv.editId=null;tv.f={type:'pto',admin:'',start:'',end:'',title:'',notes:''};tv.panel=null;tv.paystub=false;render();scrollToForm();}
-function toriEdit(id){const t=tTrip(id);if(!t)return;tv.editId=id;tv.f={type:t.type,admin:t.type==='split'?fmtH(t.admin):'',start:t.start,end:t.end,title:t.title,notes:t.notes||''};tv.expanded=null;render();scrollToForm();}
+
+// ── Balance check-in (5th & 20th, or any time via "Update balances") ──
+function toriCheckin(forced){
+  if(me!=='tori'||!online)return;
+  const today=todayStr(),ann=tToday(),adm=tAdmToday();
+  document.getElementById('overlay').innerHTML=`<div class="overlay"><div class="overlay-card" id="checkin">
+    <div class="overlay-title" style="color:var(--tori)">${forced?'Update balances':'Are these balances right?'}</div>
+    <p style="margin-bottom:14px;line-height:1.6">Compare with your latest paystub. This is what the app shows for today, ${fmtDateY(today)}:</p>
+    <div class="form-row"><div class="form-group"><label>Annual leave</label><input type="text" id="ciAnn" value="${fmtH(ann)}"><div class="hint" style="margin:4px 0 0">${(ann/hpd()).toFixed(1)} days</div></div>
+    <div class="form-group"><label>Admin / Personal</label><input type="text" id="ciAdm" value="${fmtH(adm)}"><div class="hint" style="margin:4px 0 0">${(adm/hpd()).toFixed(1)} days</div></div></div>
+    <p class="hint">Picked up new Admin or Personal time? Add the two together and enter the total. Enter as HH:MM (73:20) or decimal (73.33).</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px">
+      <button class="btn btn-ghost" onclick="tCheckinLater=true;document.getElementById('overlay').innerHTML=''">${forced?'Cancel':'Later'}</button>
+      ${forced?'':`<button class="btn" onclick="toriCheckinSave(false)">Looks right</button>`}
+      <button class="btn btn-primary" style="background:var(--tori);border-color:var(--tori)" onclick="toriCheckinSave(true)">Save these numbers</button></div></div></div>`;
+}
+function toriCheckinSave(useInputs){
+  if(me!=='tori')return;
+  const s=tS(),today=todayStr();
+  let ann=r2(tToday()),adm=r2(tAdmToday());
+  if(useInputs){ann=parseHours(document.getElementById('ciAnn').value);adm=parseHours(document.getElementById('ciAdm').value);
+    if(ann===null||ann<0||adm===null||adm<0){alert('Enter both balances as HH:MM (73:20) or decimal (73.33).');return;}
+    if(ann>+s.cap&&!confirm(`Annual is over the ${fmtH(+s.cap)} cap. Save anyway?`))return;}
+  const old=`Annual ${fmtH(+s.balance)}, Admin ${fmtH(+s.adminBalance||0)} @ ${s.asOf}`;
+  Object.assign(s,{balance:r2(ann),adminBalance:r2(adm),asOf:today,lastConfirm:today,needsConfirm:false});
+  document.getElementById('overlay').innerHTML='';
+  save('tori',useInputs?'balances updated':'balances confirmed',`${old} → Annual ${fmtH(ann)}, Admin ${fmtH(adm)} @ ${today}`);render();
+}
+function maybeCheckin(){
+  if(me==='tori'&&tab==='tori'&&online&&DB.tori&&!tCheckinLater&&tCheckinDue()&&!document.getElementById('overlay').innerHTML)toriCheckin(false);
+}
+
+// ── Plan / edit time off ──
+function toriOpen(){tv.editId=null;tv.f={type:'pto',admin:'',start:'',end:'',title:'',notes:'',auto:true};tv.panel=null;render();scrollToForm();}
+function toriEdit(id){const t=tTrip(id);if(!t)return;tv.editId=id;tv.f={type:t.type,admin:t.type==='split'?fmtH(t.admin):'',start:t.start,end:t.end,title:t.title,notes:t.notes||'',auto:false};tv.expanded=null;render();scrollToForm();}
 function toriFormHTML(){
   const f=tv.f;
-  return `<div class="form-panel"><div class="form-title">${tv.editId?'Edit':'Plan'} PTO</div>
-    <div class="form-group"><label>Type</label><select onchange="tv.f.type=this.value;render()">
-      <option value="pto" ${f.type==='pto'?'selected':''}>PTO (vacation)</option><option value="admin" ${f.type==='admin'?'selected':''}>Admin time (no balance impact)</option><option value="split" ${f.type==='split'?'selected':''}>Split (admin + PTO)</option></select></div>
-    ${f.type==='split'?`<div class="form-group"><label>Admin hours to use (HH:MM or decimal)</label><input type="text" value="${esc(f.admin)}" oninput="tv.f.admin=this.value;toriCalc()" placeholder="12:00"><p class="hint" style="margin:5px 0 0">The rest comes out of PTO.</p></div>`:''}
-    <div class="form-row"><div class="form-group"><label>Start Date</label><input type="date" value="${f.start}" onchange="tv.f.start=this.value;if(!tv.f.end||tv.f.end<this.value){tv.f.end=this.value;document.getElementById('tEnd').value=this.value;}toriCalc()"></div>
-    <div class="form-group"><label>End Date</label><input type="date" id="tEnd" value="${f.end}" onchange="tv.f.end=this.value;toriCalc()"></div></div>
+  return `<div class="form-panel"><div class="form-title">${tv.editId?'Edit':'Plan'} Time Off</div>
+    <div class="form-row"><div class="form-group"><label>Start Date</label><input type="date" value="${f.start}" onchange="tv.f.start=this.value;if(!tv.f.end||tv.f.end<this.value){tv.f.end=this.value;document.getElementById('tEnd').value=this.value;}toriCalc(true)"></div>
+    <div class="form-group"><label>End Date</label><input type="date" id="tEnd" value="${f.end}" onchange="tv.f.end=this.value;toriCalc(true)"></div></div>
+    <div class="form-group"><label>Take it from</label><select id="tType" onchange="tv.f.type=this.value;tv.f.auto=false;render()">
+      <option value="pto" ${f.type==='pto'?'selected':''}>All Annual leave</option>
+      <option value="admin" ${f.type==='admin'?'selected':''}>All Admin / Personal</option>
+      <option value="split" ${f.type==='split'?'selected':''}>Split — some Admin / Personal, rest Annual</option></select></div>
+    ${f.type==='split'?`<div class="form-group"><label>Admin / Personal hours to use (HH:MM or decimal)</label><input type="text" value="${esc(f.admin)}" oninput="tv.f.admin=this.value;tv.f.auto=false;toriCalc()" placeholder="16:00"><p class="hint" style="margin:5px 0 0">The rest comes out of Annual leave.</p></div>`:''}
     <div id="calcBox" class="calc-box hidden"></div>
-    <div class="form-group"><label>Destination / Purpose</label><input type="text" value="${esc(f.title)}" oninput="tv.f.title=this.value" placeholder="Hawaii, Family visit…"></div>
+    <div class="form-group"><label>Destination / Purpose</label><input type="text" value="${esc(f.title)}" oninput="tv.f.title=this.value" placeholder="Family visit, Cruise…"></div>
     <div class="form-group"><label>Reservations / Notes (optional)</label><textarea oninput="tv.f.notes=this.value">${esc(f.notes)}</textarea></div>
     <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="toriSaveForm()">Save</button><button class="btn btn-ghost" onclick="tv.f=null;tv.editId=null;render()">Cancel</button></div></div>`;
 }
 function toriCompute(f){
-  const wd=tWDList(f.start,f.end),total=wd.length*hpd(),adminIn=f.type==='split'?(parseHours(f.admin)||0):0;
+  const wd=tWDList(f.start,f.end),total=wd.length*hpd();
   const hols=[];eachDay(f.start,f.end,d=>{if(tHol(d)&&tS().workDays.includes(dow(d)))hols.push(`${tHol(d)} (${fmtDate(d)})`);});
-  if(f.type==='admin')return {wd,total,hols,cost:0,admin:total};
-  if(f.type==='split')return {wd,total,hols,cost:r2(total-adminIn),admin:adminIn};
-  return {wd,total,hols,cost:total,admin:0};
+  const admin=f.type==='admin'?total:f.type==='split'?(parseHours(f.admin)||0):0;
+  return {wd,total,hols,admin:r2(admin),cost:r2(total-admin)};
 }
-function toriCalc(){
+// Balances available the day before a trip, ignoring the trip being edited
+function toriAvailBefore(start){
+  const s=tS();if(start<=s.asOf)return null;
+  const ser=tSeries(DB.tori.trips.filter(t=>t.id!==tv.editId)),d=addDays(start,-1);
+  return {ann:d===s.asOf?+s.balance:ser.bal[d],adm:d===s.asOf?(+s.adminBalance||0):ser.abal[d]};
+}
+function toriCalc(datesChanged){
   const f=tv.f,box=document.getElementById('calcBox');if(!f||!box)return;
   if(!f.start||!f.end){box.classList.add('hidden');return;}
   if(f.end<f.start){box.innerHTML='<span style="color:var(--danger)">End date before start date</span>';box.classList.remove('hidden');return;}
-  const c=toriCompute(f),before=tBalEnd(addDays(f.start,-1))??(f.start<=tS().asOf?null:+tS().balance);
+  const av=toriAvailBefore(f.start);
+  // Suggest a bucket (Admin first, since it expires) until she picks one herself
+  if(datesChanged&&f.auto&&av){
+    const tot=tWDList(f.start,f.end).length*hpd(),a=Math.max(0,Math.floor((av.adm||0)*4)/4);
+    const nt=a>=tot&&tot>0?'admin':a>0?'split':'pto',na=nt==='split'?fmtH(a):'';
+    if(nt!==f.type||na!==f.admin){f.type=nt;f.admin=na;render();return;}
+  }
+  const c=toriCompute(f);
+  let warn='';
+  if(av&&c.admin>(av.adm||0)+0.001)warn+=`<br><span style="color:var(--danger)">Only ${fmtH(Math.max(0,av.adm||0))} Admin/Personal will be available then${f.start>tNextExpiry(todayStr())?' (it expires June 30)':''}.</span>`;
+  if(av&&c.cost>(av.ann||0)+0.001)warn+=`<br><span style="color:var(--danger)">Only ${fmtH(av.ann)} Annual will be available then.</span>`;
+  if(f.type==='split'&&c.admin>=c.total&&c.total>0)warn+=`<br><span style="color:var(--danger)">Admin hours cover the whole trip — pick "All Admin / Personal" instead.</span>`;
   box.innerHTML=`<strong>Workdays:</strong> ${c.wd.length} (${fmtH(c.total)})${c.hols.length?` · <strong>Holidays skipped:</strong> ${esc(c.hols.join(', '))}`:''}<br>
-    ${f.type==='admin'?'<span class="calc-deduct">Admin time — no PTO used</span>':`<span class="calc-deduct">PTO used: ${fmtH(c.cost)} (${(c.cost/hpd()).toFixed(1)} d)</span>${c.admin?` + ${fmtH(c.admin)} admin`:''}`}
-    ${before!==null&&f.type!=='admin'?`<br><strong>Projected balance before trip:</strong> ${fmtH(before)} → after ${fmtH(before-c.cost)}`:''}`;
+    <span class="calc-deduct">Admin/Personal ${fmtH(c.admin)} + Annual ${fmtH(c.cost)}</span>
+    ${av?`<br><strong>Available before trip:</strong> Annual ${fmtH(av.ann)} · Admin/Personal ${fmtH(av.adm)}${f.auto&&c.admin>0?' — Admin used first since it expires June 30':''}`:''}${warn}`;
   box.classList.remove('hidden');
 }
 function toriSaveForm(){
@@ -862,47 +938,38 @@ function toriSaveForm(){
   if(f.end<f.start){alert('End date must be on or after start date.');return;}
   const c=toriCompute(f);
   if(!c.wd.length){alert('No workdays in that range (weekends/holidays only) — no time off needed.');return;}
-  if(f.type==='split'){const a=parseHours(f.admin);if(!a||a<=0){alert('Enter admin hours (e.g. 12:00).');return;}if(a>=c.total){alert(`Admin hours must be less than the trip total (${fmtH(c.total)}).`);return;}}
+  if(f.type==='split'){const a=parseHours(f.admin);if(!a||a<=0){alert('Enter the Admin/Personal hours (e.g. 16:00).');return;}if(a>=c.total){alert(`Admin hours must be less than the trip total (${fmtH(c.total)}). For the whole trip, choose "All Admin / Personal".`);return;}}
   const entry={type:f.type,start:f.start,end:f.end,title,notes:f.notes.trim(),cost:c.cost,admin:c.admin,updated:new Date().toISOString()};
-  if(f.type!=='admin'){
-    const cand=DB.tori.trips.filter(t=>t.id!==tv.editId).concat([{...entry,id:'_new'}]);
-    const ser=tSeries(cand);let low=Infinity,lowD=null;
-    Object.keys(ser.bal).forEach(d=>{if(d>=f.start&&ser.bal[d]<low){low=ser.bal[d];lowD=d;}});
-    if(lowD&&low<0&&!confirm(`Not enough PTO\n\nWith this trip your balance would drop to ${fmtH(low)} on ${fmtDateY(lowD)}.\n\nSave anyway?`))return;
-  }
+  const cand=DB.tori.trips.filter(t=>t.id!==tv.editId).concat([{...entry,id:'_new'}]);
+  const ser=tSeries(cand);let lowA=Infinity,lowAD=null,lowM=Infinity,lowMD=null;
+  Object.keys(ser.bal).forEach(d=>{if(d<f.start)return;if(ser.bal[d]<lowA){lowA=ser.bal[d];lowAD=d;}if(ser.abal[d]<lowM){lowM=ser.abal[d];lowMD=d;}});
+  const probs=[];
+  if(lowAD&&lowA<0)probs.push(`Annual leave would drop to ${fmtH(lowA)} on ${fmtDateY(lowAD)}.`);
+  if(lowMD&&lowM<-0.001)probs.push(`Admin/Personal would drop to ${fmtH(lowM)} on ${fmtDateY(lowMD)} — there isn't enough of it (remember it expires June 30).`);
+  if(probs.length&&!confirm(`Not enough time off\n\n${probs.join('\n')}\n\nSave anyway?`))return;
   let t;
   if(tv.editId){t=tTrip(tv.editId);if(!t){alert('That trip no longer exists (removed on another device).');tv.f=null;tv.editId=null;render();return;}}
   else{t={id:uid(),details:{},autoHoliday:false};DB.tori.trips.push(t);}
   Object.assign(t,entry);sortTrips(DB.tori.trips);
   const act=tv.editId?'edit':'add';tv.f=null;tv.editId=null;
-  save('tori',act,`${title} ${t.start}→${t.end} ${t.type} PTO ${fmtH(t.cost)} admin ${fmtH(t.admin)}`);render();
+  save('tori',act,`${title} ${t.start}→${t.end} Admin ${fmtH(t.admin)} + Annual ${fmtH(t.cost)}`);render();
 }
 function toriDelete(id){
   const t=tTrip(id);if(!t||me!=='tori')return;
   if(!confirm(`Delete "${t.title}" (${rangeStr(t.start,t.end)})?\n\nThis can't be undone.`))return;
   DB.tori.trips=DB.tori.trips.filter(x=>x.id!==id);tv.expanded=null;
-  save('tori','delete',`${t.title} ${t.start}→${t.end} ${fmtH(t.cost)}`);render();
-}
-function toriSavePaystub(){
-  if(me!=='tori')return;
-  const b=parseHours(document.getElementById('psBal').value),d=document.getElementById('psDate').value,s=tS();
-  if(b===null||b<0){alert('Enter a valid balance, e.g. 73:20 or 73.33');return;}
-  if(!d||d>todayStr()){alert('As-of date must be today or earlier.');return;}
-  if(b>+s.cap&&!confirm(`That's over the ${fmtH(+s.cap)} cap. Save anyway?`))return;
-  const old=`${fmtH(+s.balance)} @ ${s.asOf}`;
-  Object.assign(s,{balance:r2(b),asOf:d,needsConfirm:false});tv.paystub=false;
-  save('tori','paystub',`${old} → ${fmtH(b)} @ ${d}`);render();
+  save('tori','delete',`${t.title} ${t.start}→${t.end} Admin ${fmtH(t.admin)} + Annual ${fmtH(t.cost)}`);render();
 }
 function toriSettingsHTML(){
   const s=tS(),wd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<div class="wd-toggle"><input type="checkbox" id="twd${i}" ${s.workDays.includes(i)?'checked':''}><span>${n}</span></div>`).join('');
   const num=(id,lab,v,step)=>`<div class="form-group"><label>${lab}</label><input type="number" id="${id}" step="${step}" value="${v}"></div>`;
   return `<div class="form-panel"><div class="form-title">Tori — Settings</div>
     <div class="settings-block"><div class="settings-block-title">Work Days</div><div class="wd-grid">${wd}</div></div>
-    <div class="settings-block"><div class="settings-block-title">Hours</div><div class="form-row">${num('tsHpd','Hours per workday',s.hoursPerDay,'0.25')}${num('tsCap','Balance cap (hours)',s.cap,'1')}</div></div>
-    <div class="settings-block"><div class="settings-block-title">Accrual (credited on the 1st of each month)</div><div class="form-row">
+    <div class="settings-block"><div class="settings-block-title">Hours</div><div class="form-row">${num('tsHpd','Hours per workday',s.hoursPerDay,'0.25')}${num('tsCap','Annual leave cap (hours)',s.cap,'1')}</div></div>
+    <div class="settings-block"><div class="settings-block-title">Annual leave accrual (credited on the 1st of each month)</div><div class="form-row">
       ${num('tsBase','Hours per month now',s.accrualBase,'0.25')}<div class="form-group"><label>First increase date</label><input type="date" id="tsStep" value="${s.accrualStepStart||''}"></div>
       ${num('tsStepH','Increase by (hours)',s.accrualStepHours,'0.25')}${num('tsStepY','Then every (years)',s.accrualStepYears,'1')}</div>
-      <p class="hint" style="margin:0">Current rule: ${fmtH(+s.accrualBase)}/mo, ${fmtH(+s.accrualBase+ +s.accrualStepHours)}/mo from ${s.accrualStepStart?fmtDateY(s.accrualStepStart):'—'}, +${fmtH(+s.accrualStepHours)} every ${s.accrualStepYears} years after.</p></div>
+      <p class="hint" style="margin:0">Current rule: ${fmtH(+s.accrualBase)}/mo, ${fmtH(+s.accrualBase+ +s.accrualStepHours)}/mo from ${s.accrualStepStart?fmtDateY(s.accrualStepStart):'—'}, +${fmtH(+s.accrualStepHours)} every ${s.accrualStepYears} years after. Admin/Personal isn't accrued — enter it with "Update balances".</p></div>
     <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="toriSaveSettings()">Save Settings</button><button class="btn btn-ghost" onclick="tv.panel=null;render()">Cancel</button></div></div>`;
 }
 function toriSaveSettings(){
@@ -911,31 +978,36 @@ function toriSaveSettings(){
   const wds=[0,1,2,3,4,5,6].filter(i=>document.getElementById('twd'+i).checked);
   const v={hoursPerDay:g('tsHpd'),cap:g('tsCap'),accrualBase:g('tsBase'),accrualStepHours:g('tsStepH'),accrualStepYears:g('tsStepY')};
   if(!wds.length||Object.values(v).some(x=>isNaN(x)||x<0)||v.hoursPerDay<=0||v.accrualStepYears<=0){alert('Check the numbers — something is blank or invalid.');return;}
-  const s=tS(),oldHpd=+s.hoursPerDay,oldWD=s.workDays.slice(),today=todayStr();
+  const s=tS(),today=todayStr();
   Object.assign(s,v,{workDays:wds,accrualStepStart:document.getElementById('tsStep').value||''});
-  // Recalculate upcoming trips for new schedule
-  DB.tori.trips.forEach(t=>{if(t.start<today)return;const c=toriCompute({type:t.type,start:t.start,end:t.end,admin:fmtH(t.admin)});if(t.type!=='split'){t.cost=c.cost;t.admin=c.admin;}else{t.cost=r2(Math.max(0,c.total-t.admin));}});
+  // Recalculate upcoming trips for the new schedule (Admin hours on split trips stay as entered)
+  DB.tori.trips.forEach(t=>{if(t.start<today)return;const total=tWDList(t.start,t.end).length*hpd();
+    if(t.type==='admin'){t.admin=total;t.cost=0;}else if(t.type==='split'){t.admin=Math.min(t.admin,total);t.cost=r2(total-t.admin);}else{t.cost=total;t.admin=0;}});
   tv.panel=null;save('tori','settings',JSON.stringify(v));render();
 }
 function toriHolidaysHTML(){
-  const y=new Date().getFullYear();let h=`<div class="form-panel"><div class="form-title">Wyoming State Holidays (paid — not charged to PTO)</div><div class="hol-grid">`;
+  const y=new Date().getFullYear();let h=`<div class="form-panel"><div class="form-title">Wyoming State Holidays (paid — not charged to leave)</div><div class="hol-grid">`;
   [y,y+1,y+2].forEach(yr=>tHolidaysYear(yr).forEach(hd=>{const inTrip=DB.tori.trips.find(t=>t.start<=hd.ds&&t.end>=hd.ds);
     h+=`<div class="hol-item"><div class="hol-name">${esc(hd.name)}</div><div>${fmtDateLong(hd.ds)}</div>${inTrip?`<div class="hol-ok">Inside "${esc(inTrip.title)}" — free day</div>`:''}</div>`;}));
   return h+`</div><button class="btn btn-ghost" style="margin-top:12px" onclick="tv.panel=null;render()">Close</button></div>`;
 }
 function toriProjHTML(){
-  const ser=tSer(),now=new Date();let rows='';
+  const ser=tSer(),now=new Date(),asOf=tS().asOf;let rows='';
   for(let i=0;i<25;i++){
-    const y=now.getFullYear(),m=now.getMonth()+i,first=monthFirst(y,m),last=monthLast(y,m),yy=P(first).getFullYear(),mm=P(first).getMonth();
-    let used=0;eachDay(first,last,d=>{if(d>tS().asOf)used+=ser.pto[d]||0;});
-    const names=DB.tori.trips.filter(t=>t.type!=='admin'&&t.start<=last&&t.end>=first).map(t=>t.title);
-    const end=tBalEnd(last,ser),acc=ser.acc[first],lost=ser.lost[first];
-    rows+=`<tr class="${used>0?'has':''}"><td>${monthLabel(yy,mm)}</td><td>${acc!==undefined?'+'+fmtH(acc):'—'}${lost?` <span class="neg">(${fmtH(lost)} lost to cap)</span>`:''}</td>
-      <td>${used>0?'−'+fmtH(used)+`<br><span style="font-size:10px">${esc(names.join(', '))}</span>`:'—'}</td><td class="${end<0?'neg':''}"><b>${fmtH(end)}</b><br><span style="font-size:10px;color:var(--text-dim)">${end===null?'':(end/hpd()).toFixed(1)+' d'}</span></td></tr>`;
+    const first=monthFirst(now.getFullYear(),now.getMonth()+i),last=monthLast(P(first).getFullYear(),P(first).getMonth()),yy=P(first).getFullYear(),mm=P(first).getMonth();
+    let usedA=0,usedM=0;eachDay(first,last,d=>{if(d>asOf){usedA+=ser.pto[d]||0;usedM+=ser.adm[d]||0;}});
+    const names=DB.tori.trips.filter(t=>t.start<=last&&t.end>=first).map(t=>t.title);
+    const endA=tBalEnd(last,ser),endM=tAdmEnd(last,ser),acc=ser.acc[first],lost=ser.lost[first],exp=ser.aexp[first];
+    const tot=endA===null||endM===null?null:endA+endM;
+    rows+=`<tr class="${usedA+usedM>0?'has':''}"><td>${monthLabel(yy,mm)}</td>
+      <td>${acc!==undefined?'+'+fmtH(acc):'—'}${lost?` <span class="neg">(${fmtH(lost)} lost to cap)</span>`:''}${exp?`<br><span class="neg">Admin −${fmtH(exp)} expired</span>`:''}</td>
+      <td>${usedA+usedM>0?`${usedM>0?'Admin −'+fmtH(usedM)+'<br>':''}${usedA>0?'Annual −'+fmtH(usedA):''}<br><span style="font-size:10px">${esc(names.join(', '))}</span>`:'—'}</td>
+      <td class="${endA<0?'neg':''}">${fmtH(endA)}</td><td class="${endM<-0.001?'neg':''}">${fmtH(endM)}</td>
+      <td><b>${fmtH(tot)}</b><br><span style="font-size:10px;color:var(--text-dim)">${tot===null?'':(tot/hpd()).toFixed(1)+' d'}</span></td></tr>`;
   }
   return `<div class="form-panel"><div class="form-title">Tori — 24-Month Projection</div>
-    <div style="overflow-x:auto"><table class="ptable"><tr><th>Month</th><th>Accrual</th><th>PTO used</th><th>End balance</th></tr>${rows}</table></div>
-    <p class="hint" style="margin-top:10px">Accrual is credited on the 1st. Balance is capped at ${fmtH(+tS().cap)}; anything over is lost.</p>
+    <div style="overflow-x:auto"><table class="ptable"><tr><th>Month</th><th>Accrual</th><th>Used</th><th>Annual</th><th>Admin</th><th>Total</th></tr>${rows}</table></div>
+    <p class="hint" style="margin-top:10px">Annual accrues on the 1st and is capped at ${fmtH(+tS().cap)}. Admin/Personal only changes when you update it — whatever is left on June 30 is removed on July 1.</p>
     <button class="btn btn-ghost" onclick="tv.panel=null;render()">Close</button></div>`;
 }
 
@@ -955,8 +1027,8 @@ function dayInfo(p,ds){
     return {kind,t,half:c>0&&c<1,cost:c};
   }
   if(trips.length){const t=trips.find(x=>x.type!=='admin')||trips[0];
-    let c=0;if(t.type!=='admin'&&tIsWD(ds)){const wd=tWDList(t.start,t.end);c=wd.length?t.cost/wd.length:0;}
-    return {kind:t.type==='admin'?'admin':'pto',t,cost:c,hol:tHol(ds)};}
+    let a=0,m=0;if(tIsWD(ds)){const wd=tWDList(t.start,t.end);if(wd.length){a=(+t.cost||0)/wd.length;m=(+t.admin||0)/wd.length;}}
+    return {kind:t.type==='admin'?'admin':'pto',t,cost:a+m,ann:a,adm:m,hol:tHol(ds)};}
   const h=tHol(ds);if(h&&tS().workDays.includes(dow(ds)))return {kind:'shol',label:h};
   return null;
 }
@@ -983,7 +1055,7 @@ function monthHTML(){
   const y=mv.y,m=mv.m,first=monthFirst(y,m),last=monthLast(y,m),today=todayStr();
   // Balances
   const dS0=dStartOfDay(first),dS1=dEndOfDay(last);
-  const tS0=tBalStart(first),tS1=tBalEnd(last),asOf=tS().asOf;
+  const tS0=tTotStart(first),tS1=tTotEnd(last),asOf=tS().asOf,tA1=tBalEnd(last),tM1=tAdmEnd(last),junExp=m===5&&tM1>0.001;
   const febNote=dYearKey(first)!==dYearKey(addDays(first,-1))?`<div class="jsub">New PTO year starts ${fmtDateY(first)} — fresh grant</div>`:'';
   let h=`<div class="year-nav"><button class="btn btn-sm" onclick="mvShift(-1)">‹</button><span class="yn-label">${monthLabel(y,m)}</span><button class="btn btn-sm" onclick="mvShift(1)">›</button>
     ${(y!==new Date().getFullYear()||m!==new Date().getMonth())?`<button class="btn btn-sm btn-ghost" onclick="mvToday()">Today</button>`:''}</div>
@@ -995,10 +1067,12 @@ function monthHTML(){
     <div class="jcard tori"><div class="jname">Tori — available</div>
       <div class="jline"><span>Start of month</span><b>${tS0===null?'—':fmtHD(tS0)}</b></div>
       <div class="jline"><span>End of month</span><b>${tS1===null?'—':fmtHD(tS1)}</b></div>
-      <div class="jsub">${tS0===null&&tS1!==null?`Start unknown — balance is from paystub on ${fmtDateY(asOf)}`:tS1===null?`Before her paystub date (${fmtDateY(asOf)})`:'Start = after the 1st-of-month accrual'}</div></div>
+      <div class="jsub">${tS1===null?`Before her last balance check (${fmtDateY(asOf)})`:`End: Annual ${fmtH(tA1)} · Admin/Personal ${fmtH(tM1)}`}</div>
+      ${junExp?`<div class="jsub" style="color:var(--danger)!important">${fmtH(tM1)} Admin/Personal expires June 30</div>`:''}
+      <div class="jsub">${tS0===null&&tS1!==null?`Start unknown — balances last checked ${fmtDateY(asOf)}`:tS1===null?'':'Annual + Admin/Personal combined'}</div></div>
   </div>`;
   h+=`<div class="legend"><span><i style="background:var(--dan)"></i>Dan PTO</span><span><i style="background:repeating-linear-gradient(45deg,rgba(31,78,121,.30) 0 3px,rgba(31,78,121,.14) 3px 6px)"></i>Dan off (no PTO)</span><span><i style="background:var(--hunt)"></i>Dan hunting</span><span><i style="background:var(--danger)"></i>Dan emergency</span>
-    <span><i style="background:var(--tori)"></i>Tori PTO</span><span><i style="background:repeating-linear-gradient(45deg,rgba(125,60,110,.30) 0 3px,rgba(125,60,110,.14) 3px 6px)"></i>Tori admin</span><span><i style="background:rgba(125,60,110,.14)"></i>Tori state holiday</span><span>½ = half day</span></div>`;
+    <span><i style="background:var(--tori)"></i>Tori PTO</span><span><i style="background:repeating-linear-gradient(45deg,rgba(125,60,110,.30) 0 3px,rgba(125,60,110,.14) 3px 6px)"></i>Tori admin/personal</span><span><i style="background:rgba(125,60,110,.14)"></i>Tori state holiday</span><span>½ = half day</span></div>`;
   h+=`<div class="cal">`+monthGrid(y,m,ds=>{
     if(!ds)return `<div class="cal-d blank"></div>`;
     const wkEnd=addDays(ds,6-dow(ds)),we=[0,6].includes(dow(ds));
@@ -1009,8 +1083,8 @@ function monthHTML(){
   if(mv.sel){
     const di=dayInfo('dan',mv.sel),ti=dayInfo('tori',mv.sel);
     const dLine=di?`${esc(di.t.title)} — ${rangeStr(di.t.start,di.t.end)}${di.t.type==='pto'?` · ${fmtD(r2(di.cost))} PTO this day`:' · no PTO'}`:'Working / not off';
-    const tLine=ti?(ti.t?`${esc(ti.t.title)} — ${rangeStr(ti.t.start,ti.t.end)} · ${ti.t.type==='admin'?'admin time':fmtH(ti.cost)+' PTO this day'}${ti.hol?` (${esc(ti.hol)} — free)`:''}`:`${esc(ti.label)} — state holiday`):'Working / not off';
-    const db=dEndOfDay(mv.sel),tb=tBalEnd(mv.sel);
+    const tLine=ti?(ti.t?`${esc(ti.t.title)} — ${rangeStr(ti.t.start,ti.t.end)} · ${fmtH(ti.cost)} this day${ti.adm>0&&ti.ann>0?` (Admin ${fmtH(ti.adm)} + Annual ${fmtH(ti.ann)})`:ti.adm>0?' Admin/Personal':ti.cost>0?' Annual':''}${ti.hol?` (${esc(ti.hol)} — free)`:''}`:`${esc(ti.label)} — state holiday`):'Working / not off';
+    const db=dEndOfDay(mv.sel),tb=tTotEnd(mv.sel);
     h+=`<div class="dayinfo"><b style="color:var(--text-bright)">${fmtDateLong(mv.sel)}</b><br>
       <span class="who-d">Dan:</span> ${dLine}<br><span class="who-t">Tori:</span> ${tLine}<br>
       <span style="color:var(--text-dim);font-size:11px">End of day available — Dan ${fmtD(db.remaining)} · Tori ${tb===null?'—':fmtHD(tb)}</span></div>`;
@@ -1020,12 +1094,12 @@ function monthHTML(){
   list.sort((a,b)=>a.t.start<b.t.start?-1:1);
   h+=`<div class="list-header">This month</div>`;
   h+=list.length?list.map(({p,t})=>{
-    const cost=p==='dan'?(t.type==='pto'?fmtD(r2(dCostIn(t,first,last)))+' this month':'no PTO'):(t.type==='admin'?'admin':fmtH(tCostIn(t,first,last))+' this month');
+    const cost=p==='dan'?(t.type==='pto'?fmtD(r2(dCostIn(t,first,last)))+' this month':'no PTO'):(fmtH(tCostIn(t,first,last))+' this month');
     const col=p==='dan'&&isHunting(t.title)?'hunt':p;return `<div class="day-row" style="border-left:3px solid var(--${col});cursor:default"><span class="type-tag" style="background:transparent;color:var(--${col})">${NAME[p].toUpperCase()}</span><div class="day-body"><div class="day-name">${esc(t.title)}</div><div class="day-meta"><span>${rangeStr(t.start,t.end)}</span><span>${cost}</span></div></div></div>`;
   }).join(''):`<div class="empty-state">Nobody's off this month.</div>`;
   return h;
 }
-function tCostIn(t,a,b){if(t.type==='admin')return 0;const wd=tWDList(t.start,t.end);if(!wd.length)return (t.start>=a&&t.start<=b)?t.cost:0;return t.cost*wd.filter(d=>d>=a&&d<=b).length/wd.length;}
+function tCostIn(t,a,b){const h=(+t.cost||0)+(+t.admin||0),wd=tWDList(t.start,t.end);if(!wd.length)return (t.start>=a&&t.start<=b)?h:0;return h*wd.filter(d=>d>=a&&d<=b).length/wd.length;}
 
 // ═══════════════ JOINT: 3-MONTH VIEW ═══════════════
 function quarterHTML(){
